@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftLSP
+import LSPServiceKit
 
 struct CodebaseContentView: View
 {

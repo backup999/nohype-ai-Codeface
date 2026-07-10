@@ -149,7 +149,7 @@ extension ArtifactViewModel
     }
 }
 
-extension SIMD2: Comparable where Scalar: Comparable
+extension SIMD2: @retroactive Comparable where Scalar: Comparable
 {
     public static func < (lhs: SIMD2<Scalar>,
                           rhs: SIMD2<Scalar>) -> Bool

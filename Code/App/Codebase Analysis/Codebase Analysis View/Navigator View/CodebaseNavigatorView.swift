@@ -27,7 +27,8 @@ struct CodebaseNavigatorView: View
             }
             .onChange(of: selectedArtifactID)
             {
-                if $0 == artifact.id
+                _, new in
+                if new == artifact.id
                 {
                     analysis.selectedArtifact = artifact
                 }

@@ -96,7 +96,7 @@ public struct DoubleSidebarView<LeftSidebar: View, Content: View, RightSidebar: 
         }
         .onChange(of: showLeftSidebar)
         {
-            showsLeftSidebar in
+            _, showsLeftSidebar in
             
             withAnimation
             {
@@ -105,7 +105,7 @@ public struct DoubleSidebarView<LeftSidebar: View, Content: View, RightSidebar: 
         }
         .onChange(of: columnVisibility)
         {
-            newValue in
+            _, newValue in
             
             showLeftSidebar = newValue == .all || newValue == .doubleColumn
         }
@@ -115,7 +115,7 @@ public struct DoubleSidebarView<LeftSidebar: View, Content: View, RightSidebar: 
         }
         .onChange(of: focus)
         {
-            [focus] newFocus in
+            [focus] _, newFocus in
 
             let contentOrRightLostFocus = newFocus == nil && focus != .leftSidebar
             if contentOrRightLostFocus { self.focus = .leftSidebar }

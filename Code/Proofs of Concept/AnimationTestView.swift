@@ -35,7 +35,7 @@ struct AnimationTestView: View {
                         animate()
                     }
                     .opacity(isVisible ? 1 : 0)
-                    .onChange(of: geo.size) { _ in animate() }
+                    .onChange(of: geo.size) { animate() }
                 }
                 .clipped()
             }

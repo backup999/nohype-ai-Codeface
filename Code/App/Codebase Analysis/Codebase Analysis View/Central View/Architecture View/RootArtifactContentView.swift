@@ -63,7 +63,7 @@ struct RootArtifactContentView: View
             }
             .onChange(of: geo.size)
             {
-                didChangeSize(to: $0.size)
+                didChangeSize(to: $1.size)
             }
             .onReceive(
                 observableSize.$size
@@ -75,7 +75,7 @@ struct RootArtifactContentView: View
             }
             .onChange(of: artifactVM)
             {
-                newArtifact in
+                _, newArtifact in
                 
                 // print("attempt to layout newly selected artifact \(newArtifact.codeArtifact.name)")
                 

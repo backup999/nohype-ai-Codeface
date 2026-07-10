@@ -25,7 +25,9 @@ struct SearchField: View
             .onChange(of: isFocused)
             {
                 // ❗️ we have to write the view model async (later) to not screw up focus management
-                newFocus in Task
+                _, newFocus in
+                
+                Task
                 {
                     withAnimation(.easeInOut(duration: 1))
                     {
@@ -40,7 +42,7 @@ struct SearchField: View
             .onChange(of: searchTerm)
             {
                 // ❗️ we have to write the view model async (later) to not screw up focus management
-                newTerm in
+                _, newTerm in
                 
                 Task
                 {
