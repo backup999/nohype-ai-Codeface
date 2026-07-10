@@ -35,9 +35,10 @@ extension CodeFolder
                   subfolders: subfolders)
     }
     
+    // TODO: make throwing instead of using optional try inside
     func printSize()
     {
-        if let encoded = encode()
+        if let encoded = try? encode()
         {
             log(name + " size: \(Double(encoded.count) / 1000_000) MB")
         }

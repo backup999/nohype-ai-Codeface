@@ -14,7 +14,7 @@ extension XPCExecutable
         {
             confirmCall()
             
-            log("received stdout from service: " + (stdOut.utf8String ?? "decoding error"))
+            log("received stdout from service: " + stdOut.utf8String)
         }
         
         func executableDidSend(stdErr: Data,
@@ -22,12 +22,13 @@ extension XPCExecutable
         {
             confirmCall()
             
-            guard stdErr.count > 0, var stdErrString = stdErr.utf8String else
+            guard stdErr.count > 0 else
             {
                 log(error: "Executable sent empty or undecodable data via stdErr")
                 return
             }
             
+            var stdErrString = stdErr.utf8String
             if stdErrString.last == "\n" { stdErrString.removeLast() }
             
             log("executable sent data via stdErr:\n\(stdErrString)")

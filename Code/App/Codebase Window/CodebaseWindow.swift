@@ -81,15 +81,16 @@ class CodebaseWindow: ObservableObject
     
     // MARK: - Load Processor for Codebase from File
     
+    // TODO: make throwing instead of using optional try inside
     func runProcessor(withCodebaseAt fileURL: URL)
     {
-        guard let fileData = Data(from: fileURL) else
+        guard let fileData = try? Data(from: fileURL) else
         {
             log(error: "Couldn't read codebase file")
             return
         }
         
-        guard let codebase = CodeFolder(fileData) else
+        guard let codebase = try? CodeFolder(jsonData: fileData) else
         {
             log(error: "Couldn't decode codebase")
             return
