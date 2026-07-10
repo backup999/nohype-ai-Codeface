@@ -101,15 +101,14 @@ class LogViewModel: ObservableObject
     
     private init()
     {
-        Log.shared.add(observer: self)
+        // Log is an actor; registration must be awaited.
+        // Pass a nonisolated @Sendable-friendly hop — never a main-actor method reference.
+        Task
         {
-            [weak self] entry in
-            
-            Task
-            {
-                @MainActor in // ensure view updates are triggered from main actor
-                
-                self?.logEntries.insertSorted(entry)
+            await Log.shared.add(observer: self) { [weak self] entry in
+                Task { @MainActor [weak self] in
+                    self?.logEntries.insertSorted(entry)
+                }
             }
         }
     }
