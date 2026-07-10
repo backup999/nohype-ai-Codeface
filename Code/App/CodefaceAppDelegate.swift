@@ -15,7 +15,8 @@ import SwiftyToolz
         
         Task
         {
-            try await Task.sleep(for: .milliseconds(50))
+            // non-throwing so an unstructured Task doesn't silently drop errors
+            try? await Task.sleep(for: .milliseconds(50))
             Self.openDocumentWindowIfNoneExist()
         }
     }

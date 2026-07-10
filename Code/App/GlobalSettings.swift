@@ -1,5 +1,6 @@
 import Combine
 
+@MainActor
 class GlobalSettings: ObservableObject
 {
     static let shared = GlobalSettings()

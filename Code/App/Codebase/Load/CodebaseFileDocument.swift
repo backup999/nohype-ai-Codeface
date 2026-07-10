@@ -26,7 +26,7 @@ struct CodebaseFileDocument: FileDocument, Codable
     }
     
     var codebase: CodeFolder?
-    static var readableContentTypes: [UTType] = [.codebase]
+    static let readableContentTypes: [UTType] = [.codebase]
 }
 
 extension UTType

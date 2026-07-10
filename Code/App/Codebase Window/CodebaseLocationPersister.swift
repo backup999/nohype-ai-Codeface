@@ -46,8 +46,14 @@ enum CodebaseLocationPersister
         return persistedLocation.codebaseLocation
     }
     
-    @UserDefault(key: "persistedCodebaseLocationData", defaultValue: nil)
+    // Computed so there is no global mutable static storage for the concurrency checker.
     private static var persistedCodebaseLocationData: Data?
+    {
+        get { UserDefaults.standard.object(forKey: storageKey) as? Data }
+        set { UserDefaults.standard.set(newValue, forKey: storageKey) }
+    }
+    
+    private static let storageKey = "persistedCodebaseLocationData"
 }
 
 private struct PersistedCodebaseLocation: Codable
