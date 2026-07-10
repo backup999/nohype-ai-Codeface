@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftLSP
 import SwiftyToolz
-import SwiftUIToolzOLD
+import SwiftUIToolz
 
 struct ArtifactView: View
 {
