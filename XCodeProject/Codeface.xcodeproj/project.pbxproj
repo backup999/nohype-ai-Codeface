@@ -34,12 +34,6 @@
 		961D497529A26A8A00E95E99 /* RelativeFilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961D497429A26A8A00E95E99 /* RelativeFilePath.swift */; };
 		961EFF32284FB8BC00DB7FE9 /* RootArtifactContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961EFF31284FB8BC00DB7FE9 /* RootArtifactContentView.swift */; };
 		9625697729BA5E47002FB7CC /* PurchasePanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9625697629BA5E47002FB7CC /* PurchasePanelView.swift */; };
-		9629D5AC29252A1E006B1E98 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96143F0E290EDC32008CA3C2 /* Client.swift */; };
-		9629D5AD29252A1E006B1E98 /* TestXPCExecutableForCodeface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96081CFB29223D9100A562BA /* TestXPCExecutableForCodeface.swift */; };
-		9629D5AE29252A1E006B1E98 /* ServiceExportedInterface+Conveniences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96021333291D5CAB0082DEF4 /* ServiceExportedInterface+Conveniences.swift */; };
-		9629D5B729252A2C006B1E98 /* XPCExecutableClientExportedInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966F39B7291C045900198B14 /* XPCExecutableClientExportedInterface.swift */; };
-		9629D5B829252A2C006B1E98 /* XPCExecutableServiceExportedInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96143F00290ED68A008CA3C2 /* XPCExecutableServiceExportedInterface.swift */; };
-		9629D5B929252A2C006B1E98 /* XPCExecutable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96021330291D3CCB0082DEF4 /* XPCExecutable.swift */; };
 		963170E629CC800C00B146D5 /* AppStoreClient+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963170E529CC800C00B146D5 /* AppStoreClient+SwiftUI.swift */; };
 		963170EA29CE0A1100B146D5 /* WindowDisplayOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */; };
 		9639C27228D761A000779BA5 /* CodebaseWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9639C27128D761A000779BA5 /* CodebaseWindowView.swift */; };
@@ -155,14 +149,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		96021330291D3CCB0082DEF4 /* XPCExecutable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCExecutable.swift; sourceTree = "<group>"; };
-		96021333291D5CAB0082DEF4 /* ServiceExportedInterface+Conveniences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ServiceExportedInterface+Conveniences.swift"; sourceTree = "<group>"; };
 		960334E82A30C2A5003EA41F /* ArtifactIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactIcon.swift; sourceTree = "<group>"; };
 		960334EA2A30C2D1003EA41F /* ArtifactIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactIconView.swift; sourceTree = "<group>"; };
 		960730B528982F3C008F1D7C /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
-		96081CFB29223D9100A562BA /* TestXPCExecutableForCodeface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestXPCExecutableForCodeface.swift; sourceTree = "<group>"; };
-		96081CFD292242E100A562BA /* RunProcessServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunProcessServiceTest.swift; sourceTree = "<group>"; };
-		96081D072922475700A562BA /* ProcessServiceTestMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessServiceTestMain.swift; sourceTree = "<group>"; };
 		960A7AA328AB875100F334CA /* DependencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyView.swift; sourceTree = "<group>"; };
 		960A7AA928AB92AE00F334CA /* ArtifactHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactHeaderView.swift; sourceTree = "<group>"; };
 		960A7AAB28ABB07800F334CA /* TreeMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeMap.swift; sourceTree = "<group>"; };
@@ -171,11 +160,7 @@
 		960C4D6529C3A3A6009282A2 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		960C4D6A29C3C170009282A2 /* TestingDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingDashboard.swift; sourceTree = "<group>"; };
 		96143EFE290ED68A008CA3C2 /* CodefaceHelper.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = CodefaceHelper.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
-		96143F00290ED68A008CA3C2 /* XPCExecutableServiceExportedInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCExecutableServiceExportedInterface.swift; sourceTree = "<group>"; };
-		96143F02290ED68A008CA3C2 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
-		96143F04290ED68A008CA3C2 /* Service+main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Service+main.swift"; sourceTree = "<group>"; };
 		96143F06290ED68A008CA3C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		96143F0E290EDC32008CA3C2 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		9619A2B12966E57700863BC0 /* CodebaseAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseAnalysis.swift; sourceTree = "<group>"; };
 		9619A2B32966E87C00863BC0 /* ProcessingFailureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingFailureView.swift; sourceTree = "<group>"; };
 		9619A2B82967104E00863BC0 /* CodeArtifact+Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeArtifact+Metrics.swift"; sourceTree = "<group>"; };
@@ -205,7 +190,6 @@
 		965795B22954697700CB9F3F /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		965A7AD82964A319006C5A3A /* CodebaseProcessorSteps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseProcessorSteps.swift; sourceTree = "<group>"; };
 		9664C1EF2A52E2B6000B8C29 /* LoggingText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingText.swift; sourceTree = "<group>"; };
-		966F39B7291C045900198B14 /* XPCExecutableClientExportedInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCExecutableClientExportedInterface.swift; sourceTree = "<group>"; };
 		9675A0B6294CE1C900C784AA /* NavigationAndFocusPOCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationAndFocusPOCView.swift; sourceTree = "<group>"; };
 		967BFD5B29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentLink+Codeface.swift"; sourceTree = "<group>"; };
 		96842F4529AF53E000FB0439 /* SecondaryToolbarButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryToolbarButtons.swift; sourceTree = "<group>"; };
@@ -328,15 +312,6 @@
 			path = "Artifact Icon";
 			sourceTree = "<group>";
 		};
-		96081D06292243EB00A562BA /* ProcessServiceTest */ = {
-			isa = PBXGroup;
-			children = (
-				96081CFD292242E100A562BA /* RunProcessServiceTest.swift */,
-				96081D072922475700A562BA /* ProcessServiceTestMain.swift */,
-			);
-			path = ProcessServiceTest;
-			sourceTree = "<group>";
-		};
 		96106E6729634D9B0002F13C /* Codebase */ = {
 			isa = PBXGroup;
 			children = (
@@ -369,15 +344,6 @@
 				96143F06290ED68A008CA3C2 /* Info.plist */,
 			);
 			path = CodefaceHelper;
-			sourceTree = "<group>";
-		};
-		96143F11290EE1EA008CA3C2 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-				96143F04290ED68A008CA3C2 /* Service+main.swift */,
-				96143F02290ED68A008CA3C2 /* Service.swift */,
-			);
-			path = Service;
 			sourceTree = "<group>";
 		};
 		9619A2B72967101300863BC0 /* Metrics */ = {
@@ -580,36 +546,6 @@
 			path = "Codebase Analysis View";
 			sourceTree = "<group>";
 		};
-		966F39B4291C03DE00198B14 /* XPCExecutable */ = {
-			isa = PBXGroup;
-			children = (
-				966F39B5291C040100198B14 /* Client */,
-				96143F11290EE1EA008CA3C2 /* Service */,
-				966F39B6291C042B00198B14 /* Shared */,
-			);
-			path = XPCExecutable;
-			sourceTree = "<group>";
-		};
-		966F39B5291C040100198B14 /* Client */ = {
-			isa = PBXGroup;
-			children = (
-				96081CFB29223D9100A562BA /* TestXPCExecutableForCodeface.swift */,
-				96021333291D5CAB0082DEF4 /* ServiceExportedInterface+Conveniences.swift */,
-				96143F0E290EDC32008CA3C2 /* Client.swift */,
-			);
-			path = Client;
-			sourceTree = "<group>";
-		};
-		966F39B6291C042B00198B14 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				966F39B7291C045900198B14 /* XPCExecutableClientExportedInterface.swift */,
-				96143F00290ED68A008CA3C2 /* XPCExecutableServiceExportedInterface.swift */,
-				96021330291D3CCB0082DEF4 /* XPCExecutable.swift */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		967BFD5D29D4B02800BD9CA7 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
@@ -651,15 +587,6 @@
 				96E479DC2835B36C00762FD7 /* SidebarLabel.swift */,
 			);
 			path = "Navigator View";
-			sourceTree = "<group>";
-		};
-		96D59CD0294AC26F003C55B5 /* XPC Experiments */ = {
-			isa = PBXGroup;
-			children = (
-				96081D06292243EB00A562BA /* ProcessServiceTest */,
-				966F39B4291C03DE00198B14 /* XPCExecutable */,
-			);
-			path = "XPC Experiments";
 			sourceTree = "<group>";
 		};
 		96E0C0BF29D080B30087A79F /* Purchase Panel */ = {
@@ -750,7 +677,6 @@
 			isa = PBXGroup;
 			children = (
 				96E863D12844125500BCCE66 /* App */,
-				96D59CD0294AC26F003C55B5 /* XPC Experiments */,
 				96F5E7F12957197500181473 /* Proofs of Concept */,
 				9EB8BA5B218E2C78007ED4E7 /* Framework-Candidates */,
 			);
@@ -1025,12 +951,9 @@
 				9688065F297C31A00075F8F3 /* CodeFolderArtifact+CalculateMetrics.swift in Sources */,
 				9E007283218E250E0094BD1C /* CodefaceApp.swift in Sources */,
 				96E135112962DD7A00DF8A43 /* CodeSymbolArtifact.swift in Sources */,
-				9629D5AD29252A1E006B1E98 /* TestXPCExecutableForCodeface.swift in Sources */,
 				96E135152962DD7F00DF8A43 /* GraphNode+Sorting.swift in Sources */,
 				968D9C0E28D4E99E000BE520 /* LoadingProgressView.swift in Sources */,
 				96E1350A2962DD6200DF8A43 /* CodeFolder+File System.swift in Sources */,
-				9629D5B829252A2C006B1E98 /* XPCExecutableServiceExportedInterface.swift in Sources */,
-				9629D5B729252A2C006B1E98 /* XPCExecutableClientExportedInterface.swift in Sources */,
 				960A7AAA28AB92AE00F334CA /* ArtifactHeaderView.swift in Sources */,
 				96D59CC1294AB82D003C55B5 /* SearchBarView.swift in Sources */,
 				96E135082962DD5900DF8A43 /* ArtifactViewModel+LayoutArtifacts.swift in Sources */,
@@ -1046,7 +969,6 @@
 				964151E129D0F968008E6074 /* FindAndFilterMenuOptions.swift in Sources */,
 				9651AC1529D348050054FB52 /* URL+Codeface.swift in Sources */,
 				960A7AA428AB875100F334CA /* DependencyView.swift in Sources */,
-				9629D5AC29252A1E006B1E98 /* Client.swift in Sources */,
 				9688065B297C25560075F8F3 /* CodeFolderArtifact+SortMetric.swift in Sources */,
 				96D59CD2294AC36A003C55B5 /* DocumentLink.swift in Sources */,
 				964464BE295204DB0004382F /* CodebaseAnalysisContentPanel.swift in Sources */,
@@ -1056,8 +978,6 @@
 				96E135182962DD7F00DF8A43 /* CodeFileArtifact+CodeArtifact.swift in Sources */,
 				965A7AD92964A319006C5A3A /* CodebaseProcessorSteps.swift in Sources */,
 				96EA394F282C2AF2002B033E /* ArtifactContentView.swift in Sources */,
-				9629D5AE29252A1E006B1E98 /* ServiceExportedInterface+Conveniences.swift in Sources */,
-				9629D5B929252A2C006B1E98 /* XPCExecutable.swift in Sources */,
 				9675A0B7294CE1C900C784AA /* NavigationAndFocusPOCView.swift in Sources */,
 				96E135162962DD7F00DF8A43 /* CodeSymbolArtifact+CodeArtifact.swift in Sources */,
 				967BFD5C29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift in Sources */,
