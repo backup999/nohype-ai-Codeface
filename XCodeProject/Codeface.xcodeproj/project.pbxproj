@@ -44,7 +44,6 @@
 		963170EA29CE0A1100B146D5 /* WindowDisplayOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */; };
 		9639C27228D761A000779BA5 /* CodebaseWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9639C27128D761A000779BA5 /* CodebaseWindowView.swift */; };
 		963AE38B28D505B9006E17F2 /* CodebaseFileDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963AE38A28D505B9006E17F2 /* CodebaseFileDocument.swift */; };
-		963C8CFF2A4EFA9100930BC6 /* AnimationTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963C8CFE2A4EFA9100930BC6 /* AnimationTestView.swift */; };
 		963D505C2A92217C001F5C51 /* TreemapAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963D505B2A92217C001F5C51 /* TreemapAlgorithm.swift */; };
 		964151DD29D0F497008E6074 /* PurchaseMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964151DC29D0F497008E6074 /* PurchaseMenu.swift */; };
 		964151DF29D0F925008E6074 /* ViewMenuOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964151DE29D0F925008E6074 /* ViewMenuOptions.swift */; };
@@ -89,7 +88,6 @@
 		96D59CC5294AB8DE003C55B5 /* CodebaseInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D59CC4294AB8DE003C55B5 /* CodebaseInspectorView.swift */; };
 		96D59CC7294AB9F8003C55B5 /* CodebaseAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D59CC6294AB9F8003C55B5 /* CodebaseAnalysisView.swift */; };
 		96D59CC9294ABB13003C55B5 /* CodebaseNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D59CC8294ABB13003C55B5 /* CodebaseNavigatorView.swift */; };
-		96D59CCB294ABC1F003C55B5 /* DoubleSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D59CCA294ABC1F003C55B5 /* DoubleSidebarView.swift */; };
 		96D59CD2294AC36A003C55B5 /* DocumentLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D59CD1294AC36A003C55B5 /* DocumentLink.swift */; };
 		96D8DB1D28A1503C00B84B45 /* PathBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D8DB1C28A1503C00B84B45 /* PathBarView.swift */; };
 		96DC635528E100D900DD5BEB /* SwiftLSP in Frameworks */ = {isa = PBXBuildFile; productRef = 96DC635428E100D900DD5BEB /* SwiftLSP */; };
@@ -189,7 +187,6 @@
 		963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowDisplayOptions.swift; sourceTree = "<group>"; };
 		9639C27128D761A000779BA5 /* CodebaseWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseWindowView.swift; sourceTree = "<group>"; };
 		963AE38A28D505B9006E17F2 /* CodebaseFileDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseFileDocument.swift; sourceTree = "<group>"; };
-		963C8CFE2A4EFA9100930BC6 /* AnimationTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationTestView.swift; sourceTree = "<group>"; };
 		963D505B2A92217C001F5C51 /* TreemapAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreemapAlgorithm.swift; sourceTree = "<group>"; };
 		964151DC29D0F497008E6074 /* PurchaseMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseMenu.swift; sourceTree = "<group>"; };
 		964151DE29D0F925008E6074 /* ViewMenuOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewMenuOptions.swift; sourceTree = "<group>"; };
@@ -228,7 +225,6 @@
 		96D59CC4294AB8DE003C55B5 /* CodebaseInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseInspectorView.swift; sourceTree = "<group>"; };
 		96D59CC6294AB9F8003C55B5 /* CodebaseAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseAnalysisView.swift; sourceTree = "<group>"; };
 		96D59CC8294ABB13003C55B5 /* CodebaseNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseNavigatorView.swift; sourceTree = "<group>"; };
-		96D59CCA294ABC1F003C55B5 /* DoubleSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleSidebarView.swift; sourceTree = "<group>"; };
 		96D59CD1294AC36A003C55B5 /* DocumentLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentLink.swift; sourceTree = "<group>"; };
 		96D8DB1C28A1503C00B84B45 /* PathBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathBarView.swift; sourceTree = "<group>"; };
 		96E0C0BD29D0806A0087A79F /* LargeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeButton.swift; sourceTree = "<group>"; };
@@ -623,7 +619,6 @@
 				96E0C0BD29D0806A0087A79F /* LargeButton.swift */,
 				9651AC0D29D2F7940054FB52 /* AboutPanel.swift */,
 				960C4D6529C3A3A6009282A2 /* LogView.swift */,
-				96D59CCA294ABC1F003C55B5 /* DoubleSidebarView.swift */,
 				9651AC1129D310EC0054FB52 /* AppIcon.swift */,
 				9664C1EF2A52E2B6000B8C29 /* LoggingText.swift */,
 			);
@@ -745,7 +740,6 @@
 		96F5E7F12957197500181473 /* Proofs of Concept */ = {
 			isa = PBXGroup;
 			children = (
-				963C8CFE2A4EFA9100930BC6 /* AnimationTestView.swift */,
 				96F5E7EF2957191E00181473 /* ConcurrencyPOC.swift */,
 				9675A0B6294CE1C900C784AA /* NavigationAndFocusPOCView.swift */,
 			);
@@ -983,7 +977,6 @@
 				96E479D028359C9900762FD7 /* AnimatableLine.swift in Sources */,
 				961EFF32284FB8BC00DB7FE9 /* RootArtifactContentView.swift in Sources */,
 				96D59CC7294AB9F8003C55B5 /* CodebaseAnalysisView.swift in Sources */,
-				963C8CFF2A4EFA9100930BC6 /* AnimationTestView.swift in Sources */,
 				96106E602962DEEE0002F13C /* CodeFolderArtifact+LOCInCycles.swift in Sources */,
 				96FDA72C29BCABCC0020A48F /* AppStoreClient.swift in Sources */,
 				96106E632962DF1C0002F13C /* CodeFileArtifact+CodeFile.swift in Sources */,
@@ -1045,7 +1038,6 @@
 				963AE38B28D505B9006E17F2 /* CodebaseFileDocument.swift in Sources */,
 				960C4D6629C3A3A6009282A2 /* LogView.swift in Sources */,
 				963D505C2A92217C001F5C51 /* TreemapAlgorithm.swift in Sources */,
-				96D59CCB294ABC1F003C55B5 /* DoubleSidebarView.swift in Sources */,
 				96E135032962DD4900DF8A43 /* ArtifactViewModel.swift in Sources */,
 				9664C1F02A52E2B6000B8C29 /* LoggingText.swift in Sources */,
 				965795AE2954652C00CB9F3F /* EmptyProcesorView.swift in Sources */,

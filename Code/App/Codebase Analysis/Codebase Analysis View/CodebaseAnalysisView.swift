@@ -4,23 +4,46 @@ struct CodebaseAnalysisView: View
 {
     var body: some View
     {
-        DoubleSidebarView(showLeftSidebar: $displayOptions.showsLeftSidebar,
-                          showRightSidebar: $displayOptions.showsRightSidebar)
+        NavigationSplitView(columnVisibility: $columnVisibility)
+        {
+            CodebaseNavigatorView(analysis: analysis,
+                                  showsLinesOfCode: $displayOptions.showsLinesOfCode)
+                .navigationSplitViewColumnWidth(min: 200, ideal: 300)
+                .listStyle(.sidebar)
+        }
+        detail:
         {
             CodebaseCentralView(analysis: analysis,
                                 displayOptions: displayOptions)
         }
-        leftSidebar:
-        {
-            CodebaseNavigatorView(analysis: analysis,
-                                  showsLinesOfCode: $displayOptions.showsLinesOfCode)
-        }
-        rightSidebar:
+        .inspector(isPresented: $displayOptions.showsRightSidebar)
         {
             CodebaseInspectorView(selectedArtifact: analysis.selectedArtifact)
+                .inspectorColumnWidth(min: 200, ideal: 250)
+        }
+        .onChange(of: displayOptions.showsLeftSidebar)
+        {
+            _, showsLeftSidebar in
+            
+            withAnimation
+            {
+                columnVisibility = showsLeftSidebar ? .doubleColumn : .detailOnly
+            }
+        }
+        .onChange(of: columnVisibility)
+        {
+            _, newValue in
+            
+            displayOptions.showsLeftSidebar = newValue == .all || newValue == .doubleColumn
+        }
+        .onAppear
+        {
+            columnVisibility = displayOptions.showsLeftSidebar ? .doubleColumn : .detailOnly
         }
     }
     
     @ObservedObject var analysis: CodebaseAnalysis
     @ObservedObject var displayOptions: WindowDisplayOptions
+    
+    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
 }
