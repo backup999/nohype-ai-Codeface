@@ -15,7 +15,7 @@ struct SecondaryToolbarButtons: View
         codebaseProcessor.state.analysis
     }
     
-    @ObservedObject var codebaseProcessor: CodebaseProcessor
+    var codebaseProcessor: CodebaseProcessor
 }
 
 struct ToolbarFilterIndicator: View

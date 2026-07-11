@@ -40,8 +40,8 @@ struct PrimaryToolbarButtons: View
         codebaseProcessor.state.analysis
     }
     
-    @ObservedObject var codebaseProcessor: CodebaseProcessor
-    @ObservedObject var displayOptions: WindowDisplayOptions
+    var codebaseProcessor: CodebaseProcessor
+    var displayOptions: WindowDisplayOptions
 }
 
 struct UpdatingDisplayModePicker: View

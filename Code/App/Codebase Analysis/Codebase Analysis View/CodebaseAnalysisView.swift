@@ -47,7 +47,7 @@ struct CodebaseAnalysisView: View
     }
     
     var analysis: CodebaseAnalysis
-    @ObservedObject var displayOptions: WindowDisplayOptions
+    @Bindable var displayOptions: WindowDisplayOptions
     
     @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
 }

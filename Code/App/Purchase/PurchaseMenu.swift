@@ -65,7 +65,7 @@ struct PurchaseMenu: View
         }
     }
     
-    @ObservedObject var displayOptions: WindowDisplayOptions
-    @ObservedObject var appStoreClient = AppStoreClient.shared
+    var displayOptions: WindowDisplayOptions
+    private var appStoreClient = AppStoreClient.shared
     @Environment(\.openURL) var openURL
 }

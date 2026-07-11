@@ -1,11 +1,12 @@
 import FoundationToolz
 import Foundation
-import Combine
+import Observation
 import SwiftLSP
 import SwiftyToolz
 
 @MainActor
-class CodebaseProcessor: ObservableObject
+@Observable
+class CodebaseProcessor
 {
     // MARK: - Run Processing
     
@@ -15,6 +16,10 @@ class CodebaseProcessor: ObservableObject
         {
             // get codebase
             guard let codebase = await retrieveCodebase() else { return }
+            
+            // Durable source of truth for Save / DocumentGroup — set *before* state
+            // advances into phases that no longer embed CodeFolder (e.g. analyzeArchitecture).
+            publishCodeFolder(codebase)
             
             // generate architecture
             state = .processCodebase(codebase, .init(primaryText: "Generating Codebase Architecture",
@@ -104,7 +109,22 @@ class CodebaseProcessor: ObservableObject
         }
     }
     
+    // MARK: - Durable CodeFolder (survives enum state transitions)
+    
+    /// Last successfully retrieved / loaded codebase for document save and reprocessing.
+    /// Independent of `state`, which drops associated values when the phase changes.
+    private(set) var codeFolder: CodeFolder?
+    
+    /// Notified synchronously whenever `codeFolder` is published (after retrieve, before analysis phases progress).
+    var onCodeFolderPublished: ((CodeFolder) -> Void)?
+    
+    private func publishCodeFolder(_ codebase: CodeFolder)
+    {
+        codeFolder = codebase
+        onCodeFolderPublished?(codebase)
+    }
+    
     // MARK: - State
     
-    @Published var state = CodebaseProcessorState.empty
+    var state = CodebaseProcessorState.empty
 }

@@ -66,6 +66,6 @@ struct SubscriptionManagementView: View
     }
     
     let subscription: Product
-    @ObservedObject private var appStoreClient = AppStoreClient.shared
+    private var appStoreClient = AppStoreClient.shared
     @Environment(\.openURL) var openURL
 }

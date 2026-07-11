@@ -39,6 +39,6 @@ struct CodebaseProcessorView: View
         }
     }
     
-    @ObservedObject var codebaseProcessor: CodebaseProcessor
-    @ObservedObject var displayOptions: WindowDisplayOptions
+    var codebaseProcessor: CodebaseProcessor
+    var displayOptions: WindowDisplayOptions
 }

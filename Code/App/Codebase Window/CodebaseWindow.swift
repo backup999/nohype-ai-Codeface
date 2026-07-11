@@ -1,6 +1,5 @@
 import SwiftLSP
 import Foundation
-import Combine
 import SwiftyToolz
 
 @MainActor
@@ -8,27 +7,17 @@ class CodebaseWindow: ObservableObject
 {
     // MARK: - Initialize
     
-    init(codebase: CodeFolder?)
+    /// - Parameter onCodeFolderForDocument: Write savable `CodeFolder` into the FileDocument.
+    ///   Called when the processor publishes a retrieved/loaded codebase (sync, MainActor).
+    init(codebase: CodeFolder?,
+         onCodeFolderForDocument: ((CodeFolder) -> Void)? = nil)
     {
         _lastLocation = Published(initialValue: try? CodebaseLocationPersister.loadCodebaseLocation())
         
-        if let codebase { runProcessor(with: codebase) }
+        codebaseProcessor.onCodeFolderPublished = onCodeFolderForDocument
         
-        sendEventWhenProcessorDidRetrieveNewCodebase()
+        if let codebase { runProcessor(with: codebase) }
     }
-    
-    private func sendEventWhenProcessorDidRetrieveNewCodebase()
-    {
-        processorObservation = codebaseProcessor.$state.sink
-        {
-            if case .didJustRetrieveCodebase(let codebase) = $0
-            {
-                self.send(.didRetrieveNewCodebase(codebase))
-            }
-        }
-    }
-    
-    private var processorObservation: AnyCancellable?
     
     // MARK: - Run Processor with Codebase at Location
     
@@ -116,22 +105,6 @@ class CodebaseWindow: ObservableObject
         codebaseProcessor.state = state
         codebaseProcessor.run()
     }
-    
-    // MARK: - Observable Events
-    
-    private func send(_ event: Event)
-    {
-        events.send(event)
-    }
-    
-    let events = CombineMessenger<Event>()
-    
-    enum Event
-    {
-        case didRetrieveNewCodebase(CodeFolder)
-    }
-    
-    typealias CombineMessenger<Message> = PassthroughSubject<Message, Never>
     
     // MARK: - Codebase Processor
     

@@ -8,8 +8,13 @@ struct CodebaseWindowView: View
     {
         _codebaseFile = codebaseFile
         
+        let documentBinding = codebaseFile
         let codebase = codebaseFile.wrappedValue.codebase
-        _documentWindow = StateObject(wrappedValue: CodebaseWindow(codebase: codebase))
+        
+        _documentWindow = StateObject(wrappedValue: CodebaseWindow(codebase: codebase) { folder in
+            // FileDocument’s savable payload — keep in sync whenever processor publishes a CodeFolder
+            documentBinding.wrappedValue.codebase = folder
+        })
     }
     
     var body: some View
@@ -49,14 +54,6 @@ struct CodebaseWindowView: View
                     
                     PrimaryToolbarButtons(codebaseProcessor: documentWindow.codebaseProcessor,
                                           displayOptions: documentWindow.displayOptions)
-                }
-            }
-            .onReceive(documentWindow.events)
-            {
-                switch $0
-                {
-                case .didRetrieveNewCodebase(let codebase):
-                    codebaseFile.codebase = codebase
                 }
             }
     }

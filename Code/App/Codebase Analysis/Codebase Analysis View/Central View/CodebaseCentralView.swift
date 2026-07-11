@@ -22,6 +22,6 @@ struct CodebaseCentralView: View
     }
     
     var analysis: CodebaseAnalysis
-    @ObservedObject var appStoreClient = AppStoreClient.shared
-    @ObservedObject var displayOptions: WindowDisplayOptions
+    private var appStoreClient = AppStoreClient.shared
+    @Bindable var displayOptions: WindowDisplayOptions
 }

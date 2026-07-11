@@ -58,7 +58,7 @@ struct LogView: View
         }
     }
     
-    @ObservedObject private var logViewModel = LogViewModel.shared
+    @Bindable private var logViewModel = LogViewModel.shared
 }
 
 struct LogIcon: View
@@ -92,7 +92,8 @@ struct LogIcon: View
 }
 
 @MainActor
-class LogViewModel: ObservableObject
+@Observable
+class LogViewModel
 {
     static let shared = LogViewModel()
     
@@ -124,10 +125,10 @@ class LogViewModel: ObservableObject
     }
     
     #if DEBUG
-    @Published var minimumLogLevel = Log.Level.verbose
+    var minimumLogLevel = Log.Level.verbose
     #else
-    @Published var minimumLogLevel = Log.Level.info
+    var minimumLogLevel = Log.Level.info
     #endif
     
-    @Published var logEntries = [Log.Entry]()
+    var logEntries = [Log.Entry]()
 }

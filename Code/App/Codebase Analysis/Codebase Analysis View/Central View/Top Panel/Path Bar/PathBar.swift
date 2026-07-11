@@ -1,7 +1,8 @@
-import Combine
+import Observation
 
 @MainActor
-class PathBar: ObservableObject
+@Observable
+final class PathBar
 {
     func select(_ artifactVM: ArtifactViewModel?)
     {
@@ -24,5 +25,5 @@ class PathBar: ObservableObject
         }
     }
     
-    @Published private(set) var artifactVMStack = [ArtifactViewModel]()
+    private(set) var artifactVMStack = [ArtifactViewModel]()
 }

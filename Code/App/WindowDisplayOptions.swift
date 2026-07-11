@@ -1,9 +1,11 @@
-import Combine
+import Observation
 
-class WindowDisplayOptions: ObservableObject
+@MainActor
+@Observable
+final class WindowDisplayOptions
 {
-    @Published var showsSubscriptionPanel = false
-    @Published var showsLeftSidebar = true
-    @Published var showsRightSidebar = false
-    @Published var showsLinesOfCode = false
+    var showsSubscriptionPanel = false
+    var showsLeftSidebar = true
+    var showsRightSidebar = false
+    var showsLinesOfCode = false
 }

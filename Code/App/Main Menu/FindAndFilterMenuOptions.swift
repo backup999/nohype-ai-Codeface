@@ -49,5 +49,5 @@ struct FindAndFilterMenuOptions: View
         codebaseProcessor.state.analysis
     }
     
-    @ObservedObject var codebaseProcessor: CodebaseProcessor
+    var codebaseProcessor: CodebaseProcessor
 }

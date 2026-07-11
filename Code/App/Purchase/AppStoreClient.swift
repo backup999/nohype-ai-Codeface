@@ -1,8 +1,10 @@
 import StoreKit
+import Observation
 import SwiftyToolz
 
 @MainActor
-class AppStoreClient: ObservableObject
+@Observable
+class AppStoreClient
 {
     // MARK: - Life Cycle
     
@@ -18,13 +20,15 @@ class AppStoreClient: ObservableObject
     
     deinit
     {
+        // Tasks are stored nonisolated so deinit can cancel them under @MainActor.
         transactionObserver?.cancel()
         subscriptionStatusObserver?.cancel()
     }
     
     // MARK: - Observe App Store
     
-    private var transactionObserver: Task<Void, Never>? = nil
+    // nonisolated(unsafe): cancel() is thread-safe; needed so deinit can reach these under @MainActor + @Observable.
+    nonisolated(unsafe) private var transactionObserver: Task<Void, Never>? = nil
     
     private func makeTransactionObserver() -> Task<Void, Never>
     {
@@ -50,7 +54,7 @@ class AppStoreClient: ObservableObject
         }
     }
     
-    private var subscriptionStatusObserver: Task<Void, Never>? = nil
+    nonisolated(unsafe) private var subscriptionStatusObserver: Task<Void, Never>? = nil
     
     private func makeSubscriptionStatusObserver() -> Task<Void, Never>
     {
@@ -243,7 +247,7 @@ class AppStoreClient: ObservableObject
         !ownedProducts.isEmpty
     }
     
-    @Published private(set) var ownedProducts = Set<ProductID>()
+    private(set) var ownedProducts = Set<ProductID>()
     
     func debugLogAllTransactions()
     {
@@ -320,7 +324,7 @@ class AppStoreClient: ObservableObject
         return newlyFetchedProducts
     }
     
-    @Published var fetchedProducts = [ProductID: Product]()
+    var fetchedProducts = [ProductID: Product]()
     
     struct ProductID: Hashable, Sendable
     {

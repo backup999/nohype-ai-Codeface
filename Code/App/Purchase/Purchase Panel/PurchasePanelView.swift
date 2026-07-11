@@ -217,5 +217,5 @@ struct PurchasePanelView: View
     }
     
     @State private var subscriptionFetch: Result<Product, Error>? = nil
-    @ObservedObject private var appStoreClient = AppStoreClient.shared
+    private var appStoreClient = AppStoreClient.shared
 }

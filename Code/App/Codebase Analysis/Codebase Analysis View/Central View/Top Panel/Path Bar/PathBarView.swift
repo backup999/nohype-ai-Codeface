@@ -33,7 +33,7 @@ struct PathBarView: View
         .frame(height: 28)
     }
     
-    @ObservedObject var overviewBar: PathBar
+    var overviewBar: PathBar
 }
 
 extension ArtifactViewModel
