@@ -12,7 +12,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Codebase</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
 			<key>LSItemContentTypes</key>
