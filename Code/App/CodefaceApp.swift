@@ -162,5 +162,4 @@ struct CodefaceApp: App
     @ObservedObject private var settings = GlobalSettings.shared
     @FocusedObject private var focusedDocumentWindow: CodebaseWindow?
     @Environment(\.openWindow) var openWindow
-    @NSApplicationDelegateAdaptor(CodefaceAppDelegate.self) var appDelegate
 }
