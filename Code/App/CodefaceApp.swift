@@ -14,16 +14,18 @@ struct CodefaceApp: App
         UserDefaults.standard.set(false, forKey: "NSFullScreenMenuItemEverywhere")
     }
     
-//    var body: some Scene
-//    {
-//        WindowGroup {
-//            ConcurrencyPOCView()
-//        }
-//    }
-    
-    //*
     var body: some Scene
     {
+        // MARK: Document windows (primary scene)
+        //
+        // Baseline: let DocumentGroup + NSDocumentController own launch and file menus.
+        // - Restored sessions reopen previous document windows when the system allows.
+        // - Cold launch with nothing to restore → system Open panel (macOS document-app default).
+        // - File → New / Open / Open Recent come from DocumentGroup (do not replace .newItem).
+        //
+        // Product conveniences (always open last codebase / always open empty welcome document)
+        // are intentionally not implemented here; re-add them once this baseline is solid.
+        
         DocumentGroup(newDocument: CodebaseFileDocument())
         {
             CodebaseWindowView(codebaseFile: $0.$document)
@@ -56,8 +58,8 @@ struct CodefaceApp: App
             
             ToolbarCommands()
             
-            CommandGroup(replacing: .undoRedo) {} // hides this
-
+            CommandGroup(replacing: .undoRedo) {} // hide unused undo/redo
+            
             CommandGroup(replacing: .sidebar)
             {
                 if let documentWindow = focusedDocumentWindow
@@ -93,21 +95,11 @@ struct CodefaceApp: App
                     openWindow(id: TestingDashboard.id)
                 }
             }
-
-            CommandGroup(replacing: .newItem)
-            {
-                Button("New Empty Codebase File")
-                {
-                    NSDocumentController.shared.newDocument(nil)
-                }
-                .keyboardShortcut("n")
-
-                Button("Open a Codebase File ...")
-                {
-                    NSDocumentController.shared.openDocument(nil)
-                }
-                .keyboardShortcut("o")
             
+            // Keep system New / Open / Open Recent from DocumentGroup.
+            // Only append Codeface-specific import actions.
+            CommandGroup(after: .newItem)
+            {
                 Divider()
                 
                 Button("Import Code Folder...")
@@ -133,12 +125,17 @@ struct CodefaceApp: App
             }
         }
         
+        // MARK: Auxiliary windows
+        //
+        // Opened only via openWindow(id:) / menu. They do not use
+        // defaultLaunchBehavior(.presented). (`.suppressed` exists on macOS 15+;
+        // deployment is still macOS 14, and the default is already non-presenting.)
+        
         TestingDashboard()
         
         AboutPanel(privacyPolicyURL: .privacyPolicy,
                    licenseAgreementURL: .licenseAgreement)
     }
-    // */
     
     private var lastFolderName: String
     {
@@ -153,11 +150,6 @@ struct CodefaceApp: App
     }
     
     // MARK: - Basics
-    
-    private var analysis: CodebaseAnalysis?
-    {
-        focusedDocumentWindow?.codebaseProcessor.state.analysis
-    }
     
     @ObservedObject private var settings = GlobalSettings.shared
     @FocusedObject private var focusedDocumentWindow: CodebaseWindow?

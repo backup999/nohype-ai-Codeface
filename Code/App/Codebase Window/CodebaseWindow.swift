@@ -39,6 +39,9 @@ class CodebaseWindow: ObservableObject
                                                         codeFileEndings: ["swift"]))
     }
     
+    /// Product convenience: re-import the last folder when no analysis is loaded.
+    /// Not wired into launch anymore — DocumentGroup owns open/restore first.
+    /// Re-enable deliberately once the document baseline is solid.
     func runProcessorWithLastCodebaseIfNoneIsLoaded()
     {
         if CodebaseLocationPersister.hasPersistedLastCodebaseLocation
