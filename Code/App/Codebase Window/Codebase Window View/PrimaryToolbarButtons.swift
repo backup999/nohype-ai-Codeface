@@ -51,5 +51,5 @@ struct UpdatingDisplayModePicker: View
         DisplayModePicker(displayMode: $analysis.displayMode)
     }
     
-    @ObservedObject var analysis: CodebaseAnalysis
+    @Bindable var analysis: CodebaseAnalysis
 }

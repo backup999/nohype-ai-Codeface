@@ -48,5 +48,5 @@ struct ToolbarFilterIndicator: View
         }
     }
     
-    @ObservedObject var analysis: CodebaseAnalysis
+    var analysis: CodebaseAnalysis
 }

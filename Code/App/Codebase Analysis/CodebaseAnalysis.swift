@@ -1,12 +1,14 @@
-import Combine
+import Observation
 
 @MainActor
-class CodebaseAnalysis: ObservableObject
+@Observable
+class CodebaseAnalysis
 {
     init(rootArtifact: ArtifactViewModel)
     {
         self.rootArtifact = rootArtifact
         self.selectedArtifact = rootArtifact
+        pathBar.select(rootArtifact)
     }
     
     // MARK: - Search
@@ -27,8 +29,8 @@ class CodebaseAnalysis: ObservableObject
     func set(searchTerm: String)
     {
         guard search.term != searchTerm else { return }
-        search.term = searchTerm // this fires since search is Published -> only for connecting to search text field UI ...
-        updateSearchFilter() // update the filter synchronously, updates `passesSearchFilter` which is Published ...
+        search.term = searchTerm // only for connecting to search text field UI ...
+        updateSearchFilter() // update the filter synchronously, updates `passesSearchFilter` ...
         
         let didClearSearchTermViaButton = searchTerm.isEmpty && !search.fieldIsFocused
         
@@ -56,21 +58,33 @@ class CodebaseAnalysis: ObservableObject
         }
     }
     
-    @Published private(set) var search = Search()
+    var search = Search()
     
     // MARK: - Path Bar
     
-    private(set) lazy var pathBar: PathBar =
-    {
-        PathBar(selectionPublisher: $selectedArtifact)
-    }()
-
+    let pathBar = PathBar()
+    
     // MARK: - Artifact View Models
     
     let rootArtifact: ArtifactViewModel
     
-    // ⚠️ observers of CodebaseAnalysis will be notified when the selected artifact is replaced, but not when any of its properties change, even though ArtifactViewModel is itself an observable class
-    @Published var selectedArtifact: ArtifactViewModel
+    /// List selection source of truth (stable plain ID). Resolved to `selectedArtifact` on set.
+    var selectedArtifactID: CodeArtifact.ID
+    {
+        get { selectedArtifact.id }
+        set
+        {
+            guard newValue != selectedArtifact.id,
+                  let found = rootArtifact.findArtifact(withID: newValue)
+            else { return }
+            
+            selectedArtifact = found
+            pathBar.select(found)
+        }
+    }
+    
+    // Observers of CodebaseAnalysis update when this is replaced; nested ArtifactViewModel changes are observed separately via that object.
+    private(set) var selectedArtifact: ArtifactViewModel
     
     // MARK: - Display Mode
     
@@ -83,5 +97,20 @@ class CodebaseAnalysis: ObservableObject
         }
     }
     
-    @Published var displayMode: DisplayMode = .treeMap
+    var displayMode: DisplayMode = .treeMap
+}
+
+private extension ArtifactViewModel
+{
+    func findArtifact(withID id: CodeArtifact.ID) -> ArtifactViewModel?
+    {
+        if self.id == id { return self }
+        
+        for part in parts
+        {
+            if let found = part.findArtifact(withID: id) { return found }
+        }
+        
+        return nil
+    }
 }

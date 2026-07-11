@@ -35,9 +35,10 @@ struct SearchField: View
                     }
                 }
             }
-            .onReceive(analysis.$search.dropFirst().map({ $0.fieldIsFocused }).removeDuplicates())
+            .onChange(of: analysis.search.fieldIsFocused)
             {
-                isFocused = $0
+                _, newFocus in
+                isFocused = newFocus
             }
             .onChange(of: searchTerm)
             {
@@ -52,9 +53,10 @@ struct SearchField: View
                     }
                 }
             }
-            .onReceive(analysis.$search.dropFirst().map({ $0.term }).removeDuplicates())
+            .onChange(of: analysis.search.term)
             {
-                searchTerm = $0
+                _, newTerm in
+                searchTerm = newTerm
             }
             .onSubmit
             {
@@ -99,7 +101,7 @@ struct SearchField: View
         }
     }
     
-    /// ❗️ we can **not** make analysis an `@ObservedObject` and simply use `onChange(of:)` for observing `Search` since that would also screw up focus management ...
+    /// Keep analysis unowned by `@Observable` tracking of this view’s body so focus management stays independent of full re-observation patterns.
     let analysis: CodebaseAnalysis
     
     @FocusState

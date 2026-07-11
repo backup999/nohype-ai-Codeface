@@ -16,5 +16,5 @@ struct TopBar: View
         .background(Color(NSColor.controlBackgroundColor))
     }
     
-    @ObservedObject var analysis: CodebaseAnalysis
+    var analysis: CodebaseAnalysis
 }

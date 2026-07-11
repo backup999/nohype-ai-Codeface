@@ -90,7 +90,7 @@ struct CodebaseContentView: View
         }
     }
     
-    @ObservedObject var analysis: CodebaseAnalysis
+    var analysis: CodebaseAnalysis
     
     // we need the selectedArtifact explicitly (even though it is accessible via analysis) so we can directly observe the properties on the selectedArtifact
     @ObservedObject var selectedArtifact: ArtifactViewModel

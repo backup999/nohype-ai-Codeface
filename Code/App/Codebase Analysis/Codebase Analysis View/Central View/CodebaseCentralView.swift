@@ -21,7 +21,7 @@ struct CodebaseCentralView: View
         .animation(.default, value: displayOptions.showsSubscriptionPanel)
     }
     
-    @ObservedObject var analysis: CodebaseAnalysis
+    var analysis: CodebaseAnalysis
     @ObservedObject var appStoreClient = AppStoreClient.shared
     @ObservedObject var displayOptions: WindowDisplayOptions
 }
