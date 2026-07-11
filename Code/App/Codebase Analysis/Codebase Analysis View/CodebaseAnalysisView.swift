@@ -8,7 +8,9 @@ struct CodebaseAnalysisView: View
         {
             CodebaseNavigatorView(analysis: analysis,
                                   showsLinesOfCode: $displayOptions.showsLinesOfCode)
-                .navigationSplitViewColumnWidth(min: 200, ideal: 300)
+                .navigationSplitViewColumnWidth(min: 200,
+                                                ideal: 300,
+                                                max: 400)
                 .listStyle(.sidebar)
         }
         detail:
@@ -19,7 +21,9 @@ struct CodebaseAnalysisView: View
         .inspector(isPresented: $displayOptions.showsRightSidebar)
         {
             CodebaseInspectorView(selectedArtifact: analysis.selectedArtifact)
-                .inspectorColumnWidth(min: 200, ideal: 250)
+                .inspectorColumnWidth(min: 200,
+                                      ideal: 250,
+                                      max: 300)
         }
         .onChange(of: displayOptions.showsLeftSidebar)
         {
