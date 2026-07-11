@@ -8,9 +8,7 @@ enum CodebaseLocationPersister
     
     static func persist(_ location: LSP.CodebaseLocation) throws
     {
-        let bookmarkData = try location.folder.bookmarkData(options: .withSecurityScope,
-                                                            includingResourceValuesForKeys: nil,
-                                                            relativeTo: nil)
+        let bookmarkData = try securityScopedBookmarkData(for: location.folder)
         
         let persistedLocation = PersistedCodebaseLocation(folderBookmarkData: bookmarkData,
                                                           codebaseLocation: location)
@@ -38,12 +36,23 @@ enum CodebaseLocationPersister
         
         if bookMarkIsStale
         {
-            persistedLocation.folderBookmarkData = try folder.bookmarkData()
+            persistedLocation.folderBookmarkData = try securityScopedBookmarkData(for: folder)
             
             persistedCodebaseLocationData = try persistedLocation.encode() as Data
         }
         
         return persistedLocation.codebaseLocation
+    }
+    
+    /// Create a security-scoped bookmark while holding access (required on modern macOS).
+    private static func securityScopedBookmarkData(for folder: URL) throws -> Data
+    {
+        try folder.mapSecurityScoped
+        {
+            try $0.bookmarkData(options: .withSecurityScope,
+                                includingResourceValuesForKeys: nil,
+                                relativeTo: nil)
+        }
     }
     
     // Computed so there is no global mutable static storage for the concurrency checker.
