@@ -1,17 +1,18 @@
-import Combine
+import Observation
 
 @MainActor
-class GlobalSettings: ObservableObject
+@Observable
+final class GlobalSettings
 {
     static let shared = GlobalSettings()
     
     private init() {}
     
     #if DEBUG
-    @Published var useCorrectAnimations = false
+    var useCorrectAnimations = false
     #else
     /// DO NOT TOUCH THIS (so we can't accidentally fuck up a release)
-    @Published var useCorrectAnimations = false
+    var useCorrectAnimations = false
     #endif
     
     #if DEBUG

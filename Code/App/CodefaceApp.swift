@@ -151,7 +151,7 @@ struct CodefaceApp: App
     
     // MARK: - Basics
     
-    @ObservedObject private var settings = GlobalSettings.shared
+    @Bindable private var settings = GlobalSettings.shared
     @FocusedObject private var focusedDocumentWindow: CodebaseWindow?
     @Environment(\.openWindow) var openWindow
 }
