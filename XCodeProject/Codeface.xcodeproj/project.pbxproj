@@ -116,7 +116,6 @@
 		96EA394F282C2AF2002B033E /* ArtifactContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EA394E282C2AF2002B033E /* ArtifactContentView.swift */; };
 		96EB5997294628390050254E /* SearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB5996294628390050254E /* SearchField.swift */; };
 		96F4F8DF3001150900E4BBE8 /* SwiftUIToolz in Frameworks */ = {isa = PBXBuildFile; productRef = 96F4F8DE3001150900E4BBE8 /* SwiftUIToolz */; };
-		96F5E7F02957191E00181473 /* ConcurrencyPOC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F5E7EF2957191E00181473 /* ConcurrencyPOC.swift */; };
 		96FC8C3F284BEB9000AD7DD2 /* CodebaseLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FC8C3E284BEB9000AD7DD2 /* CodebaseLocator.swift */; };
 		96FDA72C29BCABCC0020A48F /* AppStoreClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FDA72B29BCABCC0020A48F /* AppStoreClient.swift */; };
 		96FF8A45294F876100D06E36 /* ContentViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FF8A44294F876100D06E36 /* ContentViewStyle.swift */; };
@@ -252,7 +251,6 @@
 		96EA394E282C2AF2002B033E /* ArtifactContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactContentView.swift; sourceTree = "<group>"; };
 		96EB5996294628390050254E /* SearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchField.swift; sourceTree = "<group>"; };
 		96EF44102912A64500EB93D1 /* CodefaceHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CodefaceHelper.entitlements; sourceTree = "<group>"; };
-		96F5E7EF2957191E00181473 /* ConcurrencyPOC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyPOC.swift; sourceTree = "<group>"; };
 		96FC8C3E284BEB9000AD7DD2 /* CodebaseLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseLocator.swift; sourceTree = "<group>"; };
 		96FDA72B29BCABCC0020A48F /* AppStoreClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreClient.swift; sourceTree = "<group>"; };
 		96FF8A44294F876100D06E36 /* ContentViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewStyle.swift; sourceTree = "<group>"; };
@@ -667,7 +665,6 @@
 		96F5E7F12957197500181473 /* Proofs of Concept */ = {
 			isa = PBXGroup;
 			children = (
-				96F5E7EF2957191E00181473 /* ConcurrencyPOC.swift */,
 				9675A0B6294CE1C900C784AA /* NavigationAndFocusPOCView.swift */,
 			);
 			path = "Proofs of Concept";
@@ -935,7 +932,6 @@
 				963170EA29CE0A1100B146D5 /* WindowDisplayOptions.swift in Sources */,
 				968EA5C328DCD24500FE8A9B /* CodebaseProcessorView.swift in Sources */,
 				96E0C0C129D080F10087A79F /* FeatureView.swift in Sources */,
-				96F5E7F02957191E00181473 /* ConcurrencyPOC.swift in Sources */,
 				969A9BF229B1E60C00D391AD /* ArtifactViewModel+BorderColor.swift in Sources */,
 				960730B628982F3C008F1D7C /* Arrow.swift in Sources */,
 				96E135132962DD7A00DF8A43 /* CodeArtifact.swift in Sources */,
