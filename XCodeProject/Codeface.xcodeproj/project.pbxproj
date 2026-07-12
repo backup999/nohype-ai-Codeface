@@ -197,6 +197,11 @@
 		968EA5C228DCD24500FE8A9B /* CodebaseProcessorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseProcessorView.swift; sourceTree = "<group>"; };
 		9694D6E029BB796C00BBDA31 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		969A9BF129B1E60C00D391AD /* ArtifactViewModel+BorderColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArtifactViewModel+BorderColor.swift"; sourceTree = "<group>"; };
+		96A1228330041ED200992C82 /* Architecture_Diagram.graffle */ = {isa = PBXFileReference; lastKnownFileType = file; path = Architecture_Diagram.graffle; sourceTree = "<group>"; };
+		96A1228430041ED200992C82 /* Context_Diagram.graffle */ = {isa = PBXFileReference; lastKnownFileType = file; path = Context_Diagram.graffle; sourceTree = "<group>"; };
+		96A1228530041ED200992C82 /* Context_Diagram.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Context_Diagram.jpg; sourceTree = "<group>"; };
+		96A1228630041ED200992C82 /* Task - FlattenedTreeMapViewHierarchy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Task - FlattenedTreeMapViewHierarchy.md"; sourceTree = "<group>"; };
+		96A1228730041ED200992C82 /* Task - ProcessorPipelineArchitecture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Task - ProcessorPipelineArchitecture.md"; sourceTree = "<group>"; };
 		96A3D9F12A6BDFD300033E73 /* CodebaseContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseContentView.swift; sourceTree = "<group>"; };
 		96A7D1B42A50828E00EB143C /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
 		96CFBB3528B582D20051C318 /* ArtifactViewModel+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArtifactViewModel+SwiftUI.swift"; sourceTree = "<group>"; };
@@ -566,6 +571,19 @@
 			path = SwiftUINodes;
 			sourceTree = "<group>";
 		};
+		96A1228830041ED200992C82 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				96A1228330041ED200992C82 /* Architecture_Diagram.graffle */,
+				96A1228430041ED200992C82 /* Context_Diagram.graffle */,
+				96A1228530041ED200992C82 /* Context_Diagram.jpg */,
+				96A1228630041ED200992C82 /* Task - FlattenedTreeMapViewHierarchy.md */,
+				96A1228730041ED200992C82 /* Task - ProcessorPipelineArchitecture.md */,
+			);
+			name = Documentation;
+			path = ../Documentation;
+			sourceTree = SOURCE_ROOT;
+		};
 		96D59CBF294AB811003C55B5 /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -676,6 +694,7 @@
 				9E00727A218E250E0094BD1C /* Code */,
 				96E5A9C629BD171A00B0A913 /* App Store Synced.storekit */,
 				96D5515B29BE6565009A7818 /* App Store Testing.storekit */,
+				96A1228830041ED200992C82 /* Documentation */,
 				9E95A705218C73C7009A58A9 /* Codeface */,
 				96143EFF290ED68A008CA3C2 /* CodefaceHelper */,
 				9E95A716218C73CA009A58A9 /* CodefaceTests */,
