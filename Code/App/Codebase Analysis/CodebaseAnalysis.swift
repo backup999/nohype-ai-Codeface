@@ -16,8 +16,16 @@ class CodebaseAnalysis
     func set(searchBarIsVisible: Bool)
     {
         search.barIsShown = searchBarIsVisible
+        
+        // Keyboard focus is owned by the field's `@FocusState`. Request it when showing the bar
+        // (including when the bar is already open, e.g. ⌘F to refocus).
+        if searchBarIsVisible
+        {
+            search.fieldFocusGeneration += 1
+        }
     }
     
+    /// Called from the search field when `@FocusState` changes. One-shot layout/filter side effects.
     func set(fieldIsFocused: Bool)
     {
         guard search.fieldIsFocused != fieldIsFocused else { return }

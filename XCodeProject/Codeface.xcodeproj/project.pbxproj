@@ -61,7 +61,6 @@
 		966F39AE291BF42900198B14 /* SwiftLSP in Frameworks */ = {isa = PBXBuildFile; productRef = 966F39AD291BF42900198B14 /* SwiftLSP */; };
 		966F39B1291BF54F00198B14 /* FoundationToolz in Frameworks */ = {isa = PBXBuildFile; productRef = 966F39B0291BF54F00198B14 /* FoundationToolz */; };
 		966F39B3291BF56200198B14 /* FoundationToolz in Frameworks */ = {isa = PBXBuildFile; productRef = 966F39B2291BF56200198B14 /* FoundationToolz */; };
-		9675A0B7294CE1C900C784AA /* NavigationAndFocusPOCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9675A0B6294CE1C900C784AA /* NavigationAndFocusPOCView.swift */; };
 		967BFD5C29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967BFD5B29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift */; };
 		96842F4629AF53E000FB0439 /* SecondaryToolbarButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96842F4529AF53E000FB0439 /* SecondaryToolbarButtons.swift */; };
 		96842F4829AF541700FB0439 /* PrimaryToolbarButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96842F4729AF541700FB0439 /* PrimaryToolbarButtons.swift */; };
@@ -189,7 +188,6 @@
 		965795B22954697700CB9F3F /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		965A7AD82964A319006C5A3A /* CodebaseProcessorSteps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseProcessorSteps.swift; sourceTree = "<group>"; };
 		9664C1EF2A52E2B6000B8C29 /* LoggingText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingText.swift; sourceTree = "<group>"; };
-		9675A0B6294CE1C900C784AA /* NavigationAndFocusPOCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationAndFocusPOCView.swift; sourceTree = "<group>"; };
 		967BFD5B29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentLink+Codeface.swift"; sourceTree = "<group>"; };
 		96842F4529AF53E000FB0439 /* SecondaryToolbarButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryToolbarButtons.swift; sourceTree = "<group>"; };
 		96842F4729AF541700FB0439 /* PrimaryToolbarButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToolbarButtons.swift; sourceTree = "<group>"; };
@@ -662,19 +660,10 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		96F5E7F12957197500181473 /* Proofs of Concept */ = {
-			isa = PBXGroup;
-			children = (
-				9675A0B6294CE1C900C784AA /* NavigationAndFocusPOCView.swift */,
-			);
-			path = "Proofs of Concept";
-			sourceTree = "<group>";
-		};
 		9E00727A218E250E0094BD1C /* Code */ = {
 			isa = PBXGroup;
 			children = (
 				96E863D12844125500BCCE66 /* App */,
-				96F5E7F12957197500181473 /* Proofs of Concept */,
 				9EB8BA5B218E2C78007ED4E7 /* Framework-Candidates */,
 			);
 			name = Code;
@@ -974,7 +963,6 @@
 				96E135182962DD7F00DF8A43 /* CodeFileArtifact+CodeArtifact.swift in Sources */,
 				965A7AD92964A319006C5A3A /* CodebaseProcessorSteps.swift in Sources */,
 				96EA394F282C2AF2002B033E /* ArtifactContentView.swift in Sources */,
-				9675A0B7294CE1C900C784AA /* NavigationAndFocusPOCView.swift in Sources */,
 				96E135162962DD7F00DF8A43 /* CodeSymbolArtifact+CodeArtifact.swift in Sources */,
 				967BFD5C29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift in Sources */,
 				960BBE9629004F9000F9DC2A /* LSPServiceHint.swift in Sources */,

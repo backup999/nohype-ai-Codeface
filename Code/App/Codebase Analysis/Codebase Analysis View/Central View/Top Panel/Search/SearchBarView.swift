@@ -16,11 +16,6 @@ struct SearchBarView: View
                     {
                         analysis.set(searchBarIsVisible: false)
                     }
-                    
-                    withAnimation(.easeInOut(duration: Search.layoutAnimationDuration))
-                    {
-                        analysis.set(fieldIsFocused: false)
-                    }
                 }
                 .focusable(false)
                 .buttonStyle(.plain)

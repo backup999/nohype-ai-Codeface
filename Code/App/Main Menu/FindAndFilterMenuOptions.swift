@@ -11,11 +11,6 @@ struct FindAndFilterMenuOptions: View
             {
                 analysis?.set(searchBarIsVisible: true)
             }
-            
-            withAnimation(.easeInOut(duration: Search.layoutAnimationDuration))
-            {
-                analysis?.set(fieldIsFocused: true)
-            }
         }
         .disabled(analysis == nil)
         .keyboardShortcut("f")
@@ -28,16 +23,9 @@ struct FindAndFilterMenuOptions: View
                 return
             }
             
-            let searchBarWillBeVisible = !analysis.search.barIsShown
-            
             withAnimation(.easeInOut(duration: Search.toggleAnimationDuration))
             {
-                analysis.set(searchBarIsVisible: searchBarWillBeVisible)
-            }
-            
-            withAnimation(.easeInOut(duration: Search.layoutAnimationDuration))
-            {
-                analysis.set(fieldIsFocused: searchBarWillBeVisible)
+                analysis.set(searchBarIsVisible: !analysis.search.barIsShown)
             }
         }
         .disabled(analysis == nil)

@@ -2,14 +2,6 @@ import SwiftUI
 
 struct SearchField: View
 {
-    @MainActor
-    init(analysis: CodebaseAnalysis, artifactName: String)
-    {
-        self.analysis = analysis
-        _searchTerm = State(wrappedValue: analysis.search.term)
-        self.artifactName = artifactName
-    }
-    
     var body: some View
     {
         HStack(alignment: .firstTextBaseline)
@@ -18,59 +10,35 @@ struct SearchField: View
                 .foregroundColor(.secondary)
             
             TextField("Search Field",
-                      text: $searchTerm,
+                      text: searchTermBinding,
                       prompt: Text("Find in \(artifactName)"))
             .textFieldStyle(.plain)
             .focused($isFocused)
             .onChange(of: isFocused)
             {
-                // ❗️ we have to write the view model async (later) to not screw up focus management
                 _, newFocus in
                 
-                Task
+                withAnimation(.easeInOut(duration: Search.layoutAnimationDuration))
                 {
-                    withAnimation(.easeInOut(duration: 1))
-                    {
-                        analysis.set(fieldIsFocused: newFocus)
-                    }
+                    analysis.set(fieldIsFocused: newFocus)
                 }
             }
-            .onChange(of: analysis.search.fieldIsFocused)
+            .onChange(of: analysis.search.fieldFocusGeneration)
             {
-                _, newFocus in
-                isFocused = newFocus
+                _, _ in
+                // Programmatic focus request (e.g. ⌘F while the bar is already open).
+                isFocused = true
             }
-            .onChange(of: searchTerm)
+            .onChange(of: analysis.search.barIsShown)
             {
-                // ❗️ we have to write the view model async (later) to not screw up focus management
-                _, newTerm in
+                _, shown in
                 
-                Task
-                {
-                    withAnimation(.easeInOut(duration: Search.filterUpdateAnimationDuration))
-                    {
-                        analysis.set(searchTerm: newTerm)
-                    }
-                }
-            }
-            .onChange(of: analysis.search.term)
-            {
-                _, newTerm in
-                searchTerm = newTerm
+                // Hiding the bar must resign focus so layout gets the unfocus trigger.
+                if !shown { isFocused = false }
             }
             .onSubmit
             {
-                // we don't wait for the view model here in order to avoid a certain visual hickup
                 isFocused = false
-                
-                // ❗️ we have to write the view model async (later) to not screw up focus management
-                Task
-                {
-                    withAnimation(.easeInOut(duration: Search.layoutAnimationDuration))
-                    {
-                        analysis.set(fieldIsFocused: false)
-                    }
-                }
             }
             
             if !analysis.search.term.isEmpty
@@ -101,14 +69,23 @@ struct SearchField: View
         }
     }
     
-    /// Keep analysis unowned by `@Observable` tracking of this view’s body so focus management stays independent of full re-observation patterns.
-    let analysis: CodebaseAnalysis
+    private var searchTermBinding: Binding<String>
+    {
+        Binding(
+            get: { analysis.search.term },
+            set: { newTerm in
+                withAnimation(.easeInOut(duration: Search.filterUpdateAnimationDuration))
+                {
+                    analysis.set(searchTerm: newTerm)
+                }
+            }
+        )
+    }
+    
+    var analysis: CodebaseAnalysis
     
     @FocusState
     private var isFocused: Bool
-    
-    @State
-    private var searchTerm: String
     
     let artifactName: String
 }
