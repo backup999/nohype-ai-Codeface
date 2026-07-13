@@ -698,8 +698,8 @@
 			isa = PBXGroup;
 			children = (
 				96E863D12844125500BCCE66 /* App */,
-				9EB8BA5B218E2C78007ED4E7 /* Framework-Candidates */,
 				96A123B83004549C00992C82 /* TreeSitter PoC */,
+				9EB8BA5B218E2C78007ED4E7 /* Framework-Candidates */,
 			);
 			name = Code;
 			path = ../Code;

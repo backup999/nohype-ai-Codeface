@@ -1,20 +1,20 @@
 import SwiftTreeSitter
 
-/// Per-language **projection** of that language’s Tree-sitter CST into `ProgramNode`s.
+/// Per-language **projection** of that language’s Tree-sitter CST into `CodeNode`s.
 ///
 /// ## What a profile is for
 /// Tree-sitter already produces a full hierarchical CST. A profile does **not**
-/// invent that hierarchy. It answers language-specific questions the shared walker
-/// cannot know:
+/// invent that hierarchy. It answers language-specific questions the shared walk
+/// (`CodeTreeGenerator`) cannot know:
 ///
 /// 1. **Which node types are worth keeping** (deps-relevant decls/refs vs noise).
 /// 2. **Role** of each kept type (`.declaration` vs `.reference`) — early for deps.
 /// 3. **How to read a surface `name`** (field name, pattern dig, call callee, …).
-/// 4. **Which optional grammar fields** to copy into `ProgramNode.attributes`.
+/// 4. **Which optional grammar fields** to copy into `CodeNode.attributes`.
 /// 5. **Where bare `identifier` nodes count as references** (see loose fields).
 ///
 /// It is **not** a shared ontology of “Interface” / “AbstractClass” across languages.
-/// `ProgramNode.kind` remains the raw Tree-sitter type string.
+/// `CodeNode.kind` remains the raw Tree-sitter type string.
 ///
 /// ## Why `rules` and `looseIdentifierFields` both exist
 ///
@@ -23,20 +23,19 @@ import SwiftTreeSitter
 ///
 /// - **`looseIdentifierFields`**: some grammars put important name uses as plain
 ///   `identifier` with **no** dedicated node type (e.g. Python `class Foo(Bar)`:
-/// about  `Bar` is just `identifier` under field `superclasses`). Listing
-///   `identifier` in `rules` globally would also capture every parameter, loop
-///   variable, and local — useless noise. Instead we only promote `identifier` to a
-///   reference while walking **named fields** of certain parents (e.g. bases,
-///   import name list).
+///   `Bar` is just `identifier` under field `superclasses`). Listing `identifier`
+///   in `rules` globally would also capture every parameter, loop variable, and
+///   local — useless noise. Instead we only promote `identifier` to a reference
+///   while walking **named fields** of certain parents (e.g. bases, import names).
 ///
 /// Swift usually does not need this: types use `user_type` / `inheritance_specifier`,
-/// so `looseIdentifierFields` is empty for Swift.
+/// so `looseIdentifierFields` is empty for `Swift`.
 struct LanguageProfile: Sendable {
-    /// How a CST node type maps into one program-tree node.
+    /// How a CST node type maps into one code-tree node.
     struct Rule: Sendable {
         /// Declaration vs reference (dependency dualism).
         var role: CodeNode.Role
-        /// Where to get `ProgramNode.name` for this node type.
+        /// Where to get `CodeNode.name` for this node type.
         var name: NameSource
     }
 
@@ -56,18 +55,18 @@ struct LanguageProfile: Sendable {
         case pythonCall
     }
 
-    /// Tree-sitter node type → include in the program tree with this rule.
+    /// Tree-sitter node type → include in the code tree with this rule.
     let rules: [String: Rule]
 
-    /// Grammar field names whose text is copied into `ProgramNode.attributes`
+    /// Grammar field names whose text is copied into `CodeNode.attributes`
     /// when present (e.g. Swift `"declaration_kind"` → `"struct"` / `"class"`).
     let attributeFields: [String]
 
     /// Contextual bare-identifier references (see type comment on `LanguageProfile`).
     ///
-    /// Key = parent CST node type already in the program tree.
+    /// Key = parent CST node type already in the code tree.
     /// Value = Tree-sitter **field names** on that parent under which `identifier`
-    /// children become `.reference` program nodes.
+    /// children become `.reference` code nodes.
     ///
     /// Example: `["class_definition": ["superclasses"]]` for `class Foo(Bar)`.
     let looseIdentifierFields: [String: [String]]

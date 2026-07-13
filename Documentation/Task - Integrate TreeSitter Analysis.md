@@ -10,7 +10,7 @@ Today’s pipeline is **LSP-shaped end-to-end**:
 
 TreeSitter PoC delivers a second tech stack:
 
-- parse grammars in-process → **`ProgramNode` tree** (filtered CST, free-string kinds, `declaration` | `reference`)
+- parse grammars in-process → **`CodeNode` tree** via `CodeTreeGenerator` (filtered CST, free-string kinds, `declaration` | `reference`)
 - later: name(± type)-based dep algorithms + AI resolvers
 
 Challenge: **two analysis technologies** must meet the pipeline and the artifact model without a big-bang rewrite or a brittle dual fork forever.
@@ -48,7 +48,7 @@ Ok to overlap: reform embeds *hooks* (`structureSource`, optional `programUnits`
           ┌───────────────┴────────────────┐
           ▼                                ▼
    structure path A                  structure path B (new)
-   (LSP — status quo)                (TreeSitter ProgramNode forest)
+   (LSP — status quo)                (TreeSitter CodeNode forest)
           │                                │
           └────────────┬───────────────────┘
                        ▼
@@ -71,13 +71,13 @@ Principles:
 1. **Stage data persists** once written (processor reform).
 2. Structure/deps backends are **swappable providers** behind a source-agnostic model — not forever parallel `CodeSymbolLSP` vs `CodeSymbolTS` UI types.
 3. LSP types (`LSPRange`, `SymbolKind`, …) move to **adapters at the boundary**, not deep into metrics/UI forever.
-4. TreeSitter `ProgramNode` is an **analysis IR**, not a permanent second document format. Saved `.codebase` can stay folder+text+(optional cache) for a long time.
+4. TreeSitter `CodeNode` is an **analysis IR**, not a permanent second document format. Saved `.codebase` can stay folder+text+(optional cache) for a long time.
 
 ## Recommended phases
 
 ### Phase 0 — Done baseline
 
-- TreeSitter PoC: Swift + Python, role-tagged `ProgramNode`, profiles, tests.
+- TreeSitter PoC: Swift + Python, role-tagged `CodeNode` / `CodeTreeGenerator`, profiles, tests.
 - Document stack and dualism (decl/ref).
 
 ### Phase 1 — Processor coexisting stages (do next)
@@ -105,7 +105,7 @@ Work:
 
 - Inventory SwiftLSP surface on `CodeSymbol` / artifacts / view models.
 - Introduce thin **StructureUnit** (name TBD) ≈ multi-file forest of program nodes (or mapper from current symbols). Include range, language, role when available.
-- TreeSitter: folder walk + extension→`SourceLanguage` + `HierarchyExtractor` per file → structure IR.
+- TreeSitter: folder walk + extension→`SourceLanguage` + `CodeTreeGenerator` per file → structure IR.
 - LSP path: **adapter** existing symbols/refs → same IR (refs already more complete when server works).
 
 Stop criterion: architecture builders can take **structure IR**, not raw LSP types.

@@ -1,19 +1,19 @@
 import SwiftTreeSitter
 
-// MARK: - Extractor
+// MARK: - Generator
 
-/// Projects source text into a language-agnostic `ProgramNode` tree.
+/// Projects source text into a language-agnostic `CodeNode` tree.
 ///
-/// Pipeline: **grammar parse (full CST)** → **profile filter** → program tree.
+/// Pipeline: **grammar parse (full CST)** → **profile filter** → code tree.
 /// The walk is shared; only `LanguageProfile` differs per language.
 ///
 /// Design goals for dependency work later:
 /// - Keep **declaration** and **reference** sites in **one** tree (not outline-only).
-/// - Walk **every** CST child of a kept node so param types, bases, and body calls
-///   are not cut off when a `body` field also exists.
+/// - Walk **every** CST child of a kept declaration so param types, bases, and body
+///   calls are not cut when a `body` field also exists.
 /// - Do **not** keep pure syntax noise; selection is deliberate and profile-driven.
 enum CodeTreeGenerator {
-    /// Parse `source` with the language grammar and return top-level program nodes.
+    /// Parse `code` with the language grammar and return top-level code nodes.
     static func generateTree(
         from code: String,
         language: SourceLanguage
@@ -24,7 +24,7 @@ enum CodeTreeGenerator {
         guard let tree = parser.parse(code),
               let root = tree.rootNode
         else {
-            throw HierarchyError.parseFailed
+            throw CodeTreeGeneratorError.parseFailed
         }
 
         return collect(from: root, profile: language.profile)
@@ -33,7 +33,7 @@ enum CodeTreeGenerator {
     /// Depth-first CST walk.
     ///
     /// - If `profile.rules` has this node type **and** a name can be read → emit
-    ///   one `ProgramNode` (role from the rule; `kind` = raw node type).
+    ///   one `CodeNode` (role from the rule; `kind` = raw node type).
     /// - Else if `allowLooseIdentifierReferences` and this is a bare `identifier`
     ///   → emit a **reference** (see `LanguageProfile.looseIdentifierFields`).
     /// - Else → do not emit this CST node; still recurse into children (filter).
@@ -46,8 +46,8 @@ enum CodeTreeGenerator {
            let rule = profile.rules[type],
            let name = profile.name(for: node, rule: rule)
         {
-            // References are program-tree **leaves**: the CST often nests the same
-            // traditional name again (e.g. inheritance_specifier → user_type → Bar).
+            // References are code-tree **leaves**: the CST often nests the same
+            // surface name again (e.g. inheritance_specifier → user_type → Bar).
             // Recursing would emit two refs for one source occurrence. Declarations
             // still open their full CST children (nested decls + body/header refs).
             let children: [CodeNode] =
@@ -85,7 +85,7 @@ enum CodeTreeGenerator {
         return result
     }
 
-    /// Children of an already-selected program node: full CST child list.
+    /// Children of an already-selected code node: full CST child list.
     ///
     /// For each child, if its Tree-sitter **field name** is listed under
     /// `profile.looseIdentifierFields[parentType]`, recursion allows bare
@@ -113,6 +113,6 @@ enum CodeTreeGenerator {
     }
 }
 
-enum HierarchyError: Error, Sendable {
+enum CodeTreeGeneratorError: Error, Sendable {
     case parseFailed
 }

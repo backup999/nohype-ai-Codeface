@@ -1,4 +1,4 @@
-/// One node in the **filtered, role-tagged** program tree used for hierarchy and deps.
+/// One node in the **filtered, role-tagged** code tree used for hierarchy and deps.
 ///
 /// Not the full CST: noise (`{`, operators as pure syntax, `pass`, …) is dropped.
 /// `kind` stays language-native (Tree-sitter node type string). Optional grammar
@@ -26,8 +26,8 @@ struct CodeNode: Equatable, Sendable {
         self.attributes = attributes
         self.children = children
     }
-    
-    /// Analysis role assigned when projecting the CST into a `ProgramNode`.
+
+    /// Analysis role assigned when projecting the CST into a `CodeNode`.
     ///
     /// Tree-sitter has no declaration/reference notion; this is **our** early tag so
     /// dependency algorithms need not re-classify every `kind` on every pass.
