@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -70,6 +70,15 @@
 		968EA5C328DCD24500FE8A9B /* CodebaseProcessorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968EA5C228DCD24500FE8A9B /* CodebaseProcessorView.swift */; };
 		9694D6E129BB796C00BBDA31 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9694D6E029BB796C00BBDA31 /* StoreKit.framework */; };
 		969A9BF229B1E60C00D391AD /* ArtifactViewModel+BorderColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969A9BF129B1E60C00D391AD /* ArtifactViewModel+BorderColor.swift */; };
+		96A123493004534E00992C82 /* SwiftTreeSitter in Frameworks */ = {isa = PBXBuildFile; productRef = 96A123483004534E00992C82 /* SwiftTreeSitter */; };
+		96A1234B3004534E00992C82 /* SwiftTreeSitterLayer in Frameworks */ = {isa = PBXBuildFile; productRef = 96A1234A3004534E00992C82 /* SwiftTreeSitterLayer */; };
+		96A123FF3004549C00992C82 /* CodeTreeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A123B43004549C00992C82 /* CodeTreeGenerator.swift */; };
+		96A124013004549C00992C82 /* SourceLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A123B63004549C00992C82 /* SourceLanguage.swift */; };
+		96A124023004549C00992C82 /* CodeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A123B73004549C00992C82 /* CodeNode.swift */; };
+		96A124033004549C00992C82 /* CodeTreeGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A123B53004549C00992C82 /* CodeTreeGeneratorTests.swift */; };
+		96A124063004556400992C82 /* TreeSitterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 96A124053004556400992C82 /* TreeSitterSwift */; };
+		96A124093004564700992C82 /* TreeSitterPython in Frameworks */ = {isa = PBXBuildFile; productRef = 96A124083004564700992C82 /* TreeSitterPython */; };
+		96A1240C3004F76E00992C82 /* LanguageProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A1240B3004F76900992C82 /* LanguageProfile.swift */; };
 		96A3D9F22A6BDFD300033E73 /* CodebaseContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A3D9F12A6BDFD300033E73 /* CodebaseContentView.swift */; };
 		96A7D1B52A50828E00EB143C /* GlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A7D1B42A50828E00EB143C /* GlobalSettings.swift */; };
 		96C2118C28E347F0008024AA /* CombineObserver in Frameworks */ = {isa = PBXBuildFile; productRef = 96C2118B28E347F0008024AA /* CombineObserver */; };
@@ -197,11 +206,11 @@
 		968EA5C228DCD24500FE8A9B /* CodebaseProcessorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseProcessorView.swift; sourceTree = "<group>"; };
 		9694D6E029BB796C00BBDA31 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		969A9BF129B1E60C00D391AD /* ArtifactViewModel+BorderColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArtifactViewModel+BorderColor.swift"; sourceTree = "<group>"; };
-		96A1228330041ED200992C82 /* Architecture_Diagram.graffle */ = {isa = PBXFileReference; lastKnownFileType = file; path = Architecture_Diagram.graffle; sourceTree = "<group>"; };
-		96A1228430041ED200992C82 /* Context_Diagram.graffle */ = {isa = PBXFileReference; lastKnownFileType = file; path = Context_Diagram.graffle; sourceTree = "<group>"; };
-		96A1228530041ED200992C82 /* Context_Diagram.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Context_Diagram.jpg; sourceTree = "<group>"; };
-		96A1228630041ED200992C82 /* Task - FlattenedTreeMapViewHierarchy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Task - FlattenedTreeMapViewHierarchy.md"; sourceTree = "<group>"; };
-		96A1228730041ED200992C82 /* Task - ProcessorPipelineArchitecture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Task - ProcessorPipelineArchitecture.md"; sourceTree = "<group>"; };
+		96A123B43004549C00992C82 /* CodeTreeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeTreeGenerator.swift; sourceTree = "<group>"; };
+		96A123B53004549C00992C82 /* CodeTreeGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeTreeGeneratorTests.swift; sourceTree = "<group>"; };
+		96A123B63004549C00992C82 /* SourceLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceLanguage.swift; sourceTree = "<group>"; };
+		96A123B73004549C00992C82 /* CodeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeNode.swift; sourceTree = "<group>"; };
+		96A1240B3004F76900992C82 /* LanguageProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageProfile.swift; sourceTree = "<group>"; };
 		96A3D9F12A6BDFD300033E73 /* CodebaseContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseContentView.swift; sourceTree = "<group>"; };
 		96A7D1B42A50828E00EB143C /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
 		96CFBB3528B582D20051C318 /* ArtifactViewModel+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ArtifactViewModel+SwiftUI.swift"; sourceTree = "<group>"; };
@@ -267,6 +276,10 @@
 		9E95A719218C73CA009A58A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		96A1229130044DA900992C82 /* Documentation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); name = Documentation; path = ../Documentation; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		96143EFB290ED68A008CA3C2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -282,6 +295,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96A124093004564700992C82 /* TreeSitterPython in Frameworks */,
 				9694D6E129BB796C00BBDA31 /* StoreKit.framework in Frameworks */,
 				96DC635528E100D900DD5BEB /* SwiftLSP in Frameworks */,
 				96C2118C28E347F0008024AA /* CombineObserver in Frameworks */,
@@ -289,8 +303,11 @@
 				96F4F8DF3001150900E4BBE8 /* SwiftUIToolz in Frameworks */,
 				966F39B1291BF54F00198B14 /* FoundationToolz in Frameworks */,
 				96106E5A2962DEAD0002F13C /* SwiftNodes in Frameworks */,
+				96A123493004534E00992C82 /* SwiftTreeSitter in Frameworks */,
+				96A1234B3004534E00992C82 /* SwiftTreeSitterLayer in Frameworks */,
 				96CA360628E0F92800D71370 /* LSPServiceKit in Frameworks */,
 				96C2118E28E347F0008024AA /* SwiftObserver in Frameworks */,
+				96A124063004556400992C82 /* TreeSitterSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -571,18 +588,17 @@
 			path = SwiftUINodes;
 			sourceTree = "<group>";
 		};
-		96A1228830041ED200992C82 /* Documentation */ = {
+		96A123B83004549C00992C82 /* TreeSitter PoC */ = {
 			isa = PBXGroup;
 			children = (
-				96A1228330041ED200992C82 /* Architecture_Diagram.graffle */,
-				96A1228430041ED200992C82 /* Context_Diagram.graffle */,
-				96A1228530041ED200992C82 /* Context_Diagram.jpg */,
-				96A1228630041ED200992C82 /* Task - FlattenedTreeMapViewHierarchy.md */,
-				96A1228730041ED200992C82 /* Task - ProcessorPipelineArchitecture.md */,
+				96A123B53004549C00992C82 /* CodeTreeGeneratorTests.swift */,
+				96A123B43004549C00992C82 /* CodeTreeGenerator.swift */,
+				96A123B63004549C00992C82 /* SourceLanguage.swift */,
+				96A1240B3004F76900992C82 /* LanguageProfile.swift */,
+				96A123B73004549C00992C82 /* CodeNode.swift */,
 			);
-			name = Documentation;
-			path = ../Documentation;
-			sourceTree = SOURCE_ROOT;
+			path = "TreeSitter PoC";
+			sourceTree = "<group>";
 		};
 		96D59CBF294AB811003C55B5 /* Search */ = {
 			isa = PBXGroup;
@@ -683,6 +699,7 @@
 			children = (
 				96E863D12844125500BCCE66 /* App */,
 				9EB8BA5B218E2C78007ED4E7 /* Framework-Candidates */,
+				96A123B83004549C00992C82 /* TreeSitter PoC */,
 			);
 			name = Code;
 			path = ../Code;
@@ -694,7 +711,7 @@
 				9E00727A218E250E0094BD1C /* Code */,
 				96E5A9C629BD171A00B0A913 /* App Store Synced.storekit */,
 				96D5515B29BE6565009A7818 /* App Store Testing.storekit */,
-				96A1228830041ED200992C82 /* Documentation */,
+				96A1229130044DA900992C82 /* Documentation */,
 				9E95A705218C73C7009A58A9 /* Codeface */,
 				96143EFF290ED68A008CA3C2 /* CodefaceHelper */,
 				9E95A716218C73CA009A58A9 /* CodefaceTests */,
@@ -790,6 +807,10 @@
 				966F39B0291BF54F00198B14 /* FoundationToolz */,
 				96106E592962DEAD0002F13C /* SwiftNodes */,
 				96F4F8DE3001150900E4BBE8 /* SwiftUIToolz */,
+				96A123483004534E00992C82 /* SwiftTreeSitter */,
+				96A1234A3004534E00992C82 /* SwiftTreeSitterLayer */,
+				96A124053004556400992C82 /* TreeSitterSwift */,
+				96A124083004564700992C82 /* TreeSitterPython */,
 			);
 			productName = Cocoalytics;
 			productReference = 9E95A703218C73C7009A58A9 /* Codeface.app */;
@@ -855,6 +876,9 @@
 				966F39AF291BF54F00198B14 /* XCRemoteSwiftPackageReference "FoundationToolz" */,
 				96106E582962DEAD0002F13C /* XCRemoteSwiftPackageReference "SwiftNodes" */,
 				96F4F8DD3001150900E4BBE8 /* XCRemoteSwiftPackageReference "SwiftUIToolz" */,
+				96A123473004534E00992C82 /* XCRemoteSwiftPackageReference "swift-tree-sitter" */,
+				96A124043004556400992C82 /* XCRemoteSwiftPackageReference "tree-sitter-swift" */,
+				96A124073004564700992C82 /* XCLocalSwiftPackageReference "../Code/TreeSitter PoC/Vendor/tree-sitter-python-src" */,
 			);
 			productRefGroup = 9E95A704218C73C7009A58A9 /* Products */;
 			projectDirPath = "";
@@ -926,10 +950,14 @@
 				9651AC1229D310EC0054FB52 /* AppIcon.swift in Sources */,
 				96E5A9C329BCC87200B0A913 /* ProductID+Codeface.swift in Sources */,
 				96E479D228359CCE00762FD7 /* ArtifactView.swift in Sources */,
+				96A123FF3004549C00992C82 /* CodeTreeGenerator.swift in Sources */,
+				96A124013004549C00992C82 /* SourceLanguage.swift in Sources */,
+				96A124023004549C00992C82 /* CodeNode.swift in Sources */,
 				961D497529A26A8A00E95E99 /* RelativeFilePath.swift in Sources */,
 				96E0C0BE29D0806A0087A79F /* LargeButton.swift in Sources */,
 				96FC8C3F284BEB9000AD7DD2 /* CodebaseLocator.swift in Sources */,
 				96E135052962DD5900DF8A43 /* ArtifactViewModel+AddDependencies.swift in Sources */,
+				96A1240C3004F76E00992C82 /* LanguageProfile.swift in Sources */,
 				96EB5997294628390050254E /* SearchField.swift in Sources */,
 				96E135062962DD5900DF8A43 /* ArtifactViewModel+Search.swift in Sources */,
 				96106E5E2962DEDD0002F13C /* CodeFolderArtifact+SizeMetrics.swift in Sources */,
@@ -1012,6 +1040,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E95A718218C73CA009A58A9 /* CodefaceTests.swift in Sources */,
+				96A124033004549C00992C82 /* CodeTreeGeneratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1355,6 +1384,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		96A124073004564700992C82 /* XCLocalSwiftPackageReference "../Code/TreeSitter PoC/Vendor/tree-sitter-python-src" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../Code/TreeSitter PoC/Vendor/tree-sitter-python-src";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		96106E582962DEAD0002F13C /* XCRemoteSwiftPackageReference "SwiftNodes" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1378,6 +1414,22 @@
 			requirement = {
 				kind = exactVersion;
 				version = 0.5.9;
+			};
+		};
+		96A123473004534E00992C82 /* XCRemoteSwiftPackageReference "swift-tree-sitter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tree-sitter/swift-tree-sitter";
+			requirement = {
+				kind = exactVersion;
+				version = 0.10.0;
+			};
+		};
+		96A124043004556400992C82 /* XCRemoteSwiftPackageReference "tree-sitter-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alex-pinkus/tree-sitter-swift";
+			requirement = {
+				branch = "with-generated-files";
+				kind = branch;
 			};
 		};
 		96C2118A28E347F0008024AA /* XCRemoteSwiftPackageReference "SwiftObserver" */ = {
@@ -1444,6 +1496,25 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 966F39AF291BF54F00198B14 /* XCRemoteSwiftPackageReference "FoundationToolz" */;
 			productName = FoundationToolz;
+		};
+		96A123483004534E00992C82 /* SwiftTreeSitter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96A123473004534E00992C82 /* XCRemoteSwiftPackageReference "swift-tree-sitter" */;
+			productName = SwiftTreeSitter;
+		};
+		96A1234A3004534E00992C82 /* SwiftTreeSitterLayer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96A123473004534E00992C82 /* XCRemoteSwiftPackageReference "swift-tree-sitter" */;
+			productName = SwiftTreeSitterLayer;
+		};
+		96A124053004556400992C82 /* TreeSitterSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96A124043004556400992C82 /* XCRemoteSwiftPackageReference "tree-sitter-swift" */;
+			productName = TreeSitterSwift;
+		};
+		96A124083004564700992C82 /* TreeSitterPython */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TreeSitterPython;
 		};
 		96C2118B28E347F0008024AA /* CombineObserver */ = {
 			isa = XCSwiftPackageProductDependency;
