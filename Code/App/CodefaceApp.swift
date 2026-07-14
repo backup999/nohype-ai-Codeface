@@ -25,6 +25,7 @@ struct CodefaceApp: App
         {
             CodebaseWindowView()
         }
+        .windowToolbarStyle(.unified(showsTitle: false))
         .commands
         {
             CommandGroup(replacing: .appInfo)
@@ -110,19 +111,19 @@ struct CodefaceApp: App
                 
                 Divider()
                 
-                Button("Import Code Folder...")
+                Button("Open Code Folder...")
                 {
                     focusedDocumentWindow?.isPresentingCodebaseLocator = true
                 }
                 .disabled(focusedDocumentWindow == nil)
                 
-                Button("Import Swift Package Folder...")
+                Button("Open Swift Package Folder...")
                 {
                     focusedDocumentWindow?.isPresentingFolderImporter = true
                 }
                 .disabled(focusedDocumentWindow == nil)
                 
-                Button("Import \(lastFolderName) Again")
+                Button("Open \(lastFolderName) Again")
                 {
                     focusedDocumentWindow?.runProcessorWithLastCodebase()
                 }
