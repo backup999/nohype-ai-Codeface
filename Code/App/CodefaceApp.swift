@@ -131,6 +131,20 @@ struct CodefaceApp: App
                 .disabled(focusedDocumentWindow == nil || !CodebaseLocationPersister.hasPersistedLastCodebaseLocation)
                 
                 Divider()
+                
+                Button("Open Code Folder (new)...")
+                {
+                    focusedDocumentWindow?.treeSitterOpen.presentCodebaseLocator()
+                }
+                .disabled(focusedDocumentWindow == nil)
+                
+                Button("Open Swift Package Folder (new)...")
+                {
+                    focusedDocumentWindow?.treeSitterOpen.presentPackageFolderPicker()
+                }
+                .disabled(focusedDocumentWindow == nil)
+                
+                Divider()
             }
         }
         

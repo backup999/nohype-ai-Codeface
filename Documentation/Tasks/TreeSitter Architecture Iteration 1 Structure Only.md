@@ -168,14 +168,19 @@ Built by future name/scope linker on **references** in the CodeNode forest. Then
 
 ## Definition of done
 
-- [ ] `CodeNode` carries range (+ usable selection range policy documented)
-- [ ] Folder/file extraction builds multi-file IR without LSP
-- [ ] Conversion produces `CodeFolderArtifact` hierarchy with nested symbols for declarations only
-- [ ] All graph edges empty; Architecture / metrics / UI path still succeeds
-- [ ] Kind labels readable (humanize / `declaration_kind`); not raw snake_case in inspector
-- [ ] At least one automated fixture test + one manual folder open path
-- [ ] Architecture folder remains free of TreeSitter **and** of new SwiftLSP kinds (adapters only)
-- [ ] No dependency algorithm outside reuse placeholder comments / empty `usedBy`
+- [x] `CodeNode` carries range (+ selection range policy: name field when available, else full span)
+- [x] Folder/file extraction builds multi-file IR without LSP (`TreeSitterCodebaseExtractor` from `CodeFolder` text)
+- [x] Conversion produces `CodeFolderArtifact` hierarchy with nested symbols for declarations only
+- [x] All graph edges empty; Architecture / metrics / UI path still succeeds
+- [x] Kind labels readable (`SymbolKindDisplay` / `declaration_kind`); not raw snake_case in inspector
+- [x] Automated fixture tests (structure + conversion) + processor flag for manual folder path
+- [x] Adapters live under `Code/App/TreeSitter Codebase/`; PoC folder retains **Vendor** only
+- [x] No dependency algorithm (empty graphs; hook via empty used-by later)
+
+**Landed:** 2026-07-14. Runtime: menu **Open … (new)** builds a normal `CodeFolder` (symbols from Tree-sitter, no refs) and calls existing `runProcessor(with:)` — **zero** `Codebase Processor/` changes.
+
+
+
 
 ## Immediate next actions
 

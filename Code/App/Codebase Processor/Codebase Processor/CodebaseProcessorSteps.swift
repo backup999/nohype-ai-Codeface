@@ -27,6 +27,8 @@ enum CodebaseProcessorSteps
                                                         codebaseRootFolder: codebaseRootFolder)
     }
     
+    // MARK: - Architecture (LSP vs Tree-sitter factories)
+    
     static func generateArchitecture(from folder: CodeFolder) -> CodeFolderArtifact
     {
         var extraReferences = [CodeSymbol.ReferenceLocation]()
@@ -34,5 +36,15 @@ enum CodebaseProcessorSteps
         return CodeFolderArtifact(codeFolder: folder,
                                   pathInRootFolder: .root,
                                   additionalReferences: &extraReferences)
+    }
+    
+    static func extractTreeSitterForest(from folder: CodeFolder) throws -> TreeSitterFolder
+    {
+        try TreeSitterCodebaseExtractor.extract(from: folder)
+    }
+    
+    static func generateArchitecture(fromTreeSitterForest forest: TreeSitterFolder) -> CodeFolderArtifact
+    {
+        CodeFolderArtifact(treeSitterFolder: forest)
     }
 }

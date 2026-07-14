@@ -20,16 +20,16 @@ enum CodeTreeGenerator {
     ) throws -> [CodeNode] {
         let parser = Parser()
         try parser.setLanguage(language.treeSitterLanguage)
-
+        
         guard let tree = parser.parse(code),
               let root = tree.rootNode
         else {
             throw CodeTreeGeneratorError.parseFailed
         }
-
+        
         return collect(from: root, profile: language.profile)
     }
-
+    
     /// Depth-first CST walk.
     ///
     /// - If `profile.rules` has this node type **and** a name can be read → emit
@@ -54,24 +54,39 @@ enum CodeTreeGenerator {
                 rule.role == .reference
                 ? []
                 : childrenForSelectedNode(node, type: type, profile: profile)
+            
+            let range = CodeRange(node.pointRange)
+            let selectionRange = profile.selectionRange(for: node, rule: rule) ?? range
+            
             return [
                 CodeNode(
                     role: rule.role,
                     kind: type,
                     name: name,
                     attributes: profile.attributes(for: node),
+                    range: range,
+                    selectionRange: selectionRange,
                     children: children
                 ),
             ]
         }
-
+        
         if allowLooseIdentifierReferences,
            node.nodeType == "identifier",
            let name = node.text
         {
-            return [CodeNode(role: .reference, kind: "identifier", name: name)]
+            let range = CodeRange(node.pointRange)
+            return [
+                CodeNode(
+                    role: .reference,
+                    kind: "identifier",
+                    name: name,
+                    range: range,
+                    selectionRange: range
+                ),
+            ]
         }
-
+        
         var result: [CodeNode] = []
         node.enumerateChildren { child in
             result.append(
@@ -84,7 +99,7 @@ enum CodeTreeGenerator {
         }
         return result
     }
-
+    
     /// Children of an already-selected code node: full CST child list.
     ///
     /// For each child, if its Tree-sitter **field name** is listed under

@@ -139,9 +139,33 @@ struct LanguageProfile: Sendable {
         }
         return result
     }
-
+    
+    /// Narrower span for the surface name when the grammar exposes it; else `nil`.
+    func selectionRange(for node: Node, rule: Rule) -> CodeRange? {
+        switch rule.name {
+        case .field(let fieldName):
+            return node.child(byFieldName: fieldName).map { CodeRange($0.pointRange) }
+        case .swiftPropertyName:
+            guard let pattern = node.child(byFieldName: "name") else { return nil }
+            if let bound = pattern.child(byFieldName: "bound_identifier") {
+                return CodeRange(bound.pointRange)
+            }
+            if let id = Self.firstNamedDescendant(pattern, types: ["simple_identifier"]) {
+                return CodeRange(id.pointRange)
+            }
+            return CodeRange(pattern.pointRange)
+        case .swiftUserTypeName:
+            if let id = Self.firstNamedDescendant(node, types: ["type_identifier"]) {
+                return CodeRange(id.pointRange)
+            }
+            return nil
+        case .nodeText, .swiftCallExpression, .pythonCall:
+            return nil
+        }
+    }
+    
     // MARK: Name helpers
-
+    
     private static func swiftPropertyName(_ node: Node) -> String? {
         guard let pattern = node.child(byFieldName: "name") else { return nil }
         if let bound = pattern.child(byFieldName: "bound_identifier") {
@@ -150,7 +174,7 @@ struct LanguageProfile: Sendable {
         return firstNamedDescendant(pattern, types: ["simple_identifier"])?.text
             ?? pattern.text
     }
-
+    
     private static func swiftUserTypeName(_ node: Node) -> String? {
         firstNamedDescendant(node, types: ["type_identifier"])?.text ?? node.text
     }

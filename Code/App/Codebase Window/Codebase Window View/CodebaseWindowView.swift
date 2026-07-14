@@ -39,6 +39,7 @@ struct CodebaseWindowView: View
                 }
                 .padding()
             }
+            .treeSitterOpenSources(documentWindow.treeSitterOpen)
             .toolbar
             {
                 ToolbarItemGroup(placement: .secondaryAction)

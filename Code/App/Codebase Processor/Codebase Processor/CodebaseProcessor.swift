@@ -10,11 +10,12 @@ class CodebaseProcessor
 {
     // MARK: - Run Processing
     
-    func run()
+    func run(structureSource: StructureSource = .lsp)
     {
-        Task // to enter an async context
+        self.structureSource = structureSource
+        
+        Task
         {
-            // get codebase
             guard let codebase = await retrieveCodebase() else { return }
             
             // Durable cache for Export — set *before* state advances into phases that
@@ -24,7 +25,26 @@ class CodebaseProcessor
             // generate architecture
             state = .processCodebase(codebase, .init(primaryText: "Generating Codebase Architecture",
                                                      secondaryText: ""))
-            let codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(from: codebase)
+            
+            let codebaseArchitecture: CodeFolderArtifact
+            switch structureSource
+            {
+            case .lsp:
+                codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(from: codebase)
+            case .treesitter:
+                do
+                {
+                    let forest = try await CodebaseProcessorSteps.extractTreeSitterForest(from: codebase)
+                    codebaseArchitecture = await CodebaseProcessorSteps
+                        .generateArchitecture(fromTreeSitterForest: forest)
+                }
+                catch
+                {
+                    log(error.readable.message)
+                    state = .didFail(error.readable.message)
+                    return
+                }
+            }
             
             // calculate metrics
             state = .processArchitecture(codebase,
@@ -58,6 +78,12 @@ class CodebaseProcessor
             guard let codebaseWithoutSymbols = await readCodebaseFolder(from: codebaseLocation) else
             {
                 return nil
+            }
+            
+            if structureSource == .treesitter
+            {
+                state = .didJustRetrieveCodebase(codebaseWithoutSymbols)
+                return codebaseWithoutSymbols
             }
             
             do
@@ -127,4 +153,6 @@ class CodebaseProcessor
     // MARK: - State
     
     var state = CodebaseProcessorState.empty
+    
+    private var structureSource: StructureSource = .lsp
 }

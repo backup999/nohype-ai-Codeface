@@ -17,6 +17,12 @@ class CodebaseWindow: ObservableObject
         codebaseProcessor.onCodeFolderPublished = { [weak self] _ in
             self?.objectWillChange.send()
         }
+        
+        // Same entry as classic open: location → run(structureSource:)
+        treeSitterOpen.onLocationChosen = { [weak self] location in
+            self?.runProcessor(withCodebaseAtNewLocation: location,
+                               structureSource: .treesitter)
+        }
     }
     
     // MARK: - Run Processor with Codebase at Location
@@ -37,25 +43,28 @@ class CodebaseWindow: ObservableObject
         catch { log(error.readable) }
     }
     
-    func runProcessor(withCodebaseAtNewLocation location: LSP.CodebaseLocation)
+    func runProcessor(withCodebaseAtNewLocation location: LSP.CodebaseLocation,
+                      structureSource: StructureSource = .lsp)
     {
         do
         {
-            try runProcessor(withCodebaseAt: location)
+            try runProcessor(withCodebaseAt: location, structureSource: structureSource)
             try CodebaseLocationPersister.persist(location)
         }
         catch { log(error.readable) }
     }
     
-    private func runProcessor(withCodebaseAt location: LSP.CodebaseLocation) throws
+    private func runProcessor(withCodebaseAt location: LSP.CodebaseLocation,
+                              structureSource: StructureSource = .lsp) throws
     {
         guard FileManager.default.itemExists(location.folder) else
         {
             throw "Project folder does not exist: " + location.folder.absoluteString
         }
         
-        runProcessor(from: .didLocateCodebase(location))
         lastLocation = location
+        codebaseProcessor.state = .didLocateCodebase(location)
+        codebaseProcessor.run(structureSource: structureSource)
     }
     
     @Published var lastLocation: LSP.CodebaseLocation?
@@ -100,22 +109,18 @@ class CodebaseWindow: ObservableObject
     
     func runProcessor(with codebase: CodeFolder)
     {
-        runProcessor(from: .processCodebase(codebase,
-                                            .init(primaryText: "Did Load Codebase Data",
-                                                  secondaryText: "")))
-    }
-    
-    // MARK: - Load Processor
-    
-    private func runProcessor(from state: CodebaseProcessorState)
-    {
-        codebaseProcessor.state = state
-        codebaseProcessor.run()
+        codebaseProcessor.state = .processCodebase(codebase,
+                                                   .init(primaryText: "Did Load Codebase Data",
+                                                         secondaryText: ""))
+        codebaseProcessor.run(structureSource: .lsp)
     }
     
     // MARK: - Codebase Processor
     
     let codebaseProcessor = CodebaseProcessor()
+    
+    /// Tree-sitter open menus/importers (presentation only; work is via `run(structureSource:)`).
+    let treeSitterOpen = TreeSitterOpenController()
     
     // MARK: - Import Views
     
