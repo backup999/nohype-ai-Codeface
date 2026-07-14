@@ -330,7 +330,7 @@
 			path = "Artifact Icon";
 			sourceTree = "<group>";
 		};
-		96106E6729634D9B0002F13C /* Codebase */ = {
+		96106E6729634D9B0002F13C /* LSP Codebase */ = {
 			isa = PBXGroup;
 			children = (
 				965A7AD52964992C006C5A3A /* Load */,
@@ -338,7 +338,7 @@
 				96E134EA2962DC2200DF8A43 /* CodeFile.swift */,
 				96E134E82962DC2200DF8A43 /* CodeSymbol.swift */,
 			);
-			path = Codebase;
+			path = "LSP Codebase";
 			sourceTree = "<group>";
 		};
 		96106E6B2963561F0002F13C /* Architecture View */ = {
@@ -684,7 +684,7 @@
 				965A7AD72964A236006C5A3A /* Codebase Processor */,
 				965A7ADB2964A4E8006C5A3A /* Codebase Analysis */,
 				96E134E92962DC2200DF8A43 /* Codebase Architecture */,
-				96106E6729634D9B0002F13C /* Codebase */,
+				96106E6729634D9B0002F13C /* LSP Codebase */,
 				9625697829BA5E59002FB7CC /* Purchase */,
 				963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */,
 				96A7D1B42A50828E00EB143C /* GlobalSettings.swift */,
