@@ -54,6 +54,11 @@ struct CodebaseWindowView: View
                                           displayOptions: documentWindow.displayOptions)
                 }
             }
+            .onOpenURL
+            {
+                guard $0.pathExtension.lowercased() == "codebase" else { return }
+                documentWindow.importCodebaseFile(from: $0)
+            }
     }
     
     @StateObject private var documentWindow = CodebaseWindow()

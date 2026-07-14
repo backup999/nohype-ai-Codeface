@@ -19,7 +19,7 @@ struct CodefaceApp: App
         // MARK: Analysis windows (primary scene)
         //
         // Session-based: each window is an analysis session, not a document editor.
-        // File I/O for `.codebase` is explicit Import / Export only (no DocumentGroup).
+        // `.codebase` I/O: Import / Export menu + Finder open via `onOpenURL`.
         
         WindowGroup
         {
