@@ -1,4 +1,3 @@
-import SwiftLSP
 import SwiftNodes
 
 final class CodeSymbolArtifact: Identifiable, Hashable, Sendable
@@ -6,9 +5,9 @@ final class CodeSymbolArtifact: Identifiable, Hashable, Sendable
     // MARK: - Initialization
     
     init(name: String,
-         kind: LSPDocumentSymbol.SymbolKind?,
-         range: LSPRange,
-         selectionRange: LSPRange,
+         kind: String,
+         range: CodeRange,
+         selectionRange: CodeRange,
          code: String,
          subsymbolGraph: Graph<CodeArtifact.ID, CodeSymbolArtifact, Int>)
     {
@@ -28,8 +27,9 @@ final class CodeSymbolArtifact: Identifiable, Hashable, Sendable
     
     let id: CodeArtifact.ID = .randomID()
     let name: String
-    let kind: LSPDocumentSymbol.SymbolKind?
-    let range: LSPRange
-    let selectionRange: LSPRange
+    /// Display-oriented free-string kind (readable label from structure producer).
+    let kind: String
+    let range: CodeRange
+    let selectionRange: CodeRange
     let code: String?
 }

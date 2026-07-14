@@ -1,4 +1,3 @@
-import SwiftLSP
 import FoundationToolz
 import SwiftyToolz
 
@@ -43,26 +42,30 @@ extension ArtifactIcon
                      fillColor: .rgba(.white))
     }
     
-    static func `for`(symbolKind: LSPDocumentSymbol.SymbolKind?) -> ArtifactIcon
+    /// Icons keyed by free-string kind names (LSP English names, humanized TS kinds, …).
+    static func `for`(symbolKindName: String?) -> ArtifactIcon
     {
-        .systemImage(name: imageName(for: symbolKind),
-                     fillColor: fillColor(for: symbolKind))
+        .systemImage(name: imageName(for: symbolKindName),
+                     fillColor: fillColor(for: symbolKindName))
     }
     
-    private static func imageName(for symbolKind: LSPDocumentSymbol.SymbolKind?) -> String
+    private static func imageName(for symbolKindName: String?) -> String
     {
-        guard let symbolKind else { return "questionmark.square.fill" }
-        
-        switch symbolKind
+        guard let symbolKindName, !symbolKindName.isEmpty else
         {
-        case .File:
+            return "questionmark.square.fill"
+        }
+        
+        switch symbolKindName
+        {
+        case "File":
             return "doc.fill"
-        case .Module, .Package:
+        case "Module", "Package":
             return "shippingbox.fill"
-        case .Null:
+        case "Null":
             return "square.fill"
         default:
-            if let firstCharacter = symbolKind.name.first?.lowercased()
+            if let firstCharacter = symbolKindName.first?.lowercased()
             {
                 return firstCharacter + ".square.fill"
             }
@@ -73,25 +76,31 @@ extension ArtifactIcon
         }
     }
     
-    private static func fillColor(for symbolKind: LSPDocumentSymbol.SymbolKind?) -> UXColor
+    private static func fillColor(for symbolKindName: String?) -> UXColor
     {
-        guard let symbolKind else { return .system(.secondaryLabel) }
-        
-        switch symbolKind
+        guard let symbolKindName, !symbolKindName.isEmpty else
         {
-        case .File, .Module, .Package:
+            return .system(.secondaryLabel)
+        }
+        
+        switch symbolKindName
+        {
+        case "File", "Module", "Package":
             return .rgba(.white)
-        case .Class, .Interface, .Struct:
+        case "Class", "Interface", "Struct":
             return .system(.purple)
-        case .Namespace, .Enum:
+        case "Namespace", "Enum":
             return .system(.orange)
-        case .Method, .Constructor:
+        case "Method", "Constructor":
             return .system(.blue)
-        case .Property, .Field, .EnumMember:
+        case "Property", "Field", "EnumMember":
             return .system(.teal)
-        case .Variable, .Constant, .Function, .Operator:
+        case "Variable", "Constant", "Function", "Operator":
             return .system(.green)
-        case .Number, .Boolean, .Array, .Object, .Key, .Null, .Event, .TypeParameter, .String:
+        case "Number", "Boolean", "Array", "Object", "Key", "Null", "Event",
+             "TypeParameter", "String":
+            return .system(.secondaryLabel)
+        default:
             return .system(.secondaryLabel)
         }
     }

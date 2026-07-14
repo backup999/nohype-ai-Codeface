@@ -33,22 +33,14 @@ extension CodeSymbolArtifact
         
         // base case: create this symbol artifact
         
-//        let fileName = pathInRootFolder.components.last ?? ""
-//
-//        if (fileName.contains("cookie_method_channel") || fileName.contains("cookie_method_call_handler")) {
-//            for reference in (symbol.references ?? []) {
-//                if reference.filePathRelativeToRoot.contains("app_method_channel.dart") {
-//                    print("💥 found faulty reference:\nsource: \(reference.filePathRelativeToRoot) line \(reference.range.start.line + 1)\ntarget: \(pathInRootFolder.components.last ?? "nil") line \(symbol.range.start.line + 1) symbol \(symbol.name)")
-//                }
-//            }
-//        }
+        let thisRange = CodeRange(symbol.range)
         
         for (childID, childReferences) in referencesByChildID
         {
             for childReference in childReferences
             {
                 if pathInRootFolder.string == childReference.filePathRelativeToRoot,
-                   symbol.range.contains(childReference.range)
+                   thisRange.contains(CodeRange(childReference.range))
                 {
                     // we found a reference within the scope of this symbol artifact that we initialize
                     
@@ -57,7 +49,7 @@ extension CodeSymbolArtifact
                     {
                         if sibling.id == childID { continue } // not a sibling but the same child
                         
-                        if sibling.range.contains(childReference.range)
+                        if sibling.range.contains(CodeRange(childReference.range))
                         {
                             // the sibling references (depends on) the child -> add edge and leave for loop
                             graph.add(1, toEdgeFrom: sibling.id, to: childID)
@@ -75,19 +67,19 @@ extension CodeSymbolArtifact
         
         graph.filterEssentialEdges()
         
-        let code = getCode(of: symbol.range,
+        let code = getCode(of: thisRange,
                            inFileLines: linesOfEnclosingFile)
         
         self.init(name: symbol.name,
-                  kind: symbol.kind,
-                  range: symbol.range,
-                  selectionRange: symbol.selectionRange,
+                  kind: symbol.kind.name,
+                  range: thisRange,
+                  selectionRange: CodeRange(symbol.selectionRange),
                   code: code ?? "",
                   subsymbolGraph: graph)
     }
 }
 
-func getCode(of range: LSPRange, inFileLines fileLines: [String]) -> String?
+func getCode(of range: CodeRange, inFileLines fileLines: [String]) -> String?
 {
     guard fileLines.isValid(index: range.start.line),
           fileLines.isValid(index: range.end.line) else { return nil }

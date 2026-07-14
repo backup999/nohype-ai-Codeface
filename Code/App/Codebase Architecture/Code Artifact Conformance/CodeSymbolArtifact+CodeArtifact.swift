@@ -1,4 +1,3 @@
-import SwiftLSP
 import SwiftyToolz
 
 extension CodeSymbolArtifact: SearchableCodeArtifact
@@ -18,9 +17,7 @@ extension CodeSymbolArtifact: CodeArtifact
     
     var intrinsicSizeInLinesOfCode: Int? { (range.end.line - range.start.line) + 1 }
     
-    static var kindNames: [String] { LSPDocumentSymbol.SymbolKind.names }
-    
-    var kindName: String { kind?.name ?? "Unknown Kind of Symbol" }
+    var kindName: String { kind }
     
     var lineNumber: Int? { selectionRange.start.line }
     

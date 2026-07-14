@@ -1,4 +1,3 @@
-import SwiftLSP
 import Foundation
 import SwiftyToolz
 
@@ -63,7 +62,7 @@ class ArtifactViewModel: Identifiable, ObservableObject, Comparable
             await ArtifactViewModel(symbolArtifact: $0)
         }
         
-        icon = .for(symbolKind: symbolArtifact.kind)
+        icon = .for(symbolKindName: symbolArtifact.kind)
         
         linesOfCodeColor = .system(.gray)
         

@@ -53,8 +53,7 @@ Move range helpers needed by Architecture onto these types (`contains(_:)`, LOC 
 |------|-------|------------|
 | Artifact model | `Concrete Code Artifacts/CodeSymbolArtifact.swift` | `kind: SymbolKind?`, `range` / `selectionRange: LSPRange` |
 | Conformance | `CodeSymbolArtifact+CodeArtifact.swift` | `kindNames` from LSP; range for `contains` / LOC / `lineNumber` |
-| Create from codebase | `CodeSymbolArtifact+CodeSymbol.swift` | passes through LSP types; `getCode(of: LSPRange, …)`; `range.contains` vs reference ranges |
-| Create from codebase | `CodeFileArtifact+CodeFile.swift` | sibling `range.contains` on references |
+| Create from codebase | was nested under Architecture — **moved** to `Code/App/Create Architecture from Codebase/` | adapter only: maps dump → artifacts / ranges |
 | Metrics | `GraphNode+Sorting.swift` | `selectionRange.start.line` |
 | UI icons | `Artifact Icon/ArtifactIcon.swift` | switches on `SymbolKind` for image + color |
 | UI wiring | `ArtifactViewModel.swift` | `icon = .for(symbolKind: symbolArtifact.kind)` |
@@ -186,13 +185,16 @@ without inventing a second artifact model
 
 ## Definition of done
 
-- [ ] `Code/App/Codebase Architecture/` has **no** `import SwiftLSP` and no references to `LSPRange` / `LSPDocumentSymbol.SymbolKind`
-- [ ] `CodeSymbolArtifact` stores `kind: String` and domain `CodeRange`s
-- [ ] LSP create path maps kind names + ranges at the boundary
-- [ ] Icons for current LSP-backed projects preserve prior colors/symbols via string→icon map
-- [ ] Unknown / TS-style kind strings have a safe generic icon fallback
-- [ ] Humanize + `declaration_kind` preference documented for the future TS adapter (implemented when that path exists)
-- [ ] Metrics, search-by-kindName, inspector labels, dependency scope checks still work
+- [x] `Code/App/Codebase Architecture/` has **no** `import SwiftLSP` and no `LSPRange` / `LSPDocumentSymbol.SymbolKind` (adapters live in `Create Architecture from Codebase/`)
+- [x] `CodeSymbolArtifact` stores `kind: String` and domain `CodeRange`s
+- [x] LSP create path maps kind names + ranges at the boundary
+- [x] Icons for current LSP-backed projects preserve prior colors/symbols via string→icon map
+- [x] Unknown / TS-style kind strings have a safe generic icon fallback
+- [x] Humanize + `declaration_kind` preference helpers ready (`SymbolKindDisplay`) for the future TS adapter
+- [x] Metrics, search-by-kindName, inspector labels, dependency scope checks still compile/build
+
+**Landed:** 2026-07-14 (build OK). Manual smoke of ICP icon colors on a live project still recommended.
+
 
 ## Immediate next actions
 

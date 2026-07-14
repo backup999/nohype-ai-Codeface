@@ -1,3 +1,4 @@
+import SwiftLSP
 import SwiftNodes
 import SwiftyToolz
 
@@ -43,7 +44,7 @@ extension CodeFileArtifact
                     {
                         if sibling.id == childID { continue } // not a sibling but the same child
                         
-                        if sibling.range.contains(childReference.range)
+                        if sibling.range.contains(CodeRange(childReference.range))
                         {
                             // the sibling references (depends on) the child -> add edge and leave for loop
                             graph.add(1, toEdgeFrom: sibling.id, to: childID)
