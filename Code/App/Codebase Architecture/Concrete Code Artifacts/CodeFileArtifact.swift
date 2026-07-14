@@ -1,5 +1,4 @@
 import Foundation
-import SwiftLSP
 import SwiftNodes
 
 final class CodeFileArtifact: Identifiable, Sendable
