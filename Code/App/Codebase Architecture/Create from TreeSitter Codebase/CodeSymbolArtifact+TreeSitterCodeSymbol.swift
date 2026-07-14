@@ -4,7 +4,7 @@ import SwiftyToolz
 @BackgroundActor
 extension CodeSymbolArtifact {
     /// Nested declarations only; empty edge graph (iteration 1).
-    convenience init(declaration node: CodeNode, linesOfEnclosingFile: [String]) {
+    convenience init(declaration node: TreeSitterCodeSymbol, linesOfEnclosingFile: [String]) {
         precondition(node.role == .declaration)
         
         var graph = Graph<CodeArtifact.ID, CodeSymbolArtifact, Int>()

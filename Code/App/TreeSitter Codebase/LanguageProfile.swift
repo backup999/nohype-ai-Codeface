@@ -34,7 +34,7 @@ struct LanguageProfile: Sendable {
     /// How a CST node type maps into one code-tree node.
     struct Rule: Sendable {
         /// Declaration vs reference (dependency dualism).
-        var role: CodeNode.Role
+        var role: TreeSitterCodeSymbol.Role
         /// Where to get `CodeNode.name` for this node type.
         var name: NameSource
     }

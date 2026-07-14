@@ -17,7 +17,7 @@ enum CodeTreeGenerator {
     static func generateTree(
         from code: String,
         language: SourceLanguage
-    ) throws -> [CodeNode] {
+    ) throws -> [TreeSitterCodeSymbol] {
         let parser = Parser()
         try parser.setLanguage(language.treeSitterLanguage)
         
@@ -41,7 +41,7 @@ enum CodeTreeGenerator {
         from node: Node,
         profile: LanguageProfile,
         allowLooseIdentifierReferences: Bool = false
-    ) -> [CodeNode] {
+    ) -> [TreeSitterCodeSymbol] {
         if let type = node.nodeType,
            let rule = profile.rules[type],
            let name = profile.name(for: node, rule: rule)
@@ -50,7 +50,7 @@ enum CodeTreeGenerator {
             // surface name again (e.g. inheritance_specifier → user_type → Bar).
             // Recursing would emit two refs for one source occurrence. Declarations
             // still open their full CST children (nested decls + body/header refs).
-            let children: [CodeNode] =
+            let children: [TreeSitterCodeSymbol] =
                 rule.role == .reference
                 ? []
                 : childrenForSelectedNode(node, type: type, profile: profile)
@@ -59,7 +59,7 @@ enum CodeTreeGenerator {
             let selectionRange = profile.selectionRange(for: node, rule: rule) ?? range
             
             return [
-                CodeNode(
+                TreeSitterCodeSymbol(
                     role: rule.role,
                     kind: type,
                     name: name,
@@ -77,7 +77,7 @@ enum CodeTreeGenerator {
         {
             let range = CodeRange(node.pointRange)
             return [
-                CodeNode(
+                TreeSitterCodeSymbol(
                     role: .reference,
                     kind: "identifier",
                     name: name,
@@ -87,7 +87,7 @@ enum CodeTreeGenerator {
             ]
         }
         
-        var result: [CodeNode] = []
+        var result: [TreeSitterCodeSymbol] = []
         node.enumerateChildren { child in
             result.append(
                 contentsOf: collect(
@@ -109,9 +109,9 @@ enum CodeTreeGenerator {
         _ node: Node,
         type: String,
         profile: LanguageProfile
-    ) -> [CodeNode] {
+    ) -> [TreeSitterCodeSymbol] {
         let looseFields = Set(profile.looseIdentifierFields[type] ?? [])
-        var children: [CodeNode] = []
+        var children: [TreeSitterCodeSymbol] = []
         for i in 0 ..< node.childCount {
             guard let child = node.child(at: i) else { continue }
             let field = node.fieldNameForChild(at: i)

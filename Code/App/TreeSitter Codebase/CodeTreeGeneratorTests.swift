@@ -16,28 +16,28 @@ struct CodeTreeGeneratorTests {
         let tree = try CodeTreeGenerator.generateTree(from: code,
                                                       language: .swift)
         
-        let expected = CodeNode(
+        let expected = TreeSitterCodeSymbol(
             role: .declaration,
             kind: "class_declaration",
             name: "Foo",
             attributes: ["declaration_kind": "struct"],
             children: [
-                CodeNode(role: .reference, kind: "inheritance_specifier", name: "Bar"),
-                CodeNode(
+                TreeSitterCodeSymbol(role: .reference, kind: "inheritance_specifier", name: "Bar"),
+                TreeSitterCodeSymbol(
                     role: .declaration,
                     kind: "property_declaration",
                     name: "x",
                     children: [
-                        CodeNode(role: .reference, kind: "user_type", name: "Qux"),
+                        TreeSitterCodeSymbol(role: .reference, kind: "user_type", name: "Qux"),
                     ]
                 ),
-                CodeNode(
+                TreeSitterCodeSymbol(
                     role: .declaration,
                     kind: "function_declaration",
                     name: "baz",
                     children: [
-                        CodeNode(role: .reference, kind: "user_type", name: "Wom"),
-                        CodeNode(role: .reference, kind: "call_expression", name: "qux"),
+                        TreeSitterCodeSymbol(role: .reference, kind: "user_type", name: "Wom"),
+                        TreeSitterCodeSymbol(role: .reference, kind: "call_expression", name: "qux"),
                     ]
                 ),
             ]
@@ -57,20 +57,20 @@ struct CodeTreeGeneratorTests {
         
         let tree = try CodeTreeGenerator.generateTree(from: code, language: .python)
         
-        let expected = CodeNode(
+        let expected = TreeSitterCodeSymbol(
             role: .declaration,
             kind: "class_definition",
             name: "Foo",
             children: [
-                CodeNode(role: .reference, kind: "identifier", name: "Bar"),
-                CodeNode(
+                TreeSitterCodeSymbol(role: .reference, kind: "identifier", name: "Bar"),
+                TreeSitterCodeSymbol(
                     role: .declaration,
                     kind: "function_definition",
                     name: "baz",
                     children: [
-                        CodeNode(role: .reference, kind: "type", name: "Wom"),
-                        CodeNode(role: .reference, kind: "type", name: "Qux"),
-                        CodeNode(role: .reference, kind: "call", name: "qux"),
+                        TreeSitterCodeSymbol(role: .reference, kind: "type", name: "Wom"),
+                        TreeSitterCodeSymbol(role: .reference, kind: "type", name: "Qux"),
+                        TreeSitterCodeSymbol(role: .reference, kind: "call", name: "qux"),
                     ]
                 ),
             ]

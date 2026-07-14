@@ -3,7 +3,7 @@
 /// Not the full CST: noise (`{`, operators as pure syntax, `pass`, …) is dropped.
 /// `kind` stays language-native (Tree-sitter node type string). Optional grammar
 /// fields land in `attributes` free-form (e.g. Swift `declaration_kind` → `"struct"`).
-struct CodeNode: Equatable, Sendable {
+struct TreeSitterCodeSymbol: Equatable, Sendable {
     var role: Role
     /// Tree-sitter node type, e.g. `class_declaration`, `call_expression`.
     var kind: String
@@ -15,7 +15,7 @@ struct CodeNode: Equatable, Sendable {
     var range: CodeRange
     /// Best-effort name span; falls back to `range` when no narrower span is available.
     var selectionRange: CodeRange
-    var children: [CodeNode]
+    var children: [TreeSitterCodeSymbol]
     
     init(
         role: Role,
@@ -24,7 +24,7 @@ struct CodeNode: Equatable, Sendable {
         attributes: [String: String] = [:],
         range: CodeRange = .zero,
         selectionRange: CodeRange? = nil,
-        children: [CodeNode] = []
+        children: [TreeSitterCodeSymbol] = []
     ) {
         self.role = role
         self.kind = kind
@@ -36,7 +36,7 @@ struct CodeNode: Equatable, Sendable {
     }
     
     /// Compare structure for tests that do not care about exact spans.
-    func isStructurallyEqual(to other: CodeNode) -> Bool {
+    func isStructurallyEqual(to other: TreeSitterCodeSymbol) -> Bool {
         role == other.role
             && kind == other.kind
             && name == other.name

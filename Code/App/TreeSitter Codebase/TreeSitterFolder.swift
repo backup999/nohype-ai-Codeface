@@ -22,18 +22,3 @@ final class TreeSitterFolder: Sendable {
         return files.contains { $0.name.lowercased().contains("package") }
     }
 }
-
-/// One source file’s text and top-level code-tree nodes.
-final class TreeSitterFile: Sendable {
-    init(name: String, code: String, nodes: [CodeNode]) {
-        self.name = name
-        self.code = code
-        self.nodes = nodes
-    }
-    
-    let name: String
-    let code: String
-    let nodes: [CodeNode]
-    
-    var lines: [String] { code.lines }
-}
