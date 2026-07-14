@@ -447,6 +447,13 @@
 			path = "Create from Codebase";
 			sourceTree = "<group>";
 		};
+		964C469B300689B300B41114 /* TreeSitter Codebase */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "TreeSitter Codebase";
+			sourceTree = "<group>";
+		};
 		965795AF2954661700CB9F3F /* Display Mode */ = {
 			isa = PBXGroup;
 			children = (
@@ -693,6 +700,7 @@
 				965A7AD72964A236006C5A3A /* Codebase Processor */,
 				965A7ADB2964A4E8006C5A3A /* Codebase Analysis */,
 				96E134E92962DC2200DF8A43 /* Codebase Architecture */,
+				964C469B300689B300B41114 /* TreeSitter Codebase */,
 				96106E6729634D9B0002F13C /* LSP Codebase */,
 				9625697829BA5E59002FB7CC /* Purchase */,
 				963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */,
