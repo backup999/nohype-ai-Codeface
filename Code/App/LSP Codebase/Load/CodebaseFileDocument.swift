@@ -28,8 +28,8 @@ enum CodebaseFileIO
     /// Write a `CodeFolder` as a `.codebase` file (wrapper format, non-pretty, unescaped slashes).
     static func export(_ codeFolder: CodeFolder, to fileURL: URL) throws
     {
-        let payload = CodebaseFilePayload(codebase: codeFolder)
-        let data = try payload.encode(options: .withoutEscapingSlashes) as Data
+        let data = try CodebaseFilePayload(codebase: codeFolder)
+            .encode(options: .withoutEscapingSlashes) as Data
         try data.write(to: fileURL, options: .atomic)
     }
 }

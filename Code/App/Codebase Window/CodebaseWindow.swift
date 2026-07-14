@@ -13,8 +13,9 @@ class CodebaseWindow: ObservableObject
     {
         _lastLocation = Published(initialValue: try? CodebaseLocationPersister.loadCodebaseLocation())
         
+        // Nested @Observable processor does not drive this ObservableObject; refresh menus on cache publish.
         codebaseProcessor.onCodeFolderPublished = { [weak self] _ in
-            self?.canExportCodebaseFile = true
+            self?.objectWillChange.send()
         }
     }
     
@@ -87,34 +88,13 @@ class CodebaseWindow: ObservableObject
         
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.codebase]
-        panel.canCreateDirectories = true
-        panel.isExtensionHidden = false
-        panel.title = "Export Codebase File"
-        panel.nameFieldStringValue = defaultExportFileName
+        panel.nameFieldStringValue = (lastLocation?.folder.lastPathComponent ?? "Codebase") + ".codebase"
         
         guard panel.runModal() == .OK, let fileURL = panel.url else { return }
         
-        do
-        {
-            try CodebaseFileIO.export(codeFolder, to: fileURL)
-        }
-        catch
-        {
-            log(error: "Couldn't export codebase file: \(error.readable.message)")
-        }
+        do { try CodebaseFileIO.export(codeFolder, to: fileURL) }
+        catch { log(error: "Couldn't export codebase file: \(error.readable.message)") }
     }
-    
-    private var defaultExportFileName: String
-    {
-        if let folderName = lastLocation?.folder.lastPathComponent
-        {
-            return folderName + ".codebase"
-        }
-        return "Codebase.codebase"
-    }
-    
-    /// Mirrors whether `codebaseProcessor.codeFolder` is available (for menus).
-    @Published private(set) var canExportCodebaseFile = false
     
     // MARK: - Load Processor for Codebase from Memory
     

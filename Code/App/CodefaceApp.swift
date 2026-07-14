@@ -106,7 +106,7 @@ struct CodefaceApp: App
                 {
                     focusedDocumentWindow?.presentExportCodebaseFilePanel()
                 }
-                .disabled(focusedDocumentWindow == nil || focusedDocumentWindow?.canExportCodebaseFile != true)
+                .disabled(focusedDocumentWindow?.codebaseProcessor.codeFolder == nil)
                 
                 Divider()
                 
