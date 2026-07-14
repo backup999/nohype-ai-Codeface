@@ -1,193 +1,218 @@
 # Task: Integrate TreeSitter analysis (alongside / then past LSP)
 
+## Status (2026-07-14)
+
+**Iteration 1 (structure only) is landed** as a dual menu path into the same processor pipeline. Full processor stage reform, deps linking, and default flip remain open.
+
+| Area | Status |
+|------|--------|
+| Session shell + durable `codeFolder` export | **Done** (separate task) |
+| Architecture free of `SymbolKind` / owns `CodeRange` | **Done** — [Decouple Architecture from LSP Types](Task%20-%20Decouple%20Architecture%20from%20LSP%20Types.md) |
+| TreeSitter module (ex-PoC) under `Code/App/TreeSitter Codebase/` | **Done** (Vendor grammars stay in `Code/TreeSitter PoC/Vendor/`) |
+| Shared `run(structureSource:)` + Architecture fork | **Done** |
+| Menus **Open … (new)** → Tree-sitter structure | **Done** (hierarchy, empty deps) |
+| Dependency detection on Tree-sitter IR | **Not started** |
+| Full coexisting processor stages | **Still open** — [ProcessorPipelineArchitecture](Task%20-%20ProcessorPipelineArchitecture.md) |
+| Default backend flip / sunset LSP | **Later** |
+
+Related detail for iter 1: [TreeSitter Architecture Iteration 1 Structure Only](Task%20-%20TreeSitter%20Architecture%20Iteration%201%20Structure%20Only.md).
+
+---
+
 ## Context
 
-Today’s pipeline is **LSP-shaped end-to-end**:
+Product still has an **LSP-first** default path:
 
-- retrieve: filesystem + **language server** symbols/refs → `CodeFolder` / `CodeFile` / `CodeSymbol` (SwiftLSP types woven in)
-- architecture: `Code*Artifact` + graphs
-- UI: `CodebaseAnalysis` / treemap
+- retrieve: filesystem + **language server** symbols/refs → `CodeFolder` / `CodeFile` / `CodeSymbol`
+- architecture: Create-from-Codebase → `Code*Artifact` + graphs (used-by → edges)
+- UI: metrics / treemap / analysis VMs
 
-App shell (done separately): **session window** (`WindowGroup`), not `DocumentGroup`. Dump I/O is **Import / Export Codebase File…** against a durable processor **`codeFolder` cache** — not a live `FileDocument`. See [Drop DocumentGroup Keep Codebase File](Done/Task%20-%20Drop%20DocumentGroup%20Keep%20Codebase%20File.md).
+**Second path (Tree-sitter)** shares the same control flow after location is chosen:
 
-TreeSitter PoC delivers a second tech stack:
+```text
+Menu (classic)  →  locate  →  run(structureSource: .lsp)
+Menu (new)      →  locate  →  run(structureSource: .treesitter)
 
-- parse grammars in-process → **`CodeNode` tree** via `CodeTreeGenerator` (filtered CST, free-string kinds, `declaration` | `reference`)
-- later: name(± type)-based dep algorithms + AI resolvers
+run(structureSource):
+  1. FS text (always); + LSP symbols/refs only if .lsp
+  2. create Architecture   ← only real fork
+  3. metrics + VMs + analysis state   ← shared
+```
 
-Challenge: **two analysis technologies** must meet the pipeline and the artifact model without a big-bang rewrite or a brittle dual fork forever.
+Tree-sitter does **not** fill dump `CodeSymbol`s. Paths stay independent below Architecture and merge at `CodeFolderArtifact`.
 
-Related:
+App shell: **session window** (`WindowGroup`); Import/Export `.codebase` from durable processor `codeFolder` cache. See [Drop DocumentGroup Keep Codebase File](Done/Task%20-%20Drop%20DocumentGroup%20Keep%20Codebase%20File.md).
 
-- [Task - ProcessorPipelineArchitecture.md](Task%20-%20ProcessorPipelineArchitecture.md) — enum cases as sole store destroy earlier stage data (**minimal** `codeFolder` cache already done; full coexisting stages still open)
-- [TreeSitter - How It Works.md](TreeSitter%20-%20How%20It%20Works.md) — grammars, profiles, program model
-- [Task - TreeSitter PoC.md](Task%20-%20TreeSitter%20PoC.md) — PoC status (unit-test only so far)
-- [Done: Drop DocumentGroup…](Done/Task%20-%20Drop%20DocumentGroup%20Keep%20Codebase%20File.md) — session + import/export; **do not** couple TreeSitter to that shell work
+---
 
-## Decision: processor architecture **before** (or with) dual analysis
+## What landed (structure-only dual path)
 
-**Do full processor pipeline reform first** (or as the immediate next thin vertical slice) — *beyond* the contingent `codeFolder` export cache.
+### Layout
 
-Why:
+```text
+Code/App/TreeSitter Codebase/
+  CodeNode, CodeTreeGenerator, LanguageProfile, SourceLanguage
+  TreeSitterFolder / TreeSitterFile
+  Extract/TreeSitterCodebaseExtractor
+  Create Architecture/Code*Artifact+TreeSitter*
+  TreeSitterOpenController   // menus: present only, then run(.treesitter)
 
-1. Dual tech needs **coexisting stage outputs** (`codeFolder` / program forest / deps / architecture / analysis). Enum-associated payloads **erase** ancestors and force awkward handoffs. Export already needed a side-channel; structure IR will need proper siblings, not another one-off.
-2. TreeSitter integration will add **new** stages (parse → program trees → deps). Without durable fields, every new stage worsens the smell.
-3. Reform is small and product-safe (no new panel semantics required); dual analysis is large.
-4. Shell/session migration is **already done** and must stay independent — TreeSitter must not reintroduce document-binding or change `.codebase` schema in this pass.
+Code/TreeSitter PoC/Vendor/  // grammar packages only
+```
 
-Do **not** wait for full TreeSitter parity before reform — reform is an enabler, not blocked by TreeSitter.
+### Control flow
 
-Ok to overlap: reform embeds *hooks* (`structureSource`, optional `programUnits`) so a second path can land cleanly.
+| Piece | Role |
+|--------|------|
+| `StructureSource` | `.lsp` \| `.treesitter` |
+| `CodebaseProcessor.run(structureSource:)` | intention stored; retrieve + Architecture switch |
+| Retrieve | `.treesitter` → text-only `CodeFolder` (no language server) |
+| Architecture | `.lsp` → existing Create-from-Codebase; `.treesitter` → forest → Create Architecture from TS |
+| Post-Architecture | metrics / `ArtifactViewModel` / `state` — unchanged shared tail |
+| Menus | **Open Code Folder (new)…** / **Open Swift Package Folder (new)…** → same locate shape as classic, then `run(.treesitter)` |
 
-## Target shape (conceptual)
+### Architecture model (source-agnostic)
+
+- `CodeSymbolArtifact.kind: String` (display label; not `LSPDocumentSymbol.SymbolKind`)
+- `CodeRange` / `CodePosition` domain types
+- Icons: UI maps free strings (LSP English names when from LSP path)
+- Tree-sitter kinds: `SymbolKindDisplay` (prefer `declaration_kind`, else humanize node type)
+
+### Iteration 1 limits
+
+- **Declarations only** in the Architecture tree (references stay in `CodeNode` IR for later linking)
+- **Empty dependency graphs** (no used-by → edge wiring yet)
+- Import `.codebase` dump still uses **LSP** Architecture factory (`structureSource: .lsp`)
+- **Open … Again** still uses last location with **default `.lsp`**
+
+### Principles kept
+
+1. No mutual code between LSP Codebase and TreeSitter Codebase **below** Architecture (no synthetic `CodeSymbol` from TS).
+2. Structure backends are producers of the **same** `Code*Artifact` types — not parallel UI models.
+3. Tree-sitter `CodeNode` is analysis IR, not a second document format.
+4. Export remains durable `codeFolder` (text tree); TS does not require changing `.codebase` schema.
+
+---
+
+## Target shape (still the north star)
 
 ```text
                      location
                         │
                         ▼
                ┌─ retrieve filesystem ─┐
-               │   raw file tree + text  │  durable: sourceTree / codeFolder(text)
+               │   raw file tree + text  │  durable: codeFolder(text)
                └───────────┬────────────┘
                            │
            ┌───────────────┴────────────────┐
            ▼                                ▼
-    structure path A                  structure path B (new)
-    (LSP — status quo)                (TreeSitter CodeNode forest)
+    structure path A                  structure path B
+    (LSP symbols/refs)                (TreeSitter CodeNode forest)
            │                                │
            └────────────┬───────────────────┘
                         ▼
-               unified domain model
-               (names, ranges, hierarchy, roles)
+               Architecture (Code*Artifact graphs)
                         │
                         ▼
-               dependency linking
-               (heuristic ± types ± AI)
+               dependency edges (later: shared wiring / name linker)
                         │
                         ▼
-               architecture artifacts (graphs, metrics)
-                        │
-                        ▼
-               analysis / UI view models
+               metrics / analysis / UI
 ```
 
-Principles:
+**Today:** both structure paths feed Architecture; TS edges empty.  
+**Next:** produce used-by locations (or edges) from refs→decls and **reuse** existing Create-from-Codebase scope aggregation (or extract shared graph builder).
 
-1. **Stage data persists** once written (processor reform; `codeFolder` already demonstrates this for the dump).
-2. Structure/deps backends are **swappable providers** behind a source-agnostic model — not forever parallel `CodeSymbolLSP` vs `CodeSymbolTS` UI types.
-3. LSP types (`LSPRange`, `SymbolKind`, …) move to **adapters at the boundary**, not deep into metrics/UI forever.
-4. TreeSitter `CodeNode` is an **analysis IR**, not a permanent second document format. Saved/exported `.codebase` can stay folder+text+(optional cache) for a long time — serialised from session **`codeFolder`** (export), not from a document binding.
-5. Import codebase file vs import folder remain separate entry points; TreeSitter only affects the **structure path after** source text is available.
+---
 
-## Recommended phases
+## Remaining phases
 
-### Phase 0 — Done baseline
+### Phase A — Processor coexisting stages (still recommended)
 
-- TreeSitter PoC: Swift + Python, role-tagged `CodeNode` / `CodeTreeGenerator`, profiles, tests.
-- Dualism (decl/ref) in PoCModel.
-- **Session app + durable `codeFolder` + Import/Export codebase file** (DocumentGroup dropped). Full coexisting stages still open.
+[ProcessorPipelineArchitecture](Task%20-%20ProcessorPipelineArchitecture.md): durable siblings for structure / deps / architecture / analysis; phase enum as progress only.
 
-### Phase 1 — Processor coexisting stages (do next)
+Dual path **already works** without full reform; reform still helps (no enum erase, durable forest, cleaner re-link).
 
-Execute [ProcessorPipelineArchitecture](Task%20-%20ProcessorPipelineArchitecture.md):
+### Phase B — Dependencies on Tree-sitter IR
 
-- durable: `location`, `codeFolder` (already present — keep/harden), later `structure`, `dependencies`, `architecture`, `analysis`
-- phase enum shrinks to progress/error only
-- **export / dump**: always from durable `codeFolder` (already the model); no document-save race
+- Name-match refs→decls (scope heuristics); AI later optional.
+- Prefer fuel shaped like existing used-by lists so Architecture edge wiring can be reused.
+- Feed artifact graphs; do not invent a second treemap model.
 
-This is the **integration chassis**. Without the generalisation, dual tech lands on sand (even though export already works).
+### Phase C — Product polish
 
-### Phase 2 — Source IR: text first, structure second
+- Optional: remember last `structureSource` for **Open Again**.
+- Richer kind→icon maps for humanized TS labels.
+- More languages = more `LanguageProfile`s + grammars.
 
-Clear split:
+### Phase D — Default flip & sunset
 
-| Stage output | Content |
-|--------------|---------|
-| **Source tree** | `CodeFolder`-like: paths, file text (no LSP-required fields) |
-| **Structure IR** | hierarchy + symbols + ranges + **roles** (decl/ref), backend-agnostic |
-| **Dependencies** | edges between structure ids |
-| **Architecture** | current `Code*Artifact` graphs (consumes structure+deps) |
+- Default TreeSitter when quality acceptable.
+- LSP optional or removed; retire `LSPServiceHint` etc. when ready.
 
-Work:
-
-- Inventory SwiftLSP surface on `CodeSymbol` / artifacts / view models.
-- Introduce thin **StructureUnit** (name TBD) ≈ multi-file forest of program nodes (or mapper from current symbols). Include range, language, role when available.
-- TreeSitter: folder walk + extension→`SourceLanguage` + `CodeTreeGenerator` per file → structure IR.
-- LSP path: **adapter** existing symbols/refs → same IR (refs already more complete when server works).
-
-Stop criterion: architecture builders can take **structure IR**, not raw LSP types.
-
-### Phase 3 — Wire TreeSitter path behind a switch
-
-- Processor / settings: `structureBackend: lsp | treesitter | …`
-- TreeSitter path: no LSP server for structure (still may need location picker that is backend-agnostic).
-- Start with **structure only** (outline for treemap); deps: reuse none / empty / heuristic v0.
-- Validate on small Swift + Python fixtures in unit tests + one manual folder.
-
-UI should light up something useful on Python without Python LSP — proof of dual tech value.
-
-### Phase 4 — Dependency pipeline on structure IR
-
-- Name-match refs→decls within/across file (scope heuristics).
-- FP-heavy is expected; leave AI resolvers as optional later stage.
-- Operators/overloads: post dualism (types/context) — do not block v0.
-- Feed existing artifact edge construction from IR edges rather than LSP locations only.
-
-### Phase 5 — Decouple UI/domain from SwiftLSP kinds
-
-- `kindName` / icons: map free-string treesitter kinds + lightweight tables (or keep LSP kind when adapted).
-- Remove hard `import SwiftLSP` from metrics/treemap where possible.
-- Hospitality: LSP remains optional adapter until default backends flip.
-
-### Phase 6 — Default flip & sunset
-
-- Default TreeSitter (+ deps/AI) when quality is acceptable.
-- LSP optional or removed; unsubscribe external server UX (`LSPServiceHint`, …).
+---
 
 ## Do **not**
 
-- Big-bang delete LSP before structure IR exists.
+- Big-bang delete LSP before deps quality is acceptable.
+- Force TS through dump `CodeSymbol` / change `.codebase` schema for structure.
 - Store full CST in `.codebase` by default.
-- Build AI resolvers before a simple name linker exists.
-- Premature umbrella “all languages” packaging; add languages as profiles justify.
-- Touch session shell / reintroduce document APIs for TreeSitter.
-- Shrink `.codebase` to a project pointer as part of dual backends (separate later product task).
+- Build AI resolvers before a simple name linker.
+- Premature “all languages” packaging.
+- Reintroduce document APIs for TreeSitter.
+- Put structure-backend forks in menus/UI beyond choosing `StructureSource`.
+
+---
 
 ## Ordering vs other tasks
 
 | Task | Relation |
 |------|----------|
-| Drop DocumentGroup + durable `codeFolder` export | **Done** — shell + dump cache; frozen dump schema for now |
-| Processor coexisting stages (full) | **Prerequisite chassis** for clean dual backends |
-| TreeSitter PoC | Input IR; keep available as library under `Code/TreeSitter PoC/` (evolve name later) |
-| Flattened treemap | Orthogonal UI; ok after or in parallel once analysis VM still feeds frames |
-| Dep algorithms + AI | After structure IR + TreeSitter folder path |
-| `.codebase` → project file | **Later**, after dual path proven; independent of analysis backend |
+| Drop DocumentGroup + durable `codeFolder` | **Done** |
+| Decouple Architecture from LSP types | **Done** (enabler) |
+| TreeSitter Architecture Iteration 1 | **Done** (structure-only dual path) |
+| Processor coexisting stages (full) | **Open** — chassis for durable forest/deps |
+| Dep algorithms + AI | **Next product value** on TS path |
+| Flattened treemap | Orthogonal UI |
+| `.codebase` → project file | **Later** |
 
 ```text
-[Done]  WindowGroup + import/export + durable CodeFolder cache
+[Done]  WindowGroup + import/export + codeFolder cache
+[Done]  Architecture LSP-agnostic (kind String, CodeRange)
+[Done]  TreeSitter Codebase + run(structureSource:) structure-only path
         │
         ▼
-[Next]  Full processor coexisting stages (generalizes the cache pattern)
+[Next]  Deps on TS IR (+ optional processor stage reform)
         │
         ▼
-[Then]  TreeSitter structure path → switch → deps → default flip
-        │
-        ▼
-[Later] .codebase → project file (path + settings) — optional product change
+[Later] Default flip / LSP sunset / project file
 ```
 
-## Immediate next actions (when starting)
+---
 
-1. Implement full durable stage fields beyond `codeFolder` (Phase 1).
-2. Sketch `StructureUnit` / multi-file IR + adapters (Phase 2 design in code stubs + tests).
-3. Folder-level TreeSitter extract → IR (no UI) tests.
-4. Feature-flag backend switch → architecture for one language (Phase 3 slice).
+## Immediate next actions
 
-## Success (integration, not PoC)
+1. Design used-by / edge production from `CodeNode` references (iter 2).
+2. Prefer reusing Architecture sibling-containment wiring with that fuel.
+3. Optionally harden processor durable stages if forest must survive re-analysis.
+4. Manual smoke: **Open Swift Package Folder (new)…** on a small Swift tree (hierarchy, no arrows).
 
-- [ ] Processor retains source + structure + analysis without enum erase
-- [ ] Structure IR free of mandatory LSP types
-- [ ] TreeSitter backend can produce hierarchy for at least Swift + Python folders
-- [ ] One switch builds architecture/UI from that backend
-- [ ] Path defined for deps (even if v0 is name-only) without new storage shape fight
-- [ ] Export still works after analysis from durable `codeFolder` (no regression to DocumentGroup-era assumptions)
+---
+
+## Success checklist
+
+### Iteration 1 (structure only) — done
+
+- [x] TreeSitter module produces multi-file forest (Swift + Python profiles)
+- [x] Architecture from Tree-sitter without mutating LSP dump types
+- [x] Shared `run(structureSource:)` with fork only at retrieve + Architecture create
+- [x] Menus open TS path; metrics/UI consume same artifacts
+- [x] Export still from durable `codeFolder` (text tree)
+- [x] Unit tests for generator + Architecture conversion
+
+### Integration (full)
+
+- [ ] Processor retains source + structure + analysis without enum erase (full reform)
+- [ ] TreeSitter path produces useful dependency graphs (not only hierarchy)
+- [ ] Clear path for deps quality (name-only v0 → better later)
+- [ ] Optional default flip when ready
