@@ -495,7 +495,7 @@
 				965A7AE42965D991006C5A3A /* Codebase Analysis View */,
 				9619A2B12966E57700863BC0 /* CodebaseAnalysis.swift */,
 				960334E72A30C100003EA41F /* Artifact Icon */,
-				96E134F72962DC2200DF8A43 /* Architecture View Model */,
+				96E134F72962DC2200DF8A43 /* Artifact View Model */,
 			);
 			path = "Codebase Analysis";
 			sourceTree = "<group>";
@@ -641,7 +641,7 @@
 			path = "Codebase Architecture";
 			sourceTree = "<group>";
 		};
-		96E134F72962DC2200DF8A43 /* Architecture View Model */ = {
+		96E134F72962DC2200DF8A43 /* Artifact View Model */ = {
 			isa = PBXGroup;
 			children = (
 				96E373FF2A4DB65900CA03EE /* Layout */,
@@ -651,7 +651,7 @@
 				96E134FE2962DC2300DF8A43 /* ArtifactViewModel+AddDependencies.swift */,
 				96E134F82962DC2200DF8A43 /* ArtifactViewModel.swift */,
 			);
-			path = "Architecture View Model";
+			path = "Artifact View Model";
 			sourceTree = "<group>";
 		};
 		96E373FE2A4DA99500CA03EE /* Main Menu */ = {
