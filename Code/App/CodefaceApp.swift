@@ -16,19 +16,14 @@ struct CodefaceApp: App
     
     var body: some Scene
     {
-        // MARK: Document windows (primary scene)
+        // MARK: Analysis windows (primary scene)
         //
-        // Baseline: let DocumentGroup + NSDocumentController own launch and file menus.
-        // - Restored sessions reopen previous document windows when the system allows.
-        // - Cold launch with nothing to restore → system Open panel (macOS document-app default).
-        // - File → New / Open / Open Recent come from DocumentGroup (do not replace .newItem).
-        //
-        // Product conveniences (always open last codebase / always open empty welcome document)
-        // are intentionally not implemented here; re-add them once this baseline is solid.
+        // Session-based: each window is an analysis session, not a document editor.
+        // File I/O for `.codebase` is explicit Import / Export only (no DocumentGroup).
         
-        DocumentGroup(newDocument: CodebaseFileDocument())
+        WindowGroup
         {
-            CodebaseWindowView(codebaseFile: $0.$document)
+            CodebaseWindowView()
         }
         .commands
         {
@@ -96,10 +91,23 @@ struct CodefaceApp: App
                 }
             }
             
-            // Keep system New / Open / Open Recent from DocumentGroup.
-            // Only append Codeface-specific import actions.
+            // Folder import + bare-minimum `.codebase` import/export (no Save / Open Recent).
             CommandGroup(after: .newItem)
             {
+                Divider()
+                
+                Button("Import Codebase File...")
+                {
+                    focusedDocumentWindow?.isPresentingCodebaseFileImporter = true
+                }
+                .disabled(focusedDocumentWindow == nil)
+                
+                Button("Export Codebase File...")
+                {
+                    focusedDocumentWindow?.presentExportCodebaseFilePanel()
+                }
+                .disabled(focusedDocumentWindow == nil || focusedDocumentWindow?.canExportCodebaseFile != true)
+                
                 Divider()
                 
                 Button("Import Code Folder...")

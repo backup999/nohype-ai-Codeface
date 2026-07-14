@@ -4,19 +4,6 @@ import SwiftyToolz
 
 struct CodebaseWindowView: View
 {
-    internal init(codebaseFile: Binding<CodebaseFileDocument>)
-    {
-        _codebaseFile = codebaseFile
-        
-        let documentBinding = codebaseFile
-        let codebase = codebaseFile.wrappedValue.codebase
-        
-        _documentWindow = StateObject(wrappedValue: CodebaseWindow(codebase: codebase) { folder in
-            // FileDocument’s savable payload — keep in sync whenever processor publishes a CodeFolder
-            documentBinding.wrappedValue.codebase = folder
-        })
-    }
-    
     var body: some View
     {
         CodebaseProcessorView(codebaseProcessor: documentWindow.codebaseProcessor,
@@ -32,6 +19,17 @@ struct CodebaseWindowView: View
                 }
                 
                 documentWindow.runProcessorWithSwiftPackageCodebase(at: folderURL)
+            }
+            .fileImporter(isPresented: $documentWindow.isPresentingCodebaseFileImporter,
+                          allowedContentTypes: [.codebase],
+                          allowsMultipleSelection: false)
+            {
+                guard let fileURL = (try? $0.get())?.first else
+                {
+                    return log(error: "Could not select codebase file")
+                }
+                
+                documentWindow.importCodebaseFile(from: fileURL)
             }
             .sheet(isPresented: $documentWindow.isPresentingCodebaseLocator)
             {
@@ -58,6 +56,5 @@ struct CodebaseWindowView: View
             }
     }
     
-    @Binding var codebaseFile: CodebaseFileDocument
-    @StateObject private var documentWindow: CodebaseWindow
+    @StateObject private var documentWindow = CodebaseWindow()
 }

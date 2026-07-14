@@ -1,32 +1,37 @@
-import SwiftUI
+import Foundation
 import FoundationToolz
 import UniformTypeIdentifiers
 
-@available(macOS 11.0, *)
-struct CodebaseFileDocument: FileDocument, Codable
+/// On-disk `.codebase` payload (same JSON shape as the former `FileDocument`).
+struct CodebaseFilePayload: Codable
 {
-    // load from file
-    init(configuration: ReadConfiguration) throws
-    {
-        let selfData = try configuration.file.regularFileContents.unwrap()
-        self = try CodebaseFileDocument(jsonData: selfData)
-    }
-    
-    // write to file
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper
-    {
-        // avoid white space from pretty printing, avoid escaping slashes
-        .init(regularFileWithContents: try encode(options: .withoutEscapingSlashes))
-    }
-    
-    // store optional codebase
-    init(codebase: CodeFolder? = nil)
-    {
-        self.codebase = codebase
-    }
-    
     var codebase: CodeFolder?
-    static let readableContentTypes: [UTType] = [.codebase]
+}
+
+enum CodebaseFileIO
+{
+    /// Load a `CodeFolder` from a `.codebase` file.
+    /// Prefers the document wrapper `{ "codebase": … }`; falls back to a root `CodeFolder`.
+    static func loadCodeFolder(from fileURL: URL) throws -> CodeFolder
+    {
+        let data = try Data(contentsOf: fileURL)
+        
+        if let payload = try? CodebaseFilePayload(jsonData: data),
+           let codebase = payload.codebase
+        {
+            return codebase
+        }
+        
+        return try CodeFolder(jsonData: data)
+    }
+    
+    /// Write a `CodeFolder` as a `.codebase` file (wrapper format, non-pretty, unescaped slashes).
+    static func export(_ codeFolder: CodeFolder, to fileURL: URL) throws
+    {
+        let payload = CodebaseFilePayload(codebase: codeFolder)
+        let data = try payload.encode(options: .withoutEscapingSlashes) as Data
+        try data.write(to: fileURL, options: .atomic)
+    }
 }
 
 extension UTType

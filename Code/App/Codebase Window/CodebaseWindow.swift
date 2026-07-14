@@ -1,5 +1,7 @@
+import AppKit
 import SwiftLSP
 import Foundation
+import UniformTypeIdentifiers
 import SwiftyToolz
 
 @MainActor
@@ -7,16 +9,13 @@ class CodebaseWindow: ObservableObject
 {
     // MARK: - Initialize
     
-    /// - Parameter onCodeFolderForDocument: Write savable `CodeFolder` into the FileDocument.
-    ///   Called when the processor publishes a retrieved/loaded codebase (sync, MainActor).
-    init(codebase: CodeFolder?,
-         onCodeFolderForDocument: ((CodeFolder) -> Void)? = nil)
+    init()
     {
         _lastLocation = Published(initialValue: try? CodebaseLocationPersister.loadCodebaseLocation())
         
-        codebaseProcessor.onCodeFolderPublished = onCodeFolderForDocument
-        
-        if let codebase { runProcessor(with: codebase) }
+        codebaseProcessor.onCodeFolderPublished = { [weak self] _ in
+            self?.canExportCodebaseFile = true
+        }
     }
     
     // MARK: - Run Processor with Codebase at Location
@@ -26,17 +25,6 @@ class CodebaseWindow: ObservableObject
         runProcessor(withCodebaseAtNewLocation: .init(folder: folderURL,
                                                         languageName: "Swift",
                                                         codeFileEndings: ["swift"]))
-    }
-    
-    /// Product convenience: re-import the last folder when no analysis is loaded.
-    /// Not wired into launch anymore — DocumentGroup owns open/restore first.
-    /// Re-enable deliberately once the document baseline is solid.
-    func runProcessorWithLastCodebaseIfNoneIsLoaded()
-    {
-        if CodebaseLocationPersister.hasPersistedLastCodebaseLocation
-        {
-            runProcessorWithLastCodebase()
-        }
     }
     
     func runProcessorWithLastCodebase()
@@ -71,25 +59,64 @@ class CodebaseWindow: ObservableObject
     
     @Published var lastLocation: LSP.CodebaseLocation?
     
-    // MARK: - Load Processor for Codebase from File
+    // MARK: - Import / Export Codebase File
     
-    // TODO: make throwing instead of using optional try inside
-    func runProcessor(withCodebaseAt fileURL: URL)
+    func importCodebaseFile(from fileURL: URL)
     {
-        guard let fileData = try? Data(from: fileURL) else
-        {
-            log(error: "Couldn't read codebase file")
-            return
-        }
+        let accessed = fileURL.startAccessingSecurityScopedResource()
+        defer { if accessed { fileURL.stopAccessingSecurityScopedResource() } }
         
-        guard let codebase = try? CodeFolder(jsonData: fileData) else
+        do
         {
-            log(error: "Couldn't decode codebase")
-            return
+            let codebase = try CodebaseFileIO.loadCodeFolder(from: fileURL)
+            runProcessor(with: codebase)
         }
-        
-        runProcessor(with: codebase)
+        catch
+        {
+            log(error: "Couldn't import codebase file: \(error.readable.message)")
+        }
     }
+    
+    func presentExportCodebaseFilePanel()
+    {
+        guard let codeFolder = codebaseProcessor.codeFolder else
+        {
+            log(warning: "No codebase data to export")
+            return
+        }
+        
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.codebase]
+        panel.canCreateDirectories = true
+        panel.isExtensionHidden = false
+        panel.title = "Export Codebase File"
+        panel.nameFieldStringValue = defaultExportFileName
+        
+        guard panel.runModal() == .OK, let fileURL = panel.url else { return }
+        
+        do
+        {
+            try CodebaseFileIO.export(codeFolder, to: fileURL)
+        }
+        catch
+        {
+            log(error: "Couldn't export codebase file: \(error.readable.message)")
+        }
+    }
+    
+    private var defaultExportFileName: String
+    {
+        if let folderName = lastLocation?.folder.lastPathComponent
+        {
+            return folderName + ".codebase"
+        }
+        return "Codebase.codebase"
+    }
+    
+    /// Mirrors whether `codebaseProcessor.codeFolder` is available (for menus).
+    @Published private(set) var canExportCodebaseFile = false
+    
+    // MARK: - Load Processor for Codebase from Memory
     
     func runProcessor(with codebase: CodeFolder)
     {
@@ -114,6 +141,7 @@ class CodebaseWindow: ObservableObject
     
     @Published var isPresentingCodebaseLocator = false
     @Published var isPresentingFolderImporter = false
+    @Published var isPresentingCodebaseFileImporter = false
     
     // MARK: - Display Options
     

@@ -2,7 +2,7 @@
 
 ## Status
 
-Plan only — not implemented.
+**Implemented** (2026-07-14): `WindowGroup` session app; durable `CodeFolder` cache; File → Import/Export Codebase File; LSP folder path unchanged.
 
 Related:
 
