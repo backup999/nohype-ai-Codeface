@@ -2,7 +2,7 @@ import FoundationToolz
 import Foundation
 import SwiftyToolz
 
-extension CodeFolder
+extension LSPCodeFolder
 {
     convenience init?(_ folderURL: URL, codeFileEndings: [String]) throws
     {
@@ -10,21 +10,21 @@ extension CodeFolder
         
         let urls = fileManager.items(inDirectory: folderURL, recursive: false)
         
-        var files = [CodeFile]()
-        var subfolders = [CodeFolder]()
+        var files = [LSPCodeFile]()
+        var subfolders = [LSPCodeFolder]()
         
         for url in urls
         {
             if url.isDirectory
             {
-                if let subfolder = try CodeFolder(url, codeFileEndings: codeFileEndings)
+                if let subfolder = try LSPCodeFolder(url, codeFileEndings: codeFileEndings)
                 {
                     subfolders += subfolder
                 }
             }
             else if codeFileEndings.contains(url.pathExtension)
             {
-                files += try CodeFile(url)
+                files += try LSPCodeFile(url)
             }
         }
         
@@ -45,7 +45,7 @@ extension CodeFolder
     }
 }
 
-private extension CodeFile
+private extension LSPCodeFile
 {
     convenience init(_ file: URL) throws
     {

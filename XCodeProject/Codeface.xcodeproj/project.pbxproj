@@ -37,7 +37,7 @@
 		963170E629CC800C00B146D5 /* AppStoreClient+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963170E529CC800C00B146D5 /* AppStoreClient+SwiftUI.swift */; };
 		963170EA29CE0A1100B146D5 /* WindowDisplayOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */; };
 		9639C27228D761A000779BA5 /* CodebaseWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9639C27128D761A000779BA5 /* CodebaseWindowView.swift */; };
-		963AE38B28D505B9006E17F2 /* CodebaseFileDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963AE38A28D505B9006E17F2 /* CodebaseFileDocument.swift */; };
+		963AE38B28D505B9006E17F2 /* LSPCodebaseFileIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963AE38A28D505B9006E17F2 /* LSPCodebaseFileIO.swift */; };
 		963D505C2A92217C001F5C51 /* TreemapAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963D505B2A92217C001F5C51 /* TreemapAlgorithm.swift */; };
 		964151DD29D0F497008E6074 /* PurchaseMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964151DC29D0F497008E6074 /* PurchaseMenu.swift */; };
 		964151DF29D0F925008E6074 /* ViewMenuOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964151DE29D0F925008E6074 /* ViewMenuOptions.swift */; };
@@ -108,11 +108,11 @@
 		96E135072962DD5900DF8A43 /* ArtifactViewModel+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134FD2962DC2300DF8A43 /* ArtifactViewModel+Layout.swift */; };
 		96E135082962DD5900DF8A43 /* ArtifactViewModel+LayoutArtifacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134FC2962DC2300DF8A43 /* ArtifactViewModel+LayoutArtifacts.swift */; };
 		96E135092962DD5900DF8A43 /* ArtifactViewModel+LayoutDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134FB2962DC2300DF8A43 /* ArtifactViewModel+LayoutDependencies.swift */; };
-		96E1350A2962DD6200DF8A43 /* CodeFolder+File System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E52962DC2200DF8A43 /* CodeFolder+File System.swift */; };
-		96E1350B2962DD6200DF8A43 /* CodeFolder+LSP Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E32962DC2200DF8A43 /* CodeFolder+LSP Server.swift */; };
-		96E1350C2962DD6200DF8A43 /* CodeFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E42962DC2200DF8A43 /* CodeFolder.swift */; };
-		96E1350E2962DD6700DF8A43 /* CodeSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E82962DC2200DF8A43 /* CodeSymbol.swift */; };
-		96E1350F2962DD6C00DF8A43 /* CodeFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134EA2962DC2200DF8A43 /* CodeFile.swift */; };
+		96E1350A2962DD6200DF8A43 /* LSPCodeFolder+File System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E52962DC2200DF8A43 /* LSPCodeFolder+File System.swift */; };
+		96E1350B2962DD6200DF8A43 /* LSPCodeFolder+LSP Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E32962DC2200DF8A43 /* LSPCodeFolder+LSP Server.swift */; };
+		96E1350C2962DD6200DF8A43 /* LSPCodeFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E42962DC2200DF8A43 /* LSPCodeFolder.swift */; };
+		96E1350E2962DD6700DF8A43 /* LSPCodeSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134E82962DC2200DF8A43 /* LSPCodeSymbol.swift */; };
+		96E1350F2962DD6C00DF8A43 /* LSPCodeFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134EA2962DC2200DF8A43 /* LSPCodeFile.swift */; };
 		96E135102962DD7A00DF8A43 /* CodeFileArtifact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134ED2962DC2200DF8A43 /* CodeFileArtifact.swift */; };
 		96E135112962DD7A00DF8A43 /* CodeSymbolArtifact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134EE2962DC2200DF8A43 /* CodeSymbolArtifact.swift */; };
 		96E135132962DD7A00DF8A43 /* CodeArtifact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E134F62962DC2200DF8A43 /* CodeArtifact.swift */; };
@@ -194,7 +194,7 @@
 		963170E529CC800C00B146D5 /* AppStoreClient+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppStoreClient+SwiftUI.swift"; sourceTree = "<group>"; };
 		963170E929CE0A1100B146D5 /* WindowDisplayOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowDisplayOptions.swift; sourceTree = "<group>"; };
 		9639C27128D761A000779BA5 /* CodebaseWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseWindowView.swift; sourceTree = "<group>"; };
-		963AE38A28D505B9006E17F2 /* CodebaseFileDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseFileDocument.swift; sourceTree = "<group>"; };
+		963AE38A28D505B9006E17F2 /* LSPCodebaseFileIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPCodebaseFileIO.swift; sourceTree = "<group>"; };
 		963D505B2A92217C001F5C51 /* TreemapAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreemapAlgorithm.swift; sourceTree = "<group>"; };
 		964151DC29D0F497008E6074 /* PurchaseMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseMenu.swift; sourceTree = "<group>"; };
 		964151DE29D0F925008E6074 /* ViewMenuOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewMenuOptions.swift; sourceTree = "<group>"; };
@@ -252,11 +252,11 @@
 		96E134D82962DB8000DF8A43 /* CodeFolderArtifact+DependencyMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeFolderArtifact+DependencyMetrics.swift"; sourceTree = "<group>"; };
 		96E134D92962DB8000DF8A43 /* CodeFolderArtifact+SizeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeFolderArtifact+SizeMetrics.swift"; sourceTree = "<group>"; };
 		96E134E02962DB8000DF8A43 /* CodebaseLocationPersister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodebaseLocationPersister.swift; sourceTree = "<group>"; };
-		96E134E32962DC2200DF8A43 /* CodeFolder+LSP Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeFolder+LSP Server.swift"; sourceTree = "<group>"; };
-		96E134E42962DC2200DF8A43 /* CodeFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeFolder.swift; sourceTree = "<group>"; };
-		96E134E52962DC2200DF8A43 /* CodeFolder+File System.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeFolder+File System.swift"; sourceTree = "<group>"; };
-		96E134E82962DC2200DF8A43 /* CodeSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSymbol.swift; sourceTree = "<group>"; };
-		96E134EA2962DC2200DF8A43 /* CodeFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeFile.swift; sourceTree = "<group>"; };
+		96E134E32962DC2200DF8A43 /* LSPCodeFolder+LSP Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LSPCodeFolder+LSP Server.swift"; sourceTree = "<group>"; };
+		96E134E42962DC2200DF8A43 /* LSPCodeFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPCodeFolder.swift; sourceTree = "<group>"; };
+		96E134E52962DC2200DF8A43 /* LSPCodeFolder+File System.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LSPCodeFolder+File System.swift"; sourceTree = "<group>"; };
+		96E134E82962DC2200DF8A43 /* LSPCodeSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPCodeSymbol.swift; sourceTree = "<group>"; };
+		96E134EA2962DC2200DF8A43 /* LSPCodeFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPCodeFile.swift; sourceTree = "<group>"; };
 		96E134ED2962DC2200DF8A43 /* CodeFileArtifact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeFileArtifact.swift; sourceTree = "<group>"; };
 		96E134EE2962DC2200DF8A43 /* CodeSymbolArtifact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSymbolArtifact.swift; sourceTree = "<group>"; };
 		96E134F02962DC2200DF8A43 /* CodeFolderArtifact+CodeArtifact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeFolderArtifact+CodeArtifact.swift"; sourceTree = "<group>"; };
@@ -356,9 +356,9 @@
 			isa = PBXGroup;
 			children = (
 				965A7AD52964992C006C5A3A /* Load */,
-				96E134E42962DC2200DF8A43 /* CodeFolder.swift */,
-				96E134EA2962DC2200DF8A43 /* CodeFile.swift */,
-				96E134E82962DC2200DF8A43 /* CodeSymbol.swift */,
+				96E134E42962DC2200DF8A43 /* LSPCodeFolder.swift */,
+				96E134EA2962DC2200DF8A43 /* LSPCodeFile.swift */,
+				96E134E82962DC2200DF8A43 /* LSPCodeSymbol.swift */,
 			);
 			path = "LSP Codebase";
 			sourceTree = "<group>";
@@ -492,9 +492,9 @@
 		965A7AD52964992C006C5A3A /* Load */ = {
 			isa = PBXGroup;
 			children = (
-				963AE38A28D505B9006E17F2 /* CodebaseFileDocument.swift */,
-				96E134E32962DC2200DF8A43 /* CodeFolder+LSP Server.swift */,
-				96E134E52962DC2200DF8A43 /* CodeFolder+File System.swift */,
+				963AE38A28D505B9006E17F2 /* LSPCodebaseFileIO.swift */,
+				96E134E32962DC2200DF8A43 /* LSPCodeFolder+LSP Server.swift */,
+				96E134E52962DC2200DF8A43 /* LSPCodeFolder+File System.swift */,
 			);
 			path = Load;
 			sourceTree = "<group>";
@@ -992,7 +992,7 @@
 				96106E602962DEEE0002F13C /* CodeFolderArtifact+LOCInCycles.swift in Sources */,
 				96FDA72C29BCABCC0020A48F /* AppStoreClient.swift in Sources */,
 				960334EB2A30C2D1003EA41F /* ArtifactIconView.swift in Sources */,
-				96E1350C2962DD6200DF8A43 /* CodeFolder.swift in Sources */,
+				96E1350C2962DD6200DF8A43 /* LSPCodeFolder.swift in Sources */,
 				96E135142962DD7A00DF8A43 /* CodeFolderArtifact.swift in Sources */,
 				96CFBB3628B582D20051C318 /* ArtifactViewModel+SwiftUI.swift in Sources */,
 				96E135042962DD5500DF8A43 /* ArtifactViewModel+Hashable.swift in Sources */,
@@ -1052,19 +1052,19 @@
 				96E135112962DD7A00DF8A43 /* CodeSymbolArtifact.swift in Sources */,
 				96E135152962DD7F00DF8A43 /* GraphNode+Sorting.swift in Sources */,
 				968D9C0E28D4E99E000BE520 /* LoadingProgressView.swift in Sources */,
-				96E1350A2962DD6200DF8A43 /* CodeFolder+File System.swift in Sources */,
+				96E1350A2962DD6200DF8A43 /* LSPCodeFolder+File System.swift in Sources */,
 				960A7AAA28AB92AE00F334CA /* ArtifactHeaderView.swift in Sources */,
 				96D59CC1294AB82D003C55B5 /* SearchBarView.swift in Sources */,
 				96E135082962DD5900DF8A43 /* ArtifactViewModel+LayoutArtifacts.swift in Sources */,
 				9625697729BA5E47002FB7CC /* PurchasePanelView.swift in Sources */,
-				963AE38B28D505B9006E17F2 /* CodebaseFileDocument.swift in Sources */,
+				963AE38B28D505B9006E17F2 /* LSPCodebaseFileIO.swift in Sources */,
 				960C4D6629C3A3A6009282A2 /* LogView.swift in Sources */,
 				963D505C2A92217C001F5C51 /* TreemapAlgorithm.swift in Sources */,
 				96E135032962DD4900DF8A43 /* ArtifactViewModel.swift in Sources */,
 				9664C1F02A52E2B6000B8C29 /* LoggingText.swift in Sources */,
 				965795AE2954652C00CB9F3F /* EmptyProcesorView.swift in Sources */,
 				964464BF295204F70004382F /* PathBar.swift in Sources */,
-				96E1350B2962DD6200DF8A43 /* CodeFolder+LSP Server.swift in Sources */,
+				96E1350B2962DD6200DF8A43 /* LSPCodeFolder+LSP Server.swift in Sources */,
 				964151E129D0F968008E6074 /* FindAndFilterMenuOptions.swift in Sources */,
 				9651AC1529D348050054FB52 /* URL+Codeface.swift in Sources */,
 				960A7AA428AB875100F334CA /* DependencyView.swift in Sources */,
@@ -1072,7 +1072,7 @@
 				96D59CD2294AC36A003C55B5 /* DocumentLink.swift in Sources */,
 				964464BE295204DB0004382F /* CodebaseAnalysisContentPanel.swift in Sources */,
 				96106E612962DEF20002F13C /* CodebaseLocationPersister.swift in Sources */,
-				96E1350F2962DD6C00DF8A43 /* CodeFile.swift in Sources */,
+				96E1350F2962DD6C00DF8A43 /* LSPCodeFile.swift in Sources */,
 				96842F4629AF53E000FB0439 /* SecondaryToolbarButtons.swift in Sources */,
 				96E135182962DD7F00DF8A43 /* CodeFileArtifact+CodeArtifact.swift in Sources */,
 				965A7AD92964A319006C5A3A /* CodebaseProcessorSteps.swift in Sources */,
@@ -1080,7 +1080,7 @@
 				96E135162962DD7F00DF8A43 /* CodeSymbolArtifact+CodeArtifact.swift in Sources */,
 				967BFD5C29D4AFE400BD9CA7 /* DocumentLink+Codeface.swift in Sources */,
 				960BBE9629004F9000F9DC2A /* LSPServiceHint.swift in Sources */,
-				96E1350E2962DD6700DF8A43 /* CodeSymbol.swift in Sources */,
+				96E1350E2962DD6700DF8A43 /* LSPCodeSymbol.swift in Sources */,
 				960C4D6B29C3C170009282A2 /* TestingDashboard.swift in Sources */,
 				9639C27228D761A000779BA5 /* CodebaseWindowView.swift in Sources */,
 				964151DF29D0F925008E6074 /* ViewMenuOptions.swift in Sources */,

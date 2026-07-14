@@ -11,9 +11,9 @@ enum CodebaseProcessorState
     case empty,
          didLocateCodebase(LSP.CodebaseLocation),
          retrieveCodebase(String),
-         didJustRetrieveCodebase(CodeFolder),
-         processCodebase(CodeFolder, ProgressFeedback),
-         processArchitecture(CodeFolder, CodeFolderArtifact, ProgressFeedback),
+         didJustRetrieveCodebase(LSPCodeFolder),
+         processCodebase(LSPCodeFolder, ProgressFeedback),
+         processArchitecture(LSPCodeFolder, CodeFolderArtifact, ProgressFeedback),
          analyzeArchitecture(CodebaseAnalysis),
          didFail(String)
     

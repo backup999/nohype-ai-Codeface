@@ -18,37 +18,37 @@ class CodefaceTests: XCTestCase
         let referenceARange = LSPRange(start: .init(line: 1, character: 0),
                                        end: .init(line: 2, character: 0))
         
-        let referenceA = CodeSymbol.ReferenceLocation(filePathRelativeToRoot: "AB/AB.swift",
+        let referenceA = LSPCodeSymbol.ReferenceLocation(filePathRelativeToRoot: "AB/AB.swift",
                                                       range: referenceARange)
         
-        let classA = try CodeSymbol(lspDocumentySymbol: classALSPSymbol,
+        let classA = try LSPCodeSymbol(lspDocumentySymbol: classALSPSymbol,
                                     referenceLocations: [referenceA],
                                     children: [])
         
-        let fileA = CodeFile(name: "A.swift",
+        let fileA = LSPCodeFile(name: "A.swift",
                              code: "",
                              symbols: [classA])
         
-        let folderA = CodeFolder(name: "A", files: [fileA])
+        let folderA = LSPCodeFolder(name: "A", files: [fileA])
         
         let classABLSPSymbol = LSPDocumentSymbol(name: "ClassAB",
                                                  kind: 5,
                                                  range: range,
                                                  selectionRange: range)
         
-        let classAB = try CodeSymbol(lspDocumentySymbol: classABLSPSymbol,
+        let classAB = try LSPCodeSymbol(lspDocumentySymbol: classABLSPSymbol,
                                      referenceLocations: [],
                                      children: [])
         
-        let fileAB = CodeFile(name: "AB.swift",
+        let fileAB = LSPCodeFile(name: "AB.swift",
                               code: "",
                               symbols: [classAB])
         
-        let folderAB = CodeFolder(name: "AB", files: [fileAB])
+        let folderAB = LSPCodeFolder(name: "AB", files: [fileAB])
         
-        let folder = CodeFolder(name: "Root", subfolders: [folderA, folderAB])
+        let folder = LSPCodeFolder(name: "Root", subfolders: [folderA, folderAB])
         
-        var extraReferences = [CodeSymbol.ReferenceLocation]()
+        var extraReferences = [LSPCodeSymbol.ReferenceLocation]()
         
         let folderArtifact = CodeFolderArtifact(codeFolder: folder,
                                                 pathInRootFolder: .root,

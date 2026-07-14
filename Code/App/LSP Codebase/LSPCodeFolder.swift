@@ -1,7 +1,7 @@
 /**
  ⛔️ Do not change! This is part of the ".codebase" file format.
  */
-final class CodeFolder: Codable, Sendable
+final class LSPCodeFolder: Codable, Sendable
 {
     var looksLikeAPackage: Bool
     {
@@ -11,8 +11,8 @@ final class CodeFolder: Codable, Sendable
     }
     
     init(name: String,
-         files: [CodeFile] = [],
-         subfolders: [CodeFolder] = [])
+         files: [LSPCodeFile] = [],
+         subfolders: [LSPCodeFolder] = [])
     {
         self.name = name
         self.files = files.isEmpty ? nil : files
@@ -20,6 +20,6 @@ final class CodeFolder: Codable, Sendable
     }
     
     let name: String
-    let files: [CodeFile]?
-    let subfolders: [CodeFolder]?
+    let files: [LSPCodeFile]?
+    let subfolders: [LSPCodeFolder]?
 }

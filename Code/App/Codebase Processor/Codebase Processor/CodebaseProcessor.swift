@@ -66,7 +66,7 @@ class CodebaseProcessor
         }
     }
     
-    private func retrieveCodebase() async -> CodeFolder?
+    private func retrieveCodebase() async -> LSPCodeFolder?
     {
         switch state
         {
@@ -121,7 +121,7 @@ class CodebaseProcessor
         }
     }
     
-    private func readCodebaseFolder(from codebaseLocation: LSP.CodebaseLocation) async -> CodeFolder?
+    private func readCodebaseFolder(from codebaseLocation: LSP.CodebaseLocation) async -> LSPCodeFolder?
     {
         do
         {
@@ -139,12 +139,12 @@ class CodebaseProcessor
     
     /// Last successfully retrieved / loaded codebase for **Export Codebase File**.
     /// Independent of `state`, which drops associated values when the phase changes.
-    private(set) var codeFolder: CodeFolder?
+    private(set) var codeFolder: LSPCodeFolder?
     
     /// Notified synchronously whenever `codeFolder` is published (MainActor).
-    var onCodeFolderPublished: ((CodeFolder) -> Void)?
+    var onCodeFolderPublished: ((LSPCodeFolder) -> Void)?
     
-    private func publishCodeFolder(_ codebase: CodeFolder)
+    private func publishCodeFolder(_ codebase: LSPCodeFolder)
     {
         codeFolder = codebase
         onCodeFolderPublished?(codebase)

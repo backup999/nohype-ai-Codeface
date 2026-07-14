@@ -5,18 +5,18 @@ import SwiftyToolz
 @BackgroundActor
 extension CodeFileArtifact
 {
-    convenience init(codeFile: CodeFile,
+    convenience init(codeFile: LSPCodeFile,
                      pathInRootFolder: RelativeFilePath,
-                     additionalReferences: inout [CodeSymbol.ReferenceLocation])
+                     additionalReferences: inout [LSPCodeSymbol.ReferenceLocation])
     {
         var graph = Graph<CodeArtifact.ID, CodeSymbolArtifact, Int>()
-        var referencesByChildID = [CodeArtifact.ID: [CodeSymbol.ReferenceLocation]]()
+        var referencesByChildID = [CodeArtifact.ID: [LSPCodeSymbol.ReferenceLocation]]()
         
         // create child symbols recursively – DEPTH FIRST
         
         for childSymbol in (codeFile.symbols ?? [])
         {
-            var extraReferences = [CodeSymbol.ReferenceLocation]()
+            var extraReferences = [LSPCodeSymbol.ReferenceLocation]()
             
             let child = CodeSymbolArtifact(symbol: childSymbol,
                                            linesOfEnclosingFile: codeFile.lines,

@@ -5,14 +5,14 @@ import UniformTypeIdentifiers
 /// On-disk `.codebase` payload (same JSON shape as the former `FileDocument`).
 struct CodebaseFilePayload: Codable
 {
-    var codebase: CodeFolder?
+    var codebase: LSPCodeFolder?
 }
 
 enum CodebaseFileIO
 {
     /// Load a `CodeFolder` from a `.codebase` file.
     /// Prefers the document wrapper `{ "codebase": … }`; falls back to a root `CodeFolder`.
-    static func loadCodeFolder(from fileURL: URL) throws -> CodeFolder
+    static func loadCodeFolder(from fileURL: URL) throws -> LSPCodeFolder
     {
         let data = try Data(contentsOf: fileURL)
         
@@ -22,11 +22,11 @@ enum CodebaseFileIO
             return codebase
         }
         
-        return try CodeFolder(jsonData: data)
+        return try LSPCodeFolder(jsonData: data)
     }
     
     /// Write a `CodeFolder` as a `.codebase` file (wrapper format, non-pretty, unescaped slashes).
-    static func export(_ codeFolder: CodeFolder, to fileURL: URL) throws
+    static func export(_ codeFolder: LSPCodeFolder, to fileURL: URL) throws
     {
         let data = try CodebaseFilePayload(codebase: codeFolder)
             .encode(options: .withoutEscapingSlashes) as Data

@@ -6,7 +6,7 @@ import SwiftyToolz
 /// Text-bearing file tree + Tree-sitter structure (independent of LSP symbols).
 struct TreeSitterLoadResult: Sendable {
     /// Folder/file text only (export cache; no symbol population).
-    let sourceTree: CodeFolder
+    let sourceTree: LSPCodeFolder
     /// Filtered, role-tagged structure IR.
     let forest: TreeSitterFolder
 }
@@ -19,7 +19,7 @@ enum TreeSitterCodebaseExtractor {
     /// Security-scoped FS read (same helper as LSP load) + parse into IR.
     static func load(from location: LSP.CodebaseLocation) throws -> TreeSitterLoadResult {
         try location.folder.mapSecurityScoped { folderURL in
-            guard let sourceTree = try CodeFolder(folderURL,
+            guard let sourceTree = try LSPCodeFolder(folderURL,
                                                   codeFileEndings: location.codeFileEndings)
             else {
                 throw "Project folder contains no code files with the specified file endings\nFolder: \(folderURL.absoluteString)\nFile endings: \(location.codeFileEndings)"
@@ -31,21 +31,21 @@ enum TreeSitterCodebaseExtractor {
     
     // MARK: - Core
     
-    static func extract(from codeFolder: CodeFolder) throws -> TreeSitterFolder {
+    static func extract(from codeFolder: LSPCodeFolder) throws -> TreeSitterFolder {
         try project(codeFolder)
     }
     
     static func extract(folderURL: URL,
                         codeFileEndings: [String]) throws -> TreeSitterFolder?
     {
-        guard let codeFolder = try CodeFolder(folderURL, codeFileEndings: codeFileEndings)
+        guard let codeFolder = try LSPCodeFolder(folderURL, codeFileEndings: codeFileEndings)
         else { return nil }
         return try extract(from: codeFolder)
     }
     
     // MARK: - Project
     
-    private static func project(_ folder: CodeFolder) throws -> TreeSitterFolder {
+    private static func project(_ folder: LSPCodeFolder) throws -> TreeSitterFolder {
         let files = try (folder.files ?? []).map(project(file:))
         let subfolders = try (folder.subfolders ?? []).map(project)
         return TreeSitterFolder(name: folder.name,
@@ -53,7 +53,7 @@ enum TreeSitterCodebaseExtractor {
                                 subfolders: subfolders)
     }
     
-    private static func project(file: CodeFile) throws -> TreeSitterFile {
+    private static func project(file: LSPCodeFile) throws -> TreeSitterFile {
         let ext = (file.name as NSString).pathExtension
         guard let language = SourceLanguage.from(fileExtension: ext) else {
             return TreeSitterFile(name: file.name, code: file.code, nodes: [])

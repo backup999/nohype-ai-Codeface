@@ -4,9 +4,9 @@ import SwiftyToolz
 @BackgroundActor
 extension CodeFolderArtifact
 {
-    convenience init(codeFolder: CodeFolder,
+    convenience init(codeFolder: LSPCodeFolder,
                      pathInRootFolder: RelativeFilePath,
-                     additionalReferences: inout [CodeSymbol.ReferenceLocation])
+                     additionalReferences: inout [LSPCodeSymbol.ReferenceLocation])
     {
         // use the first (sub-)folder that contains more than one thing
         
@@ -15,7 +15,7 @@ extension CodeFolderArtifact
         
         while let onlySubfolder = ultimateCodeFolder.containsExactlyOneSubfolder
         {
-            ultimateCodeFolder = CodeFolder(name: ultimateCodeFolder.name + "/" + onlySubfolder.name,
+            ultimateCodeFolder = LSPCodeFolder(name: ultimateCodeFolder.name + "/" + onlySubfolder.name,
                                             files: onlySubfolder.files ?? [],
                                             subfolders: onlySubfolder.subfolders ?? [])
             
@@ -24,12 +24,12 @@ extension CodeFolderArtifact
         
         // create child parts recursively – DEPTH FIRST
         
-        var referencesByChildID = [CodeArtifact.ID: [CodeSymbol.ReferenceLocation]]()
+        var referencesByChildID = [CodeArtifact.ID: [LSPCodeSymbol.ReferenceLocation]]()
         var graph = Graph<CodeArtifact.ID, Part, Int>()
         
         for subfolder in (ultimateCodeFolder.subfolders ?? [])
         {
-            var extraReferences = [CodeSymbol.ReferenceLocation]()
+            var extraReferences = [LSPCodeSymbol.ReferenceLocation]()
             
             let child = Part(kind: .subfolder(.init(codeFolder: subfolder,
                                                     pathInRootFolder: ultmatePathInRootFolder + subfolder.name,
@@ -42,7 +42,7 @@ extension CodeFolderArtifact
         
         for file in (ultimateCodeFolder.files ?? [])
         {
-            var extraReferences = [CodeSymbol.ReferenceLocation]()
+            var extraReferences = [LSPCodeSymbol.ReferenceLocation]()
             
             let child = Part(kind: .file(.init(codeFile: file,
                                                pathInRootFolder: ultmatePathInRootFolder + file.name,
@@ -94,9 +94,9 @@ extension CodeFolderArtifact
     }
 }
 
-extension CodeFolder
+extension LSPCodeFolder
 {
-    var containsExactlyOneSubfolder: CodeFolder?
+    var containsExactlyOneSubfolder: LSPCodeFolder?
     {
         if !(files?.isEmpty ?? true) { return nil }
         guard let subfolders, subfolders.count == 1 else { return nil }

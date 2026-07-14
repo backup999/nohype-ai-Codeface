@@ -4,11 +4,11 @@ import SwiftyToolz
 /**
  ⛔️ Do not change! This is part of the ".codebase" file format.
  */
-final class CodeSymbol: Codable, Sendable
+final class LSPCodeSymbol: Codable, Sendable
 {
     init(lspDocumentySymbol: LSPDocumentSymbol,
          referenceLocations: [ReferenceLocation],
-         children: [CodeSymbol]) throws
+         children: [LSPCodeSymbol]) throws
     {
         guard let decodedKind = lspDocumentySymbol.decodedKind else
         {
@@ -39,5 +39,5 @@ final class CodeSymbol: Codable, Sendable
         let range: LSPRange
     }
     
-    let children: [CodeSymbol]?
+    let children: [LSPCodeSymbol]?
 }

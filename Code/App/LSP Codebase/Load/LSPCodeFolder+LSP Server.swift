@@ -2,14 +2,14 @@ import Foundation
 import SwiftLSP
 import SwiftyToolz
 
-extension CodeFolder
+extension LSPCodeFolder
 {
     func retrieveSymbolsAndReferences(at path: RelativeFilePath = .root,
                                       from server: LSP.Server,
-                                      codebaseRootFolder: URL) async throws -> CodeFolder
+                                      codebaseRootFolder: URL) async throws -> LSPCodeFolder
     {
         /// recursive calls
-        let resultingSubFolders: [CodeFolder] = try await (subfolders ?? []).asyncMap
+        let resultingSubFolders: [LSPCodeFolder] = try await (subfolders ?? []).asyncMap
         {
             subfolder in
             
@@ -18,11 +18,11 @@ extension CodeFolder
                                                              codebaseRootFolder: codebaseRootFolder)
         }
         
-        let resultingFiles: [CodeFile] = try await (files ?? []).asyncMap
+        let resultingFiles: [LSPCodeFile] = try await (files ?? []).asyncMap
         {
             file in
             
-            let fileUri = CodeFolder.fileURI(forFilePath: path + file.name,
+            let fileUri = LSPCodeFolder.fileURI(forFilePath: path + file.name,
                                              inRootFolder: codebaseRootFolder)
             
             try await server.notifyDidOpen(fileUri, containingText: file.code)
@@ -76,9 +76,9 @@ extension CodeFolder
                 }
             }()
             
-            let symbols: [CodeSymbol]? = try await retrievedLSPDocumentSymbols?.asyncMap
+            let symbols: [LSPCodeSymbol]? = try await retrievedLSPDocumentSymbols?.asyncMap
             {
-                try await CodeSymbol(lspDocumentSymbol: $0,
+                try await LSPCodeSymbol(lspDocumentSymbol: $0,
                                      enclosingFile: fileUri,
                                      codebaseRootPathAbsolute: codebaseRootFolder.absoluteString,
                                      server: server)
@@ -87,12 +87,12 @@ extension CodeFolder
             /**
              this is where the magic happens: we create a new file instance in which the symbol data is not nil anymore. this quasi copying allows the symbols property to be constant and CodeFile and CodeFolder to be `Sendable`
              */
-            return CodeFile(name: file.name,
+            return LSPCodeFile(name: file.name,
                             code: file.code,
                             symbols: symbols)
         }
         
-        return CodeFolder(name: name,
+        return LSPCodeFolder(name: name,
                           files: resultingFiles,
                           subfolders: resultingSubFolders)
     }
@@ -104,7 +104,7 @@ extension CodeFolder
     }
 }
 
-private extension CodeSymbol
+private extension LSPCodeSymbol
 {
     convenience init(lspDocumentSymbol: LSPDocumentSymbol,
                      enclosingFile: LSPDocumentUri,
@@ -112,16 +112,16 @@ private extension CodeSymbol
                      server: LSP.Server) async throws
     {
         /// depth first recursive calls
-        let resultingChildren: [CodeSymbol] = try await lspDocumentSymbol.children?.asyncMap
+        let resultingChildren: [LSPCodeSymbol] = try await lspDocumentSymbol.children?.asyncMap
         {
-            try await CodeSymbol(lspDocumentSymbol: $0,
+            try await LSPCodeSymbol(lspDocumentSymbol: $0,
                                  enclosingFile: enclosingFile,
                                  codebaseRootPathAbsolute: codebaseRootPathAbsolute,
                                  server: server)
         } ?? []
         
         /// retrieve references
-        let referenceLocations = try await CodeSymbol.retrieveReferences(for: lspDocumentSymbol,
+        let referenceLocations = try await LSPCodeSymbol.retrieveReferences(for: lspDocumentSymbol,
                                                                          in: enclosingFile,
                                                                          codebaseRootPathAbsolute: codebaseRootPathAbsolute,
                                                                          from: server)
@@ -166,7 +166,7 @@ private extension CodeSymbol
     }
 }
 
-private extension CodeSymbol.ReferenceLocation
+private extension LSPCodeSymbol.ReferenceLocation
 {
     init?(lspLocation: LSPLocation, codebaseRootPathAbsolute: String)
     {

@@ -107,7 +107,7 @@ class CodebaseWindow: ObservableObject
     
     // MARK: - Load Processor for Codebase from Memory
     
-    func runProcessor(with codebase: CodeFolder)
+    func runProcessor(with codebase: LSPCodeFolder)
     {
         codebaseProcessor.state = .processCodebase(codebase,
                                                    .init(primaryText: "Did Load Codebase Data",
