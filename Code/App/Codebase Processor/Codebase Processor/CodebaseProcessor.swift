@@ -16,34 +16,31 @@ class CodebaseProcessor
         
         Task
         {
+            // retrieve raw codebase
             guard let codebase = await retrieveCodebase() else { return }
             
             // Durable cache for Export — set *before* state advances into phases that
             // no longer embed CodeFolder (e.g. analyzeArchitecture).
-            publishCodeFolder(codebase)
+            if case let .lsp(lspCodebase) = codebase {
+                publishCodeFolder(lspCodebase)
+            }
             
             // generate architecture
             state = .processCodebase(codebase, .init(primaryText: "Generating Codebase Architecture",
                                                      secondaryText: ""))
             
             let codebaseArchitecture: CodeFolderArtifact
-            switch structureSource
+            
+            switch codebase
             {
-            case .lsp:
-                codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(from: codebase)
-            case .treesitter:
-                do
-                {
-                    let forest = try await CodebaseProcessorSteps.extractTreeSitterForest(from: codebase)
-                    codebaseArchitecture = await CodebaseProcessorSteps
-                        .generateArchitecture(fromTreeSitterForest: forest)
-                }
-                catch
-                {
-                    log(error.readable.message)
-                    state = .didFail(error.readable.message)
-                    return
-                }
+            case .lsp(let lspCodebase):
+                codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(
+                    from: lspCodebase
+                )
+            case .treeSitter(let treeSitterCodebase):
+                codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(
+                    fromTreeSitterForest: treeSitterCodebase
+                )
             }
             
             // calculate metrics
@@ -59,14 +56,14 @@ class CodebaseProcessor
                                          .init(primaryText: "Generating Codebase Architecture View Models",
                                                secondaryText: ""))
             let architectureViewModel = await ArtifactViewModel(folderArtifact: codebaseArchitecture,
-                                                                isPackage: codebase.looksLikeAPackage)
+                                                                isPackage: codebaseArchitecture.looksLikeAPackage)
             architectureViewModel.addDependencies()
             
             state = .analyzeArchitecture(.init(rootArtifact: architectureViewModel))
         }
     }
     
-    private func retrieveCodebase() async -> LSPCodeFolder?
+    private func retrieveCodebase() async -> CodebaseProcessorState.Codebase?
     {
         switch state
         {
@@ -75,40 +72,49 @@ class CodebaseProcessor
             
         case .didLocateCodebase(let codebaseLocation):
             state = .retrieveCodebase("Reading raw data from codebase folder")
-            guard let codebaseWithoutSymbols = await readCodebaseFolder(from: codebaseLocation) else
-            {
-                return nil
-            }
             
-            if structureSource == .treesitter
-            {
-                state = .didJustRetrieveCodebase(codebaseWithoutSymbols)
-                return codebaseWithoutSymbols
+            switch structureSource {
+            case .treesitter:
+                do {
+                    let treeSitterCodebase = try TreeSitterFolder.readFolder(from: codebaseLocation)
+                    state = .didJustRetrieveCodebase(.treeSitter(treeSitterCodebase))
+                    return .treeSitter(treeSitterCodebase)
+                } catch {
+                    log(error: "Could not load TreeSitter codebase: " + error.readable.message)
+                    state = .didFail(error.readable.message)
+                    return nil
+                }
+                
+            case .lsp:
+                guard let codebaseWithoutSymbols = await readCodebaseFolder(from: codebaseLocation) else
+                {
+                    return nil
+                }
+                
+                do
+                {
+                    state = .retrieveCodebase("Connecting to LSP server")
+                    let server = try await LSP.ServerManager.shared.initializeServer(for: codebaseLocation)
+                    
+                    state = .retrieveCodebase("Retrieving symbols and their references from LSP server")
+                    
+                    let codebase = try await CodebaseProcessorSteps.retrieveSymbolsAndReferences(for: codebaseWithoutSymbols,
+                                                                                                 from: server,
+                                                                                                 codebaseRootFolder: codebaseLocation.folder)
+                    
+                    state = .didJustRetrieveCodebase(.lsp(codebase))
+                    return .lsp(codebase)
+                }
+                catch
+                {
+                    log(warning: "Cannot talk to LSP server: " + error.readable.message)
+                    LSP.ServerManager.shared.serverIsWorking = false
+                    
+                    state = .didJustRetrieveCodebase(.lsp(codebaseWithoutSymbols))
+                    return .lsp(codebaseWithoutSymbols)
+                }
             }
-            
-            do
-            {
-                state = .retrieveCodebase("Connecting to LSP server")
-                let server = try await LSP.ServerManager.shared.initializeServer(for: codebaseLocation)
-                
-                state = .retrieveCodebase("Retrieving symbols and their references from LSP server")
-                
-                let codebase = try await CodebaseProcessorSteps.retrieveSymbolsAndReferences(for: codebaseWithoutSymbols,
-                                                                                             from: server,
-                                                                                             codebaseRootFolder: codebaseLocation.folder)
-                
-                state = .didJustRetrieveCodebase(codebase)
-                return codebase
-            }
-            catch
-            {
-                log(warning: "Cannot talk to LSP server: " + error.readable.message)
-                LSP.ServerManager.shared.serverIsWorking = false
-                
-                state = .didJustRetrieveCodebase(codebaseWithoutSymbols)
-                return codebaseWithoutSymbols
-            }
-            
+
         case .processCodebase(let codebase, _):
             return codebase
             
@@ -129,7 +135,7 @@ class CodebaseProcessor
         }
         catch
         {
-            log(error.readable.message)
+            log(error: error.readable.message)
             state = .didFail(error.readable.message)
             return nil
         }

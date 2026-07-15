@@ -38,11 +38,6 @@ enum CodebaseProcessorSteps
                                   additionalReferences: &extraReferences)
     }
     
-    static func extractTreeSitterForest(from folder: LSPCodeFolder) throws -> TreeSitterFolder
-    {
-        try CreateTreeSitterCodebaseFromLSPCodebase.extract(from: folder)
-    }
-    
     static func generateArchitecture(fromTreeSitterForest forest: TreeSitterFolder) -> CodeFolderArtifact
     {
         CodeFolderArtifact(treeSitterFolder: forest)

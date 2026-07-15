@@ -11,11 +11,16 @@ enum CodebaseProcessorState
     case empty,
          didLocateCodebase(LSP.CodebaseLocation),
          retrieveCodebase(String),
-         didJustRetrieveCodebase(LSPCodeFolder),
-         processCodebase(LSPCodeFolder, ProgressFeedback),
-         processArchitecture(LSPCodeFolder, CodeFolderArtifact, ProgressFeedback),
+         didJustRetrieveCodebase(Codebase),
+         processCodebase(Codebase, ProgressFeedback),
+         processArchitecture(Codebase, CodeFolderArtifact, ProgressFeedback),
          analyzeArchitecture(CodebaseAnalysis),
          didFail(String)
+    
+    enum Codebase {
+        case treeSitter(TreeSitterFolder)
+        case lsp(LSPCodeFolder)
+    }
     
     struct ProgressFeedback
     {

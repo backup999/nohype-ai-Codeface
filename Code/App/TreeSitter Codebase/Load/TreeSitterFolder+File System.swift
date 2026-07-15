@@ -1,12 +1,21 @@
 import Foundation
 import SwiftLSP
 
-enum CreateTreeSitterCodebaseFromLSPCodebase {
-    static func load(fromFolder folder: LSP.CodebaseLocation) throws -> TreeSitterFolder {
+extension TreeSitterFolder {
+    static func readFolder(from location: LSP.CodebaseLocation) throws -> TreeSitterFolder
+    {
+        try location.folder.mapSecurityScoped
+        {
+            try TreeSitterFolder(url: $0, fileEndings: location.codeFileEndings)
+        }
+    }
+    
+    convenience init(url: URL, fileEndings: [String]) throws {
+        // TODO: read directly from file equivalent to how `LSPCodeFolder+File System.swift` does it
         throw "not implemented yet"
     }
     
-    static func extract(from codeFolder: LSPCodeFolder) throws -> TreeSitterFolder {
+    private static func extract(from codeFolder: LSPCodeFolder) throws -> TreeSitterFolder {
         try convert(codeFolder)
     }
     

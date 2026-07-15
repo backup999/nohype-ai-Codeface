@@ -3,13 +3,6 @@
  */
 final class LSPCodeFolder: Codable, Sendable
 {
-    var looksLikeAPackage: Bool
-    {
-        if name.lowercased().contains("package") { return true }
-        
-        return files?.contains { $0.name.lowercased().contains("package") } ?? false
-    }
-    
     init(name: String,
          files: [LSPCodeFile] = [],
          subfolders: [LSPCodeFolder] = [])

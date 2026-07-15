@@ -12,6 +12,12 @@ final class CodeFolderArtifact: Identifiable, Sendable
 
     // MARK: - Graph Structure
     
+    var looksLikeAPackage: Bool
+    {
+        if name.lowercased().contains("package") { return true }
+        return partGraph.nodes.contains { $0.value.name.lowercased().contains("package") }
+    }
+    
     let partGraph: Graph<CodeArtifact.ID, Part, Int>
     
     final class Part: CodeArtifact, Identifiable, Hashable

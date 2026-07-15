@@ -109,7 +109,7 @@ class CodebaseWindow: ObservableObject
     
     func runProcessor(with codebase: LSPCodeFolder)
     {
-        codebaseProcessor.state = .processCodebase(codebase,
+        codebaseProcessor.state = .processCodebase(.lsp(codebase),
                                                    .init(primaryText: "Did Load Codebase Data",
                                                          secondaryText: ""))
         codebaseProcessor.run(structureSource: .lsp)
