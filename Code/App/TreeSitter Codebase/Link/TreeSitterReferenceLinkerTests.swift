@@ -209,9 +209,6 @@ struct TreeSitterReferenceLinkerTests {
     /// declared in B → used-by on that function (and thereby a dep onto B).
     /// That path must **not** require A, and must **not** invent a reference to A
     /// (A may be absent from the analyzed codebase entirely).
-    ///
-    /// Today extension members live only in B’s nested body scope and are never
-    /// visible to outer callers, so the call does not bind.
     @Test func testExternalUseOfExtensionMember() throws {
         // A is intentionally absent — only extension B and external caller C.
         let code = """

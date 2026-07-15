@@ -2,13 +2,26 @@
 ///
 /// Pure: `TreeSitterFolder` → new forest with `references` filled on matched decls.
 /// No types, overloads, or imports — exact name match, most-local scope wins.
+///
+/// ## Scopes
+///
+/// 1. **Root (cross-scope index):** every name-binding declaration that lives at
+///    file scope or as a member of a type-like container (class / struct / enum /
+///    protocol / extension body, including nested types). First registration wins;
+///    a second distinct decl with the same name makes the name **ambiguous**.
+/// 2. **Nested body scopes:** when entering a declaration, its child decls are
+///    registered with last-wins shadowing so sibling order and locals still work.
+///
+/// Lookup walks the stack inward→outward, so a local or sibling always beats the
+/// root index. Function/method bodies do **not** publish their nested locals into
+/// the root index (they stay body-scoped only).
 enum TreeSitterReferenceLinker {
     
     // MARK: - Public
     
     static func link(_ folder: TreeSitterFolder) -> TreeSitterFolder {
         var root = Scope(policy: .rootFirstWinsOrAmbiguous)
-        registerTopLevelDeclarations(in: folder, pathPrefix: "", into: &root)
+        registerDeclarations(in: folder, pathPrefix: "", into: &root)
         
         var usedBy = [DeclKey: [TreeSitterCodeSymbol.ReferenceLocation]]()
         var stack = [root]
@@ -29,7 +42,7 @@ enum TreeSitterReferenceLinker {
     
     struct Scope {
         enum Policy {
-            /// File-level / root: first registration wins; a second distinct decl
+            /// Cross-scope index: first registration wins; a second distinct decl
             /// with the same name makes the name unresolvable (ambiguous).
             case rootFirstWinsOrAmbiguous
             /// Nested bodies: last registration wins (shadowing).
@@ -60,15 +73,15 @@ enum TreeSitterReferenceLinker {
         }
     }
     
-    // MARK: - Phase 1: register file-level decls into root
+    // MARK: - Phase 1: register decls into the cross-scope root index
     
-    private static func registerTopLevelDeclarations(
+    private static func registerDeclarations(
         in folder: TreeSitterFolder,
         pathPrefix: String,
         into scope: inout Scope
     ) {
         for subfolder in folder.subfolders {
-            registerTopLevelDeclarations(
+            registerDeclarations(
                 in: subfolder,
                 pathPrefix: join(pathPrefix, subfolder.name),
                 into: &scope
@@ -77,13 +90,45 @@ enum TreeSitterReferenceLinker {
         
         for file in folder.files {
             let filePath = join(pathPrefix, file.name)
-            for symbol in file.symbols where symbol.role == .declaration {
-                guard introducesNameBinding(symbol) else { continue }
+            // File scope: top-level decls are part of the global index; type-like
+            // containers also publish their members (see `publishMembersIntoRoot`).
+            registerDeclarations(
+                file.symbols,
+                filePath: filePath,
+                into: &scope,
+                publishIntoRoot: true
+            )
+        }
+    }
+    
+    /// Walk a declaration forest for root-index registration.
+    ///
+    /// - `publishIntoRoot`: whether *these* nodes should be entered into the root
+    ///   index. Always true at file scope and under type-like containers; false
+    ///   under functions/methods so locals stay body-only.
+    private static func registerDeclarations(
+        _ symbols: [TreeSitterCodeSymbol],
+        filePath: String,
+        into scope: inout Scope,
+        publishIntoRoot: Bool
+    ) {
+        for symbol in symbols where symbol.role == .declaration {
+            if publishIntoRoot, introducesNameBinding(symbol) {
                 scope.register(
                     name: symbol.name,
                     key: DeclKey(filePathRelativeToRoot: filePath, range: symbol.range)
                 )
             }
+            
+            // Type-like containers (incl. extensions) expose members cross-scope.
+            // Everything else (functions, properties, …) keeps nested decls local.
+            let childPublish = isTypeLikeContainer(symbol)
+            registerDeclarations(
+                symbol.children,
+                filePath: filePath,
+                into: &scope,
+                publishIntoRoot: childPublish
+            )
         }
     }
     
@@ -154,9 +199,26 @@ enum TreeSitterReferenceLinker {
     ///
     /// Swift `extension T` is still a structural declaration (container for members),
     /// but it does **not** declare type `T` — it extends an existing type. Registering
-    /// it under `T` would collide with the real type (v0 root policy then drops the name).
+    /// it under `T` would collide with the real type (root policy then drops the name).
+    /// Members *inside* the extension still bind under their own names.
     private static func introducesNameBinding(_ symbol: TreeSitterCodeSymbol) -> Bool {
         symbol.attributes["declaration_kind"] != "extension"
+    }
+    
+    /// Containers whose **members** are part of the cross-scope root index.
+    ///
+    /// Includes Swift/Python type forms and Swift extensions (`class_declaration`
+    /// with `declaration_kind == extension`): the extension itself does not bind
+    /// the type name, but methods/properties it declares must be findable outside.
+    private static func isTypeLikeContainer(_ symbol: TreeSitterCodeSymbol) -> Bool {
+        switch symbol.kind {
+        case "class_declaration",    // Swift: class / struct / actor / enum / extension
+             "protocol_declaration", // Swift
+             "class_definition":     // Python
+            return true
+        default:
+            return false
+        }
     }
     
     private static func lookup(_ name: String, in stack: [Scope]) -> DeclKey? {
