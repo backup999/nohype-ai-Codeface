@@ -11,7 +11,7 @@ extension CodeSymbolArtifact {
         var referencesByChildID = [CodeArtifact.ID: [TreeSitterCodeSymbol.ReferenceLocation]]()
         
         // create subsymbols recursively – RECURSION FIRST
-        // (declarations and reference sites alike — Tree-sitter IR is richer than LSP)
+        // Full Tree-sitter tree: declarations and reference sites alike.
         
         for childSymbol in symbol.children {
             var extraChildReferences = [TreeSitterCodeSymbol.ReferenceLocation]()

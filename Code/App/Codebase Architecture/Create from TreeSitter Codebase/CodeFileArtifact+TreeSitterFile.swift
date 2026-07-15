@@ -10,8 +10,8 @@ extension CodeFileArtifact {
         var referencesByChildID = [CodeArtifact.ID: [TreeSitterCodeSymbol.ReferenceLocation]]()
         
         // create child symbols recursively – DEPTH FIRST
+        // Full Tree-sitter tree: declarations and reference sites alike.
         
-        // declarations and reference sites alike — Tree-sitter IR is richer than LSP
         for childSymbol in codeFile.symbols {
             var extraReferences = [TreeSitterCodeSymbol.ReferenceLocation]()
             

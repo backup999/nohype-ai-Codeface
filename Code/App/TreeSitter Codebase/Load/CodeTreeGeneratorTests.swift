@@ -95,7 +95,7 @@ struct CodeTreeGeneratorTests {
         let forest = TreeSitterFolder(name: "Demo", files: [file])
         
         let architecture = await BackgroundActor.run {
-            CodeFolderArtifact(treeSitterFolder: forest)
+            CodebaseProcessorSteps.generateArchitecture(from: forest)
         }
         
         #expect(architecture.name == "Demo")

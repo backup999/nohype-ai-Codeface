@@ -2,7 +2,7 @@
 
 ## Status (2026-07-15)
 
-**Iteration 1 (structure only) is landed** as a dual menu path into the same processor pipeline. **Next product step: simple dependency detection on the Tree-sitter IR** (name-match refs→decls → used-by lists). Full processor stage reform and default flip remain open.
+**Iteration 2 (deps v0) is landed**: scope-stack name linker fills used-by on Tree-sitter declarations; Architecture already turns those into edges. Quality is expected to be rough (many misses / false positives). Full processor stage reform and default flip remain open.
 
 | Area | Status |
 |------|--------|
@@ -10,8 +10,8 @@
 | Architecture free of `SymbolKind` / owns `CodeRange` | **Done** — [Decouple Architecture from LSP Types](Task%20-%20Decouple%20Architecture%20from%20LSP%20Types.md) |
 | TreeSitter module under `Code/App/TreeSitter Codebase/` | **Done** |
 | Shared `run(structureSource:)` + Architecture fork | **Done** |
-| Menus **Open … (new)** → Tree-sitter structure | **Done** (hierarchy, empty deps) |
-| Dependency detection on Tree-sitter IR | **Ready to start** (IR + Architecture wiring in place; linker missing) |
+| Menus **Open … (new)** → Tree-sitter structure | **Done** |
+| Dependency detection on Tree-sitter IR | **Done (v0)** — `TreeSitterReferenceLinker` + wired before Architecture |
 | Full coexisting processor stages | **Still open** — [ProcessorPipelineArchitecture](Task%20-%20ProcessorPipelineArchitecture.md) |
 | Default backend flip / sunset LSP | **Later** |
 
@@ -281,14 +281,9 @@ generateArchitecture(from: linkedForest)         // already exists
 - Do **not** invent a second edge model; Architecture remains the graph owner.
 - Optional later: cache linked forest only if processor durable stages land — not required for v0.
 
-### Architecture hygiene (small fix if still needed)
+### Architecture hygiene
 
-Create-from-TreeSitter currently walks **all** symbol children (including `.reference`). Product treemap should stay **declaration-only**:
-
-- When building `CodeSymbolArtifact` / file symbol graphs: **insert only `.declaration` children**.
-- Reference nodes contribute solely via used-by lists on declarations (after linking).
-
-Confirm against UI/tests; filter if reference shells currently pollute the artifact tree.
+Create-from-TreeSitter walks **all** symbol children (declarations **and** references). Richer Tree-sitter IR in the artifact tree is intentional vs LSP outline-only. Reference nodes also remain linker fuel (used-by on declarations → edges).
 
 ### Tests (minimal)
 
@@ -359,10 +354,8 @@ Dual path **already works** without full reform; reform helps if the forest must
 [Done]  Architecture LSP-agnostic (kind String, CodeRange)
 [Done]  TreeSitter Codebase + run(structureSource:) structure-only path
 [Done]  Create-from-TreeSitter already reads symbol.references → edges
+[Done]  Name/scope linker v0 + full TS artifact tree + fixture tests
         │
-        ▼
-[Next]  Name/scope linker: forest → forest with used-by on declarations
-        │  (+ declaration-only artifact filter if needed)
         ▼
 [Later] Better resolution / processor reform / default flip / LSP sunset
 ```
@@ -391,14 +384,14 @@ Dual path **already works** without full reform; reform helps if the forest must
 - [x] Unit tests for generator + Architecture conversion
 - [x] `TreeSitterCodeSymbol.references` + Create-from-TS edge wiring ready (empty fuel)
 
-### Iteration 2 (deps v0) — next
+### Iteration 2 (deps v0) — done
 
-- [ ] Scope-stack linker: per-scope register decls, then resolve refs (lookup top→root)
-- [ ] Output forest: declaration nodes carry used-by `ReferenceLocation`s
-- [ ] TS Architecture path shows useful edges (not only hierarchy)
-- [ ] Artifact tree remains declaration-focused (refs are fuel, not treemap nodes)
-- [ ] Fixture tests: mutual locals, shadowing, cross-file unique name; one Architecture edge
-- [ ] Clear path for quality: lexical v0 → imports/types/overloads/AI later
+- [x] Scope-stack linker: per-scope register decls, then resolve refs (lookup top→root)
+- [x] Output forest: declaration nodes carry used-by `ReferenceLocation`s
+- [x] TS Architecture path shows useful edges (not only hierarchy)
+- [x] Artifact tree keeps full Tree-sitter IR (decls + refs; refs also fuel used-by)
+- [x] Fixture tests: mutual locals, shadowing, cross-file unique name; one Architecture edge
+- [x] Clear path for quality: lexical v0 → imports/types/overloads/AI later
 
 ### Integration (full)
 
