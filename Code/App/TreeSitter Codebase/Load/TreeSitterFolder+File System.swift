@@ -4,35 +4,42 @@ import SwiftLSP
 extension TreeSitterFolder {
     static func readFolder(from location: LSP.CodebaseLocation) throws -> TreeSitterFolder
     {
-        try location.folder.mapSecurityScoped
+        guard let language = location.language else {
+            throw "Could not read codebase from \(location.folder.path) using TreeSitter because we do not support the language \(location.languageName) yet."
+        }
+        
+        return try location.folder.mapSecurityScoped
         {
-            try TreeSitterFolder(url: $0, fileEndings: location.codeFileEndings)
+            try TreeSitterFolder(url: $0,
+                                 fileEndings: location.codeFileEndings,
+                                 language: language)
         }
     }
     
-    convenience init(url: URL, fileEndings: [String]) throws {
+    convenience init(url: URL, fileEndings: [String], language: LanguageProfile) throws {
         // TODO: read directly from file equivalent to how `LSPCodeFolder+File System.swift` does it
+        /**
+         example of how to generate the symbol structure within a file:
+         
+         ```swift
+         let code = "some source code"
+         TreeSitterFile(name: "some file name",
+                        code: code,
+                        nodes: try CodeTreeGenerator.generateTree(from: code,
+                                                                  language: language))
+         ```
+         */
+        
         throw "not implemented yet"
     }
-    
-    private static func extract(from codeFolder: LSPCodeFolder) throws -> TreeSitterFolder {
-        try convert(codeFolder)
-    }
-    
-    private static func convert(_ folder: LSPCodeFolder) throws -> TreeSitterFolder {
-        let files = try (folder.files ?? []).map(convert(file:))
-        let subfolders = try (folder.subfolders ?? []).map(convert)
-        return TreeSitterFolder(name: folder.name,
-                                files: files,
-                                subfolders: subfolders)
-    }
-    
-    private static func convert(file: LSPCodeFile) throws -> TreeSitterFile {
-        let ext = (file.name as NSString).pathExtension
-        guard let language = SourceLanguage.from(fileExtension: ext) else {
-            return TreeSitterFile(name: file.name, code: file.code, nodes: [])
+}
+
+extension LSP.CodebaseLocation {
+    var language: LanguageProfile? {
+        return switch languageName.lowercased() {
+        case "swift": .swift
+        case "python": .python
+        default : nil
         }
-        let nodes = try CodeTreeGenerator.generateTree(from: file.code, language: language)
-        return TreeSitterFile(name: file.name, code: file.code, nodes: nodes)
     }
 }
