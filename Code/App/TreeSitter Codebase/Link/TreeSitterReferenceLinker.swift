@@ -9,12 +9,15 @@
 ///    file scope or as a member of a type-like container (class / struct / enum /
 ///    protocol / extension body, including nested types). First registration wins;
 ///    a second distinct decl with the same name makes the name **ambiguous**.
-/// 2. **Nested body scopes:** when entering a declaration, its child decls are
+/// 2. **File scopes:** each file’s top-level name-binding decls, last-wins. When
+///    the root marks a name ambiguous (e.g. two files both declare `foo`), a
+///    same-file use still resolves via this scope instead of being dropped.
+/// 3. **Nested body scopes:** when entering a declaration, its child decls are
 ///    registered with last-wins shadowing so sibling order and locals still work.
 ///
-/// Lookup walks the stack inward→outward, so a local or sibling always beats the
-/// root index. Function/method bodies do **not** publish their nested locals into
-/// the root index (they stay body-scoped only).
+/// Lookup walks the stack inward→outward, so a local, sibling, or same-file
+/// top-level always beats the root index. Function/method bodies do **not**
+/// publish their nested locals into the root index (they stay body-scoped only).
 enum TreeSitterReferenceLinker {
     
     // MARK: - Public
@@ -151,7 +154,18 @@ enum TreeSitterReferenceLinker {
         
         for file in folder.files {
             let filePath = join(pathPrefix, file.name)
+            // File scope: same-file top-level decls beat an ambiguous root name.
+            var fileScope = Scope(policy: .nestedLastWins)
+            for symbol in file.symbols where symbol.role == .declaration {
+                guard introducesNameBinding(symbol) else { continue }
+                fileScope.register(
+                    name: symbol.name,
+                    key: DeclKey(filePathRelativeToRoot: filePath, range: symbol.range)
+                )
+            }
+            stack.append(fileScope)
             process(nodes: file.symbols, filePath: filePath, stack: &stack, usedBy: &usedBy)
+            stack.removeLast()
         }
     }
     
