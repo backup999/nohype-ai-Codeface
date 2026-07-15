@@ -137,7 +137,7 @@ struct CodefaceApp: App
                 }
                 .disabled(focusedDocumentWindow == nil)
                 
-                Button("Open Swift Package Folder (new)...")
+                Button("Open Swift Code Folder (new)...")
                 {
                     focusedDocumentWindow?.treeSitterOpen.presentPackageFolderPicker()
                 }
