@@ -67,8 +67,7 @@ extension CodeSymbolArtifact
         
         graph.filterEssentialEdges()
         
-        let code = getCode(of: thisRange,
-                           inFileLines: linesOfEnclosingFile)
+        let code = thisRange.getCode(fromLines: linesOfEnclosingFile)
         
         self.init(name: symbol.name,
                   kind: symbol.kind.name,
@@ -77,12 +76,4 @@ extension CodeSymbolArtifact
                   code: code ?? "",
                   subsymbolGraph: graph)
     }
-}
-
-func getCode(of range: CodeRange, inFileLines fileLines: [String]) -> String?
-{
-    guard fileLines.isValid(index: range.start.line),
-          fileLines.isValid(index: range.end.line) else { return nil }
-    
-    return fileLines[range.start.line ... range.end.line].joined(separator: "\n")
 }

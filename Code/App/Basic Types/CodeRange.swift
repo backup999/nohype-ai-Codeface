@@ -1,3 +1,13 @@
+extension CodeRange {
+    func getCode(fromLines lines: [String]) -> String?
+    {
+        guard lines.isValid(index: start.line),
+              lines.isValid(index: end.line) else { return nil }
+        
+        return lines[start.line ... end.line].joined(separator: "\n")
+    }
+}
+
 /// Contiguous source range used by Architecture (backend-agnostic).
 struct CodeRange: Hashable, Sendable, Codable
 {
