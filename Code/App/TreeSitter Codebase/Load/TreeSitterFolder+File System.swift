@@ -1,5 +1,7 @@
+import FoundationToolz
 import Foundation
 import SwiftLSP
+import SwiftyToolz
 
 extension TreeSitterFolder {
     static func readFolder(from location: LSP.CodebaseLocation) throws -> TreeSitterFolder
@@ -10,31 +12,63 @@ extension TreeSitterFolder {
         
         return try location.folder.mapSecurityScoped
         {
-            try TreeSitterFolder(url: $0,
-                                 fileEndings: location.codeFileEndings,
-                                 language: language)
+            guard let folder = try TreeSitterFolder(url: $0,
+                                                    fileEndings: location.codeFileEndings,
+                                                    language: language)
+            else {
+                throw "Project folder contains no code files with the specified file endings\nFolder: \($0.absoluteString)\nFile endings: \(location.codeFileEndings)"
+            }
+            
+            return folder
         }
     }
     
-    convenience init(url: URL, fileEndings: [String], language: LanguageProfile) throws {
-        // TODO: read directly from file, equivalent to how `LSPCodeFolder+File System.swift` does it. Of course the LSP path stops at the file level and adds symbols later. But here we can generate the symbols within each file right away using TreeSitter, see example below.
-        /**
-         example of how to generate the symbols for a file:
-         
-         ```swift
-         let code = "some source code"
-         TreeSitterFile(name: "some file name",
-                        code: code,
-                        symbols: try CodeTreeGenerator.generateTree(from: code, language: language))
-         ```
-         */
+    convenience init?(url: URL, fileEndings: [String], language: SourceLanguage) throws {
+        let fileManager = FileManager.default
         
-        throw "not implemented yet"
+        let urls = fileManager.items(inDirectory: url, recursive: false)
+        
+        var files = [TreeSitterFile]()
+        var subfolders = [TreeSitterFolder]()
+        
+        for itemURL in urls
+        {
+            if itemURL.isDirectory
+            {
+                if let subfolder = try TreeSitterFolder(url: itemURL,
+                                                        fileEndings: fileEndings,
+                                                        language: language)
+                {
+                    subfolders += subfolder
+                }
+            }
+            else if fileEndings.contains(itemURL.pathExtension)
+            {
+                files += try TreeSitterFile(url: itemURL, language: language)
+            }
+        }
+        
+        if files.count + subfolders.count == 0 { return nil }
+        
+        self.init(name: url.lastPathComponent,
+                  files: files,
+                  subfolders: subfolders)
+    }
+}
+
+private extension TreeSitterFile {
+    convenience init(url: URL, language: SourceLanguage) throws {
+        let code = try String(contentsOf: url, encoding: .utf8)
+        
+        self.init(name: url.lastPathComponent,
+                  code: code,
+                  nodes: try CodeTreeGenerator.generateTree(from: code,
+                                                            language: language))
     }
 }
 
 extension LSP.CodebaseLocation {
-    var language: LanguageProfile? {
+    var language: SourceLanguage? {
         return switch languageName.lowercased() {
         case "swift": .swift
         case "python": .python
