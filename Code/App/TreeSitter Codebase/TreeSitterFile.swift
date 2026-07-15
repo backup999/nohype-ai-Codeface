@@ -3,12 +3,10 @@ final class TreeSitterFile: Sendable {
     init(name: String, code: String, nodes: [TreeSitterCodeSymbol]) {
         self.name = name
         self.code = code
-        self.nodes = nodes
+        self.symbols = nodes
     }
     
     let name: String
     let code: String
-    let nodes: [TreeSitterCodeSymbol]
-    
-    var lines: [String] { code.lines }
+    let symbols: [TreeSitterCodeSymbol]
 }

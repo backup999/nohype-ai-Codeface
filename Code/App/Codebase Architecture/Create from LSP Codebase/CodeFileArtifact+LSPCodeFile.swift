@@ -19,7 +19,7 @@ extension CodeFileArtifact
             var extraReferences = [LSPCodeSymbol.ReferenceLocation]()
             
             let child = CodeSymbolArtifact(symbol: childSymbol,
-                                           linesOfEnclosingFile: codeFile.lines,
+                                           linesOfEnclosingFile: codeFile.code.lines,
                                            pathInRootFolder: pathInRootFolder,
                                            additionalReferences: &extraReferences)
             
@@ -63,7 +63,7 @@ extension CodeFileArtifact
         graph.filterEssentialEdges()
         
         self.init(name: codeFile.name,
-                  codeLines: codeFile.lines,
+                  codeLines: codeFile.code.lines,
                   symbolGraph: graph)
     }
 }

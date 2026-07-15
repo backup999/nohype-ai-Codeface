@@ -7,15 +7,15 @@ extension CodeFileArtifact {
     convenience init(treeSitterFile: TreeSitterFile) {
         var graph = Graph<CodeArtifact.ID, CodeSymbolArtifact, Int>()
         
-        for node in treeSitterFile.nodes where node.role == .declaration {
+        for node in treeSitterFile.symbols where node.role == .declaration {
             graph.insert(CodeSymbolArtifact(declaration: node,
-                                            linesOfEnclosingFile: treeSitterFile.lines))
+                                            linesOfEnclosingFile: treeSitterFile.code.lines))
         }
         
         graph.filterEssentialEdges()
         
         self.init(name: treeSitterFile.name,
-                  codeLines: treeSitterFile.lines,
+                  codeLines: treeSitterFile.code.lines,
                   symbolGraph: graph)
     }
 }

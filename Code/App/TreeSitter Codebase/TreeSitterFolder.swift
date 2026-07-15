@@ -1,6 +1,6 @@
 /// Multi-file Tree-sitter structure IR (paths + text + `CodeNode` trees).
 ///
-/// Analogous to the LSP `CodeFolder` dump, but filename texts and structure come
+/// Analogous to the `LSPCodeFolder` dump, but filename texts and structure come
 /// from in-process parsing alone. Not part of the `.codebase` file format.
 final class TreeSitterFolder: Sendable {
     init(name: String,
@@ -15,10 +15,4 @@ final class TreeSitterFolder: Sendable {
     let name: String
     let files: [TreeSitterFile]
     let subfolders: [TreeSitterFolder]
-    
-    /// Mirrors `CodeFolder.looksLikeAPackage` for view-model package icon choice.
-    var looksLikeAPackage: Bool {
-        if name.lowercased().contains("package") { return true }
-        return files.contains { $0.name.lowercased().contains("package") }
-    }
 }

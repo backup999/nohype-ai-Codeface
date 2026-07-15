@@ -16,9 +16,6 @@ final class LSPCodeFile: Codable, Sendable
     }
     
     let name: String
-    
-    var lines: [String] { code.lines }
     let code: String
-    
     let symbols: [LSPCodeSymbol]?
 }
