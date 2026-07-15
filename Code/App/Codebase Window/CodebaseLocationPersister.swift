@@ -1,4 +1,3 @@
-import SwiftLSP
 import FoundationToolz
 import Foundation
 
@@ -6,7 +5,7 @@ enum CodebaseLocationPersister
 {
     static var hasPersistedLastCodebaseLocation: Bool { persistedCodebaseLocationData != nil }
     
-    static func persist(_ location: LSP.CodebaseLocation) throws
+    static func persist(_ location: CodebaseLocation) throws
     {
         let bookmarkData = try securityScopedBookmarkData(for: location.folder)
         
@@ -16,7 +15,7 @@ enum CodebaseLocationPersister
         persistedCodebaseLocationData = try persistedLocation.encode() as Data
     }
     
-    static func loadCodebaseLocation() throws -> LSP.CodebaseLocation
+    static func loadCodebaseLocation() throws -> CodebaseLocation
     {
         guard let locationData = persistedCodebaseLocationData else
         {
@@ -68,5 +67,5 @@ enum CodebaseLocationPersister
 private struct PersistedCodebaseLocation: Codable
 {
     var folderBookmarkData: Data
-    var codebaseLocation: LSP.CodebaseLocation
+    var codebaseLocation: CodebaseLocation
 }

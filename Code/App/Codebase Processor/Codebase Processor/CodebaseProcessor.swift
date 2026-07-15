@@ -94,7 +94,11 @@ class CodebaseProcessor
                 do
                 {
                     state = .retrieveCodebase("Connecting to LSP server")
-                    let server = try await LSP.ServerManager.shared.initializeServer(for: codebaseLocation)
+                    let server = try await LSP.ServerManager.shared.initializeServer(
+                        for: .init(folder: codebaseLocation.folder,
+                                   languageName: codebaseLocation.languageName,
+                                   codeFileEndings: codebaseLocation.codeFileEndings)
+                    )
                     
                     state = .retrieveCodebase("Retrieving symbols and their references from LSP server")
                     
@@ -127,7 +131,7 @@ class CodebaseProcessor
         }
     }
     
-    private func readCodebaseFolder(from codebaseLocation: LSP.CodebaseLocation) async -> LSPCodeFolder?
+    private func readCodebaseFolder(from codebaseLocation: CodebaseLocation) async -> LSPCodeFolder?
     {
         do
         {

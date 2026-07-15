@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import SwiftLSP
 import SwiftyToolz
 
 // MARK: - SwiftUI surface
@@ -48,7 +47,7 @@ final class TreeSitterOpenController: ObservableObject
     @Published var isPresentingCodebaseLocator = false
     @Published var isPresentingPackageFolderImporter = false
     
-    var onLocationChosen: ((LSP.CodebaseLocation) -> Void)?
+    var onLocationChosen: ((CodebaseLocation) -> Void)?
     
     func presentPackageFolderPicker()
     {
@@ -67,7 +66,7 @@ final class TreeSitterOpenController: ObservableObject
                              codeFileEndings: ["swift"]))
     }
     
-    func open(location: LSP.CodebaseLocation)
+    func open(location: CodebaseLocation)
     {
         do
         {

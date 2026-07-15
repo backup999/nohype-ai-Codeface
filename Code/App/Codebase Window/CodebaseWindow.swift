@@ -1,5 +1,4 @@
 import AppKit
-import SwiftLSP
 import Foundation
 import UniformTypeIdentifiers
 import SwiftyToolz
@@ -43,7 +42,7 @@ class CodebaseWindow: ObservableObject
         catch { log(error.readable) }
     }
     
-    func runProcessor(withCodebaseAtNewLocation location: LSP.CodebaseLocation,
+    func runProcessor(withCodebaseAtNewLocation location: CodebaseLocation,
                       structureSource: StructureSource = .lsp)
     {
         do
@@ -54,7 +53,7 @@ class CodebaseWindow: ObservableObject
         catch { log(error.readable) }
     }
     
-    private func runProcessor(withCodebaseAt location: LSP.CodebaseLocation,
+    private func runProcessor(withCodebaseAt location: CodebaseLocation,
                               structureSource: StructureSource = .lsp) throws
     {
         guard FileManager.default.itemExists(location.folder) else
@@ -67,7 +66,7 @@ class CodebaseWindow: ObservableObject
         codebaseProcessor.run(structureSource: structureSource)
     }
     
-    @Published var lastLocation: LSP.CodebaseLocation?
+    @Published var lastLocation: CodebaseLocation?
     
     // MARK: - Import / Export Codebase File
     

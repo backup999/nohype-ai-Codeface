@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftLSP
 import SwiftyToolz
 
 struct CodebaseLocator: View
@@ -56,9 +55,9 @@ struct CodebaseLocator: View
                         
                         log("Detected \(fileEndings.count) file endings in user input: \(fileEndings.joined(separator: ", "))")
                         
-                        let config = LSP.CodebaseLocation(folder: firstURL,
-                                                          languageName: languageName,
-                                                          codeFileEndings: fileEndings)
+                        let config = CodebaseLocation(folder: firstURL,
+                                                      languageName: languageName,
+                                                      codeFileEndings: fileEndings)
                         
                         confirm(config)
                     }
@@ -69,7 +68,7 @@ struct CodebaseLocator: View
     }
     
     @Binding var isBeingPresented: Bool
-    let confirm: (LSP.CodebaseLocation) -> Void
+    let confirm: (CodebaseLocation) -> Void
     
     @State private var languageName: String = ""
     @State private var fileEndingsInput: String = ""

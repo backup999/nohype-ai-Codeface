@@ -1,5 +1,3 @@
-import SwiftLSP
-
 enum CodebaseProcessorState
 {
     var analysis: CodebaseAnalysis?
@@ -9,7 +7,7 @@ enum CodebaseProcessorState
     }
     
     case empty,
-         didLocateCodebase(LSP.CodebaseLocation),
+         didLocateCodebase(CodebaseLocation),
          retrieveCodebase(String),
          didJustRetrieveCodebase(Codebase),
          processCodebase(Codebase, ProgressFeedback),

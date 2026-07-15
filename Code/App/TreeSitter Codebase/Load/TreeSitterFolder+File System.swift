@@ -1,10 +1,9 @@
 import FoundationToolz
 import Foundation
-import SwiftLSP
 import SwiftyToolz
 
 extension TreeSitterFolder {
-    static func readFolder(from location: LSP.CodebaseLocation) throws -> TreeSitterFolder
+    static func readFolder(from location: CodebaseLocation) throws -> TreeSitterFolder
     {
         guard let language = location.language else {
             throw "Could not read codebase from \(location.folder.path) using TreeSitter because we do not support the language \(location.languageName) yet."
@@ -67,7 +66,7 @@ private extension TreeSitterFile {
     }
 }
 
-extension LSP.CodebaseLocation {
+extension CodebaseLocation {
     var language: SourceLanguage? {
         return switch languageName.lowercased() {
         case "swift": .swift

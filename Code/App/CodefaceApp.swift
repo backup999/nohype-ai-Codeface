@@ -1,6 +1,5 @@
 import SwiftUIToolz
 import SwiftUI
-import SwiftLSP
 import SwiftyToolz
 
 @main

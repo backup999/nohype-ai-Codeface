@@ -6,7 +6,7 @@ import SwiftyToolz
 @BackgroundActor
 enum CodebaseProcessorSteps
 {
-    static func readFolder(from location: LSP.CodebaseLocation) throws -> LSPCodeFolder?
+    static func readFolder(from location: CodebaseLocation) throws -> LSPCodeFolder?
     {
         try location.folder.mapSecurityScoped
         {
