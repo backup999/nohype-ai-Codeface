@@ -355,4 +355,96 @@ struct TreeSitterReferenceLinkerTests {
         #expect(quxType.references?.allSatisfy { $0.filePathRelativeToRoot == "Demo.swift" } == true)
         #expect(quxFunc.references?.allSatisfy { $0.filePathRelativeToRoot == "Demo.swift" } == true)
     }
+
+    // MARK: - Member / qualified call names must match the method decl
+    
+    /// Real-world gap: `TreeSitterReferenceLinkerTests` → `TreeSitterReferenceLinker`
+    /// (via `forest.withLinkedReferences()` and `TreeSitterReferenceLinker.link`).
+    ///
+    /// `LanguageProfile.swiftCallName` keeps the full `navigation_expression` text
+    /// as the call’s reference name (`host.withLinkedReferences`, `Linker.link`),
+    /// while the method is registered under the bare name (`withLinkedReferences`,
+    /// `link`). Exact-name lookup never hits → no used-by → no architecture edge.
+    @Test func testQualifiedCallResolvesToMethodName() throws {
+        let implCode = """
+        enum Linker {
+            static func link(_ x: Int) -> Int { x }
+        }
+        extension Host {
+            func withLinkedReferences() {
+                Linker.link(0)
+            }
+        }
+        """
+        let clientCode = """
+        func client(_ host: Host) {
+            host.withLinkedReferences()
+        }
+        """
+        
+        let forest = TreeSitterFolder(
+            name: "Link",
+            files: [
+                TreeSitterFile(
+                    name: "Impl.swift",
+                    code: implCode,
+                    nodes: try CodeTreeGenerator.generateTree(from: implCode, language: .swift)
+                ),
+                TreeSitterFile(
+                    name: "Client.swift",
+                    code: clientCode,
+                    nodes: try CodeTreeGenerator.generateTree(from: clientCode, language: .swift)
+                ),
+            ]
+        )
+        let linked = forest.withLinkedReferences()
+        let impl = try #require(linked.files.first { $0.name == "Impl.swift" })
+        
+        // Surface the name mismatch the linker sees (not just empty used-by).
+        let clientRefs = linked.files
+            .first { $0.name == "Client.swift" }?
+            .symbols
+            .flatMap { Self.collectReferences(in: $0) } ?? []
+        let withLinkedCall = clientRefs.first { $0.contains("withLinkedReferences") }
+        #expect(
+            withLinkedCall == "withLinkedReferences",
+            """
+            Call ref name should be the method base `withLinkedReferences` for exact-name \
+            lookup; got \(withLinkedCall ?? "nil") (swiftCallName uses full navigation text)
+            """
+        )
+        
+        let hostExt = try #require(
+            impl.symbols.first {
+                $0.name == "Host" && $0.attributes["declaration_kind"] == "extension"
+            }
+        )
+        let withLinked = try #require(
+            hostExt.children.first { $0.name == "withLinkedReferences" && $0.role == .declaration }
+        )
+        #expect(
+            (withLinked.references ?? []).contains { $0.filePathRelativeToRoot == "Client.swift" },
+            "Client’s host.withLinkedReferences() should produce used-by on the method decl"
+        )
+        
+        let linker = try #require(impl.symbols.first { $0.name == "Linker" && $0.role == .declaration })
+        let link = try #require(
+            linker.children.first { $0.name == "link" && $0.role == .declaration }
+        )
+        #expect(
+            (link.references ?? []).contains { $0.filePathRelativeToRoot == "Impl.swift" },
+            "Linker.link(0) inside withLinkedReferences should produce used-by on static link"
+        )
+    }
+    
+    /// Reference names under a symbol tree (call / type / etc.).
+    private static func collectReferences(in symbol: TreeSitterCodeSymbol) -> [String] {
+        var names: [String] = []
+        if symbol.role == .reference { names.append(symbol.name) }
+        for child in symbol.children {
+            names.append(contentsOf: collectReferences(in: child))
+        }
+        return names
+    }
 }
+
