@@ -1,20 +1,22 @@
 ### Reproduced
 
-**Test:** `testCodeRangeDepsWhenNestedUnderAppWithExtensionElsewhere`
+**Test:** `testSameFileTypeMentionDespiteRootExtensionElsewhere`
 
-**Fixture (minimal App):**
+**Fixture (hardcoded, stable):**
 ```text
-App/
-  Basic Types/CodeRange.swift          ← struct CodePosition
-  Codebase Architecture/.../CodeRange+LSPRange.swift  ← extension CodePosition
+T.swift          ← struct T { var x: T }
+T+Ext.swift      ← extension T {}
 ```
 
-**Result: fails at Stage 1 (linker)**  
-- used-by count on struct `CodePosition` = **0**  
-- Architecture edge count = **0** (follows from empty used-by)
+**Result: fails at linker**  
+- used-by count on struct `T` = **0**
 
 ### Cause
 
-Tree-sitter treats `extension CodePosition` as another root `class_declaration` named `CodePosition`.  
+Tree-sitter treats `extension T` as another root `class_declaration` named `T`.  
 v0 root policy: **duplicate root name → never bind**.  
-Basic Types alone has one `CodePosition` → works. Full App adds the extension → name is dropped.
+With only `T.swift`, a single root `T` binds and the property type mention gets used-by. Adding the extension drops the name entirely.
+
+### Origin
+
+Observed on real App sources: `CodePosition` in `Basic Types/CodeRange.swift` + `extension CodePosition` in `CodeRange+LSPRange.swift`. Architecture edges disappear when opening full App vs Basic Types alone.
