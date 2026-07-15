@@ -358,13 +358,10 @@ struct TreeSitterReferenceLinkerTests {
 
     // MARK: - Member / qualified call names must match the method decl
     
-    /// Real-world gap: `TreeSitterReferenceLinkerTests` → `TreeSitterReferenceLinker`
-    /// (via `forest.withLinkedReferences()` and `TreeSitterReferenceLinker.link`).
-    ///
-    /// `LanguageProfile.swiftCallName` keeps the full `navigation_expression` text
-    /// as the call’s reference name (`host.withLinkedReferences`, `Linker.link`),
-    /// while the method is registered under the bare name (`withLinkedReferences`,
-    /// `link`). Exact-name lookup never hits → no used-by → no architecture edge.
+    /// Real-world: `TreeSitterReferenceLinkerTests` → `TreeSitterReferenceLinker`
+    /// via `forest.withLinkedReferences()` and `TreeSitterReferenceLinker.link`.
+    /// Member/static call refs must use the method base name (not the full
+    /// navigation path) so exact-name lookup hits the declaration.
     @Test func testQualifiedCallResolvesToMethodName() throws {
         let implCode = """
         enum Linker {
@@ -410,7 +407,7 @@ struct TreeSitterReferenceLinkerTests {
             withLinkedCall == "withLinkedReferences",
             """
             Call ref name should be the method base `withLinkedReferences` for exact-name \
-            lookup; got \(withLinkedCall ?? "nil") (swiftCallName uses full navigation text)
+            lookup; got \(withLinkedCall ?? "nil")
             """
         )
         

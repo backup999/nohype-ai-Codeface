@@ -179,13 +179,29 @@ struct LanguageProfile: Sendable {
         firstNamedDescendant(node, types: ["type_identifier"])?.text ?? node.text
     }
 
+    /// Surface name for a Swift `call_expression`: the **callee symbol**, not the
+    /// full path. Free calls use the bare identifier; member/static calls use the
+    /// final navigation suffix (`host.foo()` / `Type.bar()` → `foo` / `bar`) so
+    /// exact-name linking matches the method declaration.
     private static func swiftCallName(_ call: Node) -> String? {
         for i in 0 ..< call.namedChildCount {
             guard let child = call.namedChild(at: i),
                   let type = child.nodeType
             else { continue }
-            if type == "simple_identifier" || type == "navigation_expression" {
+            switch type {
+            case "simple_identifier":
                 return child.text
+            case "navigation_expression":
+                // navigation_expression → suffix:navigation_suffix → suffix:simple_identifier
+                if let navSuffix = child.child(byFieldName: "suffix"),
+                   let nameNode = navSuffix.child(byFieldName: "suffix")
+                    ?? firstNamedDescendant(navSuffix, types: ["simple_identifier"])
+                {
+                    return nameNode.text
+                }
+                return child.text
+            default:
+                continue
             }
         }
         return nil
