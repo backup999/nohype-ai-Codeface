@@ -39,7 +39,7 @@ class CodebaseProcessor
                 )
             case .treeSitter(let treeSitterCodebase):
                 codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(
-                    fromTreeSitterForest: treeSitterCodebase
+                    from: treeSitterCodebase
                 )
             }
             

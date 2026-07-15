@@ -38,8 +38,12 @@ enum CodebaseProcessorSteps
                                   additionalReferences: &extraReferences)
     }
     
-    static func generateArchitecture(fromTreeSitterForest forest: TreeSitterFolder) -> CodeFolderArtifact
+    static func generateArchitecture(from folder: TreeSitterFolder) -> CodeFolderArtifact
     {
-        CodeFolderArtifact(treeSitterFolder: forest)
+        var extraReferences = [TreeSitterCodeSymbol.ReferenceLocation]()
+        
+        return CodeFolderArtifact(codeFolder: folder,
+                                  pathInRootFolder: .root,
+                                  additionalReferences: &extraReferences)
     }
 }

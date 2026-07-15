@@ -4,29 +4,11 @@ import SwiftyToolz
 /// Tree-sitter → Architecture (declarations only; empty dependency graphs in iter 1).
 @BackgroundActor
 extension CodeFolderArtifact {
-    convenience init(treeSitterFolder: TreeSitterFolder) {
-        var ultimateFolder = treeSitterFolder
-        
-        while let onlySubfolder = ultimateFolder.containsExactlyOneSubfolder {
-            ultimateFolder = TreeSitterFolder(
-                name: ultimateFolder.name + "/" + onlySubfolder.name,
-                files: onlySubfolder.files,
-                subfolders: onlySubfolder.subfolders
-            )
-        }
-        
-        var graph = Graph<CodeArtifact.ID, Part, Int>()
-        
-        for subfolder in ultimateFolder.subfolders {
-            graph.insert(Part(kind: .subfolder(.init(treeSitterFolder: subfolder))))
-        }
-        
-        for file in ultimateFolder.files {
-            graph.insert(Part(kind: .file(.init(treeSitterFile: file))))
-        }
-        
-        graph.filterEssentialEdges()
-        self.init(name: ultimateFolder.name, partGraph: graph)
+    convenience init(codeFolder: TreeSitterFolder,
+                     pathInRootFolder: RelativeFilePath,
+                     additionalReferences: inout [TreeSitterCodeSymbol.ReferenceLocation]) {
+        // TODO: implement equivalent to how `CodeFolderArtifact+LSPCodeFolder.swift` does it. Do not reuse anything fromn the LSP path but rather create a perfect mirror image of the LSP path here.
+        fatalError("not implemented yet")
     }
 }
 
