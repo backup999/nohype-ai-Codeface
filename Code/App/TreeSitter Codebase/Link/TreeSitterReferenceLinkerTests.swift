@@ -126,6 +126,77 @@ struct TreeSitterReferenceLinkerTests {
         )
     }
     
+    // MARK: - Same-folder cross-file preference (not yet: no folder scopes)
+    
+    /// Folder scopes are not on the stack yet — only root + file + bodies.
+    /// So a unique-within-folder name still dies when another folder declares the
+    /// same name, even though the use and target share a parent folder.
+    ///
+    /// Expected once generalized (see Tasks/Folder hierarchy scopes for linking.md):
+    /// same mechanism as file scope, applied to every forest container.
+    @Test func testSameFolderCrossFileUseDespiteDuplicateElsewhere() throws {
+        let fooCode = """
+        func foo() {}
+        """
+        let barCode = """
+        func bar() { foo() }
+        """
+        let otherFooCode = """
+        func foo() {}
+        """
+        
+        let forest = TreeSitterFolder(
+            name: "Demo",
+            subfolders: [
+                TreeSitterFolder(
+                    name: "A",
+                    files: [
+                        TreeSitterFile(
+                            name: "Foo.swift",
+                            code: fooCode,
+                            nodes: try CodeTreeGenerator.generateTree(from: fooCode, language: .swift)
+                        ),
+                        TreeSitterFile(
+                            name: "Bar.swift",
+                            code: barCode,
+                            nodes: try CodeTreeGenerator.generateTree(from: barCode, language: .swift)
+                        ),
+                    ]
+                ),
+                TreeSitterFolder(
+                    name: "B",
+                    files: [
+                        TreeSitterFile(
+                            name: "OtherFoo.swift",
+                            code: otherFooCode,
+                            nodes: try CodeTreeGenerator.generateTree(
+                                from: otherFooCode,
+                                language: .swift
+                            )
+                        ),
+                    ]
+                ),
+            ]
+        )
+        let linked = forest.withLinkedReferences()
+        
+        let aFoo = try #require(
+            linked.subfolders
+                .first { $0.name == "A" }?
+                .files.first { $0.name == "Foo.swift" }?
+                .symbols.first { $0.name == "foo" }
+        )
+        #expect(
+            (aFoo.references ?? []).count >= 1,
+            """
+            Cross-file call in A/Bar.swift → A/Foo.swift’s foo should still produce used-by \
+            even when B/OtherFoo.swift also declares foo. Today only a file scope exists, \
+            so the shared-folder target is lost to root ambiguity.
+            """
+        )
+        #expect(aFoo.references?.first?.filePathRelativeToRoot == "A/Bar.swift")
+    }
+    
     // MARK: - Architecture sibling edge after link
     
     @Test func testArchitectureSiblingEdgeAfterLink() async throws {
