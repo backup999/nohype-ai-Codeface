@@ -85,3 +85,75 @@ import SwiftyToolz
     #expect(foo.subsymbolGraph.edgesByID.isEmpty)
     #expect(foo.subsymbolGraph.values.first?.name == "bar")
 }
+
+// MARK: - External same-named method must not create folder edge
+
+/// Real-world: Architecture Creation Tests call `BackgroundActor.run` (SwiftyToolz,
+/// outside the forest) while Processor declares `CodebaseProcessor.run`. Call refs
+/// use the bare callee name (`run`); folder scopes publish type members, so the
+/// only in-forest `run` wins → used-by on Processor → false Architecture → Processor.
+///
+/// Fixture (hardcoded, stable):
+/// ```text
+/// App/
+///   Processor/Processor.swift   ← class Processor { func run() {} }
+///   Architecture/Client.swift ← func client() { Library.run() }  // Library absent
+/// ```
+@Test func testExternalQualifiedCallDoesNotCreateFolderEdgeOntoUnrelatedMethod() async throws {
+    let processorCode = """
+    class Processor {
+        func run() {}
+    }
+    """
+    let architectureCode = """
+    func client() {
+        Library.run()
+    }
+    """
+    
+    let forest = TreeSitterFolder(
+        name: "App",
+        subfolders: [
+            TreeSitterFolder(
+                name: "Processor",
+                files: [
+                    TreeSitterFile(
+                        name: "Processor.swift",
+                        code: processorCode,
+                        nodes: try CodeTreeGenerator.generateTree(
+                            from: processorCode,
+                            language: .swift
+                        )
+                    ),
+                ]
+            ),
+            TreeSitterFolder(
+                name: "Architecture",
+                files: [
+                    TreeSitterFile(
+                        name: "Client.swift",
+                        code: architectureCode,
+                        nodes: try CodeTreeGenerator.generateTree(
+                            from: architectureCode,
+                            language: .swift
+                        )
+                    ),
+                ]
+            ),
+        ]
+    )
+    
+    let root = await BackgroundActor.run {
+        CodeFolderArtifact.generateArchitecture(from: forest)
+    }
+    
+    let parts = Array(root.partGraph.values)
+    let processor = try #require(parts.first { $0.name == "Processor" })
+    let architecture = try #require(parts.first { $0.name == "Architecture" })
+    
+    let edge = root.partGraph.edge(from: architecture.id, to: processor.id)
+    #expect(
+        edge == nil,
+        "Architecture’s Library.run() (external host) must not create a folder edge onto Processor.run"
+    )
+}
