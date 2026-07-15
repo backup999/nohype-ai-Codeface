@@ -80,9 +80,12 @@ struct TreeSitterReferenceLinkerTests {
         #expect(b.references?.first?.filePathRelativeToRoot == "A.swift")
     }
     
-    // MARK: - Ambiguous root names never bind
+    // MARK: - Duplicate root names must not erase a real use
     
-    @Test func testAmbiguousRootNamesDoNotBind() throws {
+    /// Two top-level `foo`s make the root index mark `foo` **ambiguous and unbound**.
+    /// Then `bar() { foo() }` in the same file as one `foo` gets **no** used-by at all —
+    /// a miss caused only by the other file also declaring `foo`, not by a missing decl.
+    @Test func testDuplicateRootNameStillLinksSameFileUse() throws {
         let aCode = """
         func foo() {}
         """
@@ -110,7 +113,17 @@ struct TreeSitterReferenceLinkerTests {
         
         let foos = linked.files.flatMap(\.symbols).filter { $0.name == "foo" }
         #expect(foos.count == 2)
-        #expect(foos.allSatisfy { ($0.references ?? []).isEmpty })
+        
+        let bFoo = try #require(
+            linked.files.first { $0.name == "B.swift" }?.symbols.first { $0.name == "foo" }
+        )
+        #expect(
+            (bFoo.references ?? []).count >= 1,
+            """
+            Same-file call `bar() { foo() }` should still produce used-by on B.swift’s foo \
+            even when A.swift also declares foo (root “ambiguous → never bind” drops the name)
+            """
+        )
     }
     
     // MARK: - Architecture sibling edge after link
