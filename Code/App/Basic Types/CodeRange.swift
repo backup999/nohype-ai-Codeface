@@ -1,16 +1,3 @@
-/// Zero-based source position (line + character on that line).
-struct CodePosition: Hashable, Sendable, Codable
-{
-    init(line: Int, character: Int)
-    {
-        self.line = line
-        self.character = character
-    }
-    
-    let line: Int
-    let character: Int
-}
-
 /// Contiguous source range used by Architecture (backend-agnostic).
 struct CodeRange: Hashable, Sendable, Codable
 {
@@ -44,4 +31,17 @@ struct CodeRange: Hashable, Sendable, Codable
         
         return true
     }
+}
+
+/// Zero-based source position (line + character on that line).
+struct CodePosition: Hashable, Sendable, Codable
+{
+    init(line: Int, character: Int)
+    {
+        self.line = line
+        self.character = character
+    }
+    
+    let line: Int
+    let character: Int
 }
