@@ -203,6 +203,55 @@ struct TreeSitterReferenceLinkerTests {
         )
     }
     
+    // MARK: - Depend on extension via a member it declares
+    
+    /// Type A extended by extension B; symbol C (outside A and B) uses a function
+    /// declared in B → used-by on that function (and thereby a dep onto B).
+    /// That path must **not** require A, and must **not** invent a reference to A
+    /// (A may be absent from the analyzed codebase entirely).
+    ///
+    /// Today extension members live only in B’s nested body scope and are never
+    /// visible to outer callers, so the call does not bind.
+    @Test func testExternalUseOfExtensionMember() throws {
+        // A is intentionally absent — only extension B and external caller C.
+        let code = """
+        extension A {
+            func foo() {}
+        }
+        func c() {
+            foo()
+        }
+        """
+        
+        let symbols = try CodeTreeGenerator.generateTree(from: code, language: .swift)
+        let file = TreeSitterFile(name: "Demo.swift", code: code, nodes: symbols)
+        let linked = TreeSitterFolder(name: "Demo", files: [file]).withLinkedReferences()
+        
+        let extB = try #require(
+            linked.files[0].symbols.first {
+                $0.name == "A" && $0.attributes["declaration_kind"] == "extension"
+            }
+        )
+        let foo = try #require(extB.children.first { $0.name == "foo" && $0.role == .declaration })
+        let c = try #require(linked.files[0].symbols.first { $0.name == "c" && $0.role == .declaration })
+        
+        // No primary type A in this forest — only the extension named A.
+        #expect(linked.files[0].symbols.filter { $0.name == "A" }.count == 1)
+        #expect(extB.attributes["declaration_kind"] == "extension")
+        
+        #expect(
+            (foo.references ?? []).count >= 1,
+            """
+            External caller `c` uses `foo` declared in extension B → used-by on foo \
+            (and thereby a dependency onto B). A need not be present.
+            """
+        )
+        // Mechanism is used-by on the member in B, not a synthetic used-by on type A.
+        #expect((extB.references ?? []).isEmpty)
+        // Sanity: C itself is not the resolution target of the call.
+        #expect((c.references ?? []).isEmpty)
+    }
+    
     // MARK: - Same-file type mention + call (basic used-by)
     
     @Test func testSameFileCallAndTypeMention() throws {
