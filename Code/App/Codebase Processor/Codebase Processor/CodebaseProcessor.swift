@@ -38,7 +38,7 @@ class CodebaseProcessor
                     from: lspCodebase
                 )
             case .treeSitter(let treeSitterCodebase):
-                codebaseArchitecture = await CodebaseProcessorSteps.generateArchitecture(
+                codebaseArchitecture = await CodeFolderArtifact.generateArchitecture(
                     from: treeSitterCodebase
                 )
             }

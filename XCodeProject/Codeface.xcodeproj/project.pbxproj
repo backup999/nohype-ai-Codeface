@@ -71,6 +71,7 @@
 		96DC776630077A5800668633 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"App/Codebase Architecture/Create from TreeSitter Codebase/Architecture Creation Tests.swift",
 				"App/TreeSitter Codebase/Link/TreeSitterReferenceLinkerTests.swift",
 				"App/TreeSitter Codebase/Load/CodeTreeGeneratorTests.swift",
 			);
@@ -79,6 +80,7 @@
 		96DC776730077A5800668633 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"App/Codebase Architecture/Create from TreeSitter Codebase/Architecture Creation Tests.swift",
 				"App/TreeSitter Codebase/Link/TreeSitterReferenceLinkerTests.swift",
 				"App/TreeSitter Codebase/Load/CodeTreeGeneratorTests.swift",
 			);

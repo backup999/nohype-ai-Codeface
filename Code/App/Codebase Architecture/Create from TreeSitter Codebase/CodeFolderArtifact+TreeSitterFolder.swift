@@ -4,6 +4,18 @@ import SwiftyToolz
 /// Tree-sitter → Architecture (full mirror of the LSP path).
 @BackgroundActor
 extension CodeFolderArtifact {
+    
+    static func generateArchitecture(from folder: TreeSitterFolder) -> CodeFolderArtifact
+    {
+        // Link refs→decls (used-by) before Architecture edge wiring.
+        let linked = folder.withLinkedReferences()
+        var extraReferences = [TreeSitterCodeSymbol.ReferenceLocation]()
+        
+        return CodeFolderArtifact(codeFolder: linked,
+                                  pathInRootFolder: .root,
+                                  additionalReferences: &extraReferences)
+    }
+    
     convenience init(codeFolder: TreeSitterFolder,
                      pathInRootFolder: RelativeFilePath,
                      additionalReferences: inout [TreeSitterCodeSymbol.ReferenceLocation]) {

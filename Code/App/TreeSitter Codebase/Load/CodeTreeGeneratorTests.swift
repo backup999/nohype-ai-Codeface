@@ -79,44 +79,4 @@ struct CodeTreeGeneratorTests {
         #expect(tree.count == 1)
         #expect(tree[0].isStructurallyEqual(to: expected))
     }
-    
-    @Test func testArchitectureFromTreeSitterForest() async throws {
-        let code = """
-        struct Foo {
-            func bar() {}
-        }
-        """
-        
-        let file = try TreeSitterFile(
-            name: "Foo.swift",
-            code: code,
-            nodes: CodeTreeGenerator.generateTree(from: code, language: .swift)
-        )
-        let forest = TreeSitterFolder(name: "Demo", files: [file])
-        
-        let architecture = await BackgroundActor.run {
-            CodebaseProcessorSteps.generateArchitecture(from: forest)
-        }
-        
-        #expect(architecture.name == "Demo")
-        #expect(architecture.partGraph.nodesByID.count == 1)
-        
-        guard let part = architecture.partGraph.values.first,
-              case .file(let fileArtifact) = part.kind
-        else {
-            Issue.record("Expected one file part")
-            return
-        }
-        
-        #expect(fileArtifact.symbolGraph.nodesByID.count == 1)
-        guard let foo = fileArtifact.symbolGraph.values.first else {
-            Issue.record("Expected Foo")
-            return
-        }
-        #expect(foo.name == "Foo")
-        #expect(foo.kind == "Struct")
-        #expect(foo.subsymbolGraph.nodesByID.count == 1)
-        #expect(foo.subsymbolGraph.edgesByID.isEmpty)
-        #expect(foo.subsymbolGraph.values.first?.name == "bar")
-    }
 }
