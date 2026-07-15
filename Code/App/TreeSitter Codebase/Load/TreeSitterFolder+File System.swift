@@ -17,16 +17,15 @@ extension TreeSitterFolder {
     }
     
     convenience init(url: URL, fileEndings: [String], language: LanguageProfile) throws {
-        // TODO: read directly from file equivalent to how `LSPCodeFolder+File System.swift` does it
+        // TODO: read directly from file, equivalent to how `LSPCodeFolder+File System.swift` does it. Of course the LSP path stops at the file level and adds symbols later. But here we can generate the symbols within each file right away using TreeSitter, see example below.
         /**
-         example of how to generate the symbol structure within a file:
+         example of how to generate the symbols for a file:
          
          ```swift
          let code = "some source code"
          TreeSitterFile(name: "some file name",
                         code: code,
-                        nodes: try CodeTreeGenerator.generateTree(from: code,
-                                                                  language: language))
+                        symbols: try CodeTreeGenerator.generateTree(from: code, language: language))
          ```
          */
         
