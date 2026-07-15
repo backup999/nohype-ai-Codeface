@@ -78,6 +78,7 @@ enum TreeSitterReferenceLinker {
         for file in folder.files {
             let filePath = join(pathPrefix, file.name)
             for symbol in file.symbols where symbol.role == .declaration {
+                guard introducesNameBinding(symbol) else { continue }
                 scope.register(
                     name: symbol.name,
                     key: DeclKey(filePathRelativeToRoot: filePath, range: symbol.range)
@@ -138,6 +139,7 @@ enum TreeSitterReferenceLinker {
     ) {
         var body = Scope(policy: .nestedLastWins)
         for child in decl.children where child.role == .declaration {
+            guard introducesNameBinding(child) else { continue }
             body.register(
                 name: child.name,
                 key: DeclKey(filePathRelativeToRoot: filePath, range: child.range)
@@ -146,6 +148,15 @@ enum TreeSitterReferenceLinker {
         stack.append(body)
         process(nodes: decl.children, filePath: filePath, stack: &stack, usedBy: &usedBy)
         stack.removeLast()
+    }
+    
+    /// Whether a declaration introduces a resolvable name binding.
+    ///
+    /// Swift `extension T` is still a structural declaration (container for members),
+    /// but it does **not** declare type `T` — it extends an existing type. Registering
+    /// it under `T` would collide with the real type (v0 root policy then drops the name).
+    private static func introducesNameBinding(_ symbol: TreeSitterCodeSymbol) -> Bool {
+        symbol.attributes["declaration_kind"] != "extension"
     }
     
     private static func lookup(_ name: String, in stack: [Scope]) -> DeclKey? {

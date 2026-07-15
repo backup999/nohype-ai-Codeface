@@ -1,4 +1,4 @@
-### Reproduced
+### Fixed
 
 **Test:** `testSameFileTypeMentionDespiteRootExtensionElsewhere`
 
@@ -8,15 +8,20 @@ T.swift          ← struct T { var x: T }
 T+Ext.swift      ← extension T {}
 ```
 
-**Result: fails at linker**  
-- used-by count on struct `T` = **0**
-
 ### Cause
 
-Tree-sitter treats `extension T` as another root `class_declaration` named `T`.  
-v0 root policy: **duplicate root name → never bind**.  
-With only `T.swift`, a single root `T` binds and the property type mention gets used-by. Adding the extension drops the name entirely.
+Tree-sitter models `extension T` as another root `class_declaration` named `T`
+(`declaration_kind` = `extension`). v0 root policy treated that as a second binding of
+`T` → **ambiguous, never bind** → same-file property type mentions lost used-by.
+
+### Fix
+
+`TreeSitterReferenceLinker` skips scope registration for decls whose
+`declaration_kind` is `extension`. Extensions remain structural declarations
+(containers for members) but do not introduce a type-name binding.
 
 ### Origin
 
-Observed on real App sources: `CodePosition` in `Basic Types/CodeRange.swift` + `extension CodePosition` in `CodeRange+LSPRange.swift`. Architecture edges disappear when opening full App vs Basic Types alone.
+Observed on real App sources: `CodePosition` in `Basic Types/CodeRange.swift` +
+`extension CodePosition` in `CodeRange+LSPRange.swift`. Architecture edges
+disappeared when opening full App vs Basic Types alone.
