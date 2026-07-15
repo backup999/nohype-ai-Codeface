@@ -126,14 +126,11 @@ struct TreeSitterReferenceLinkerTests {
         )
     }
     
-    // MARK: - Same-folder cross-file preference (not yet: no folder scopes)
+    // MARK: - Same-folder cross-file preference (folder scopes)
     
-    /// Folder scopes are not on the stack yet — only root + file + bodies.
-    /// So a unique-within-folder name still dies when another folder declares the
-    /// same name, even though the use and target share a parent folder.
-    ///
-    /// Expected once generalized (see Tasks/Folder hierarchy scopes for linking.md):
-    /// same mechanism as file scope, applied to every forest container.
+    /// Folder scopes register each subtree: a name unique under `A/` still resolves
+    /// for cross-file uses in `A/` when another folder also declares the same name
+    /// (outer/root scope marks it ambiguous; closer folder scope still binds).
     @Test func testSameFolderCrossFileUseDespiteDuplicateElsewhere() throws {
         let fooCode = """
         func foo() {}
@@ -190,8 +187,7 @@ struct TreeSitterReferenceLinkerTests {
             (aFoo.references ?? []).count >= 1,
             """
             Cross-file call in A/Bar.swift → A/Foo.swift’s foo should still produce used-by \
-            even when B/OtherFoo.swift also declares foo. Today only a file scope exists, \
-            so the shared-folder target is lost to root ambiguity.
+            even when B/OtherFoo.swift also declares foo (folder scope for A uniquely binds foo)
             """
         )
         #expect(aFoo.references?.first?.filePathRelativeToRoot == "A/Bar.swift")

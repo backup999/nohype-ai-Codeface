@@ -3,33 +3,26 @@
 /// Pure: `TreeSitterFolder` → new forest with `references` filled on matched decls.
 /// No types, overloads, or imports — exact name match, most-local scope wins.
 ///
-/// ## Scopes
+/// ## Scopes (mirror the forest)
 ///
-/// 1. **Root (cross-scope index):** every name-binding declaration that lives at
-///    file scope or as a member of a type-like container (class / struct / enum /
-///    protocol / extension body, including nested types). First registration wins;
-///    a second distinct decl with the same name makes the name **ambiguous**.
-/// 2. **File scopes:** each file’s top-level name-binding decls, last-wins. When
-///    the root marks a name ambiguous (e.g. two files both declare `foo`), a
-///    same-file use still resolves via this scope instead of being dropped.
-/// 3. **Nested body scopes:** when entering a declaration, its child decls are
-///    registered with last-wins shadowing so sibling order and locals still work.
+/// 1. **Folder scopes (every depth, including the codebase root):** all name-binding
+///    decls in that folder’s **subtree** (file-level + members of type-like
+///    containers). First registration wins; a second distinct binding makes the
+///    name **ambiguous** at that level.
+/// 2. **File scopes:** that file’s top-level name-binding decls, last-wins.
+/// 3. **Nested body scopes:** child decls of a declaration, last-wins shadowing.
 ///
-/// Lookup walks the stack inward→outward, so a local, sibling, or same-file
-/// top-level always beats the root index. Function/method bodies do **not**
-/// publish their nested locals into the root index (they stay body-scoped only).
+/// Lookup walks the stack inward→outward. A name unique under a closer folder
+/// still resolves when an outer folder (or the root) marks it ambiguous.
+/// Function/method bodies do **not** publish nested locals into folder scopes.
 enum TreeSitterReferenceLinker {
     
     // MARK: - Public
     
     static func link(_ folder: TreeSitterFolder) -> TreeSitterFolder {
-        var root = Scope(policy: .rootFirstWinsOrAmbiguous)
-        registerDeclarations(in: folder, pathPrefix: "", into: &root)
-        
         var usedBy = [DeclKey: [TreeSitterCodeSymbol.ReferenceLocation]]()
-        var stack = [root]
-        resolveFiles(in: folder, pathPrefix: "", stack: &stack, usedBy: &usedBy)
-        
+        var stack = [Scope]()
+        enterFolder(folder, pathPrefix: "", stack: &stack, usedBy: &usedBy)
         return rebuild(folder, pathPrefix: "", usedBy: usedBy)
     }
     
@@ -45,11 +38,11 @@ enum TreeSitterReferenceLinker {
     
     struct Scope {
         enum Policy {
-            /// Cross-scope index: first registration wins; a second distinct decl
+            /// Folder / codebase: first registration wins; a second distinct decl
             /// with the same name makes the name unresolvable (ambiguous).
-            case rootFirstWinsOrAmbiguous
-            /// Nested bodies: last registration wins (shadowing).
-            case nestedLastWins
+            case firstWinsOrAmbiguous
+            /// File top-level and nested bodies: last registration wins (shadowing).
+            case lastWins
         }
         
         let policy: Policy
@@ -58,7 +51,7 @@ enum TreeSitterReferenceLinker {
         
         mutating func register(name: String, key: DeclKey) {
             switch policy {
-            case .rootFirstWinsOrAmbiguous:
+            case .firstWinsOrAmbiguous:
                 if ambiguous.contains(name) { return }
                 if bindings[name] != nil {
                     bindings.removeValue(forKey: name)
@@ -66,7 +59,7 @@ enum TreeSitterReferenceLinker {
                     return
                 }
                 bindings[name] = key
-            case .nestedLastWins:
+            case .lastWins:
                 bindings[name] = key
             }
         }
@@ -76,47 +69,98 @@ enum TreeSitterReferenceLinker {
         }
     }
     
-    // MARK: - Phase 1: register decls into the cross-scope root index
+    // MARK: - Walk: folder → file → bodies
     
-    private static func registerDeclarations(
-        in folder: TreeSitterFolder,
+    /// Push a folder scope filled with this subtree, then recurse and process files.
+    private static func enterFolder(
+        _ folder: TreeSitterFolder,
+        pathPrefix: String,
+        stack: inout [Scope],
+        usedBy: inout [DeclKey: [TreeSitterCodeSymbol.ReferenceLocation]]
+    ) {
+        var folderScope = Scope(policy: .firstWinsOrAmbiguous)
+        registerSubtree(folder, pathPrefix: pathPrefix, into: &folderScope)
+        stack.append(folderScope)
+        
+        for subfolder in folder.subfolders {
+            enterFolder(
+                subfolder,
+                pathPrefix: join(pathPrefix, subfolder.name),
+                stack: &stack,
+                usedBy: &usedBy
+            )
+        }
+        
+        for file in folder.files {
+            enterFile(
+                file,
+                filePath: join(pathPrefix, file.name),
+                stack: &stack,
+                usedBy: &usedBy
+            )
+        }
+        
+        stack.removeLast()
+    }
+    
+    /// Push a file scope (top-level name bindings only), then resolve refs/bodies.
+    private static func enterFile(
+        _ file: TreeSitterFile,
+        filePath: String,
+        stack: inout [Scope],
+        usedBy: inout [DeclKey: [TreeSitterCodeSymbol.ReferenceLocation]]
+    ) {
+        var fileScope = Scope(policy: .lastWins)
+        for symbol in file.symbols where symbol.role == .declaration {
+            guard introducesNameBinding(symbol) else { continue }
+            fileScope.register(
+                name: symbol.name,
+                key: DeclKey(filePathRelativeToRoot: filePath, range: symbol.range)
+            )
+        }
+        stack.append(fileScope)
+        process(nodes: file.symbols, filePath: filePath, stack: &stack, usedBy: &usedBy)
+        stack.removeLast()
+    }
+    
+    // MARK: - Register decls into a folder scope (full subtree)
+    
+    private static func registerSubtree(
+        _ folder: TreeSitterFolder,
         pathPrefix: String,
         into scope: inout Scope
     ) {
         for subfolder in folder.subfolders {
-            registerDeclarations(
-                in: subfolder,
+            registerSubtree(
+                subfolder,
                 pathPrefix: join(pathPrefix, subfolder.name),
                 into: &scope
             )
         }
         
         for file in folder.files {
-            let filePath = join(pathPrefix, file.name)
-            // File scope: top-level decls are part of the global index; type-like
-            // containers also publish their members (see `publishMembersIntoRoot`).
             registerDeclarations(
                 file.symbols,
-                filePath: filePath,
+                filePath: join(pathPrefix, file.name),
                 into: &scope,
-                publishIntoRoot: true
+                publishIntoContainer: true
             )
         }
     }
     
-    /// Walk a declaration forest for root-index registration.
+    /// Walk a declaration forest for container-scope registration.
     ///
-    /// - `publishIntoRoot`: whether *these* nodes should be entered into the root
-    ///   index. Always true at file scope and under type-like containers; false
-    ///   under functions/methods so locals stay body-only.
+    /// - `publishIntoContainer`: whether *these* nodes should be entered into the
+    ///   current folder scope. Always true at file scope and under type-like
+    ///   containers; false under functions/methods so locals stay body-only.
     private static func registerDeclarations(
         _ symbols: [TreeSitterCodeSymbol],
         filePath: String,
         into scope: inout Scope,
-        publishIntoRoot: Bool
+        publishIntoContainer: Bool
     ) {
         for symbol in symbols where symbol.role == .declaration {
-            if publishIntoRoot, introducesNameBinding(symbol) {
+            if publishIntoContainer, introducesNameBinding(symbol) {
                 scope.register(
                     name: symbol.name,
                     key: DeclKey(filePathRelativeToRoot: filePath, range: symbol.range)
@@ -130,44 +174,12 @@ enum TreeSitterReferenceLinker {
                 symbol.children,
                 filePath: filePath,
                 into: &scope,
-                publishIntoRoot: childPublish
+                publishIntoContainer: childPublish
             )
         }
     }
     
-    // MARK: - Phase 2: resolve refs (root already filled; nested scopes only)
-    
-    private static func resolveFiles(
-        in folder: TreeSitterFolder,
-        pathPrefix: String,
-        stack: inout [Scope],
-        usedBy: inout [DeclKey: [TreeSitterCodeSymbol.ReferenceLocation]]
-    ) {
-        for subfolder in folder.subfolders {
-            resolveFiles(
-                in: subfolder,
-                pathPrefix: join(pathPrefix, subfolder.name),
-                stack: &stack,
-                usedBy: &usedBy
-            )
-        }
-        
-        for file in folder.files {
-            let filePath = join(pathPrefix, file.name)
-            // File scope: same-file top-level decls beat an ambiguous root name.
-            var fileScope = Scope(policy: .nestedLastWins)
-            for symbol in file.symbols where symbol.role == .declaration {
-                guard introducesNameBinding(symbol) else { continue }
-                fileScope.register(
-                    name: symbol.name,
-                    key: DeclKey(filePathRelativeToRoot: filePath, range: symbol.range)
-                )
-            }
-            stack.append(fileScope)
-            process(nodes: file.symbols, filePath: filePath, stack: &stack, usedBy: &usedBy)
-            stack.removeLast()
-        }
-    }
+    // MARK: - Resolve refs inside a file
     
     private static func process(
         nodes: [TreeSitterCodeSymbol],
@@ -196,7 +208,7 @@ enum TreeSitterReferenceLinker {
         stack: inout [Scope],
         usedBy: inout [DeclKey: [TreeSitterCodeSymbol.ReferenceLocation]]
     ) {
-        var body = Scope(policy: .nestedLastWins)
+        var body = Scope(policy: .lastWins)
         for child in decl.children where child.role == .declaration {
             guard introducesNameBinding(child) else { continue }
             body.register(
@@ -213,13 +225,13 @@ enum TreeSitterReferenceLinker {
     ///
     /// Swift `extension T` is still a structural declaration (container for members),
     /// but it does **not** declare type `T` — it extends an existing type. Registering
-    /// it under `T` would collide with the real type (root policy then drops the name).
+    /// it under `T` would collide with the real type (folder policy then drops the name).
     /// Members *inside* the extension still bind under their own names.
     private static func introducesNameBinding(_ symbol: TreeSitterCodeSymbol) -> Bool {
         symbol.attributes["declaration_kind"] != "extension"
     }
     
-    /// Containers whose **members** are part of the cross-scope root index.
+    /// Containers whose **members** are part of folder/cross-scope indexes.
     ///
     /// Includes Swift/Python type forms and Swift extensions (`class_declaration`
     /// with `declaration_kind == extension`): the extension itself does not bind
