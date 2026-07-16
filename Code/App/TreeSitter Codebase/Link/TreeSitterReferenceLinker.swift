@@ -198,10 +198,22 @@ enum TreeSitterReferenceLinker {
         for node in nodes {
             switch node.role {
             case .reference:
-                guard shouldAttemptNameLookup(node, stack: stack) else { continue }
-                if let declKey = lookup(node.name, in: stack) {
+                // Resolve this ref, then walk nested refs (call args / trailing
+                // closures projected under opensChildren call-like kinds).
+                // Do not push a new scope — calls do not introduce name bindings.
+                if shouldAttemptNameLookup(node, stack: stack),
+                   let declKey = lookup(node.name, in: stack)
+                {
                     usedBy[declKey, default: []].append(
                         .init(filePathRelativeToRoot: filePath, range: node.range)
+                    )
+                }
+                if !node.children.isEmpty {
+                    process(
+                        nodes: node.children,
+                        filePath: filePath,
+                        stack: &stack,
+                        usedBy: &usedBy
                     )
                 }
             case .declaration:

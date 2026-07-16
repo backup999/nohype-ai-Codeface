@@ -46,14 +46,15 @@ enum CodeTreeGenerator {
            let rule = profile.rules[type],
            let name = profile.name(for: node, rule: rule)
         {
-            // References are code-tree **leaves**: the CST often nests the same
-            // surface name again (e.g. inheritance_specifier → user_type → Bar).
-            // Recursing would emit two refs for one source occurrence. Declarations
-            // still open their full CST children (nested decls + body/header refs).
+            // Open children by default (nested uses under calls, type args, …).
+            // Declarations always open. References open unless the profile marks
+            // a stacked same-name shell with `opensChildren: false` (e.g.
+            // inheritance_specifier → user_type → Bar would otherwise double-count).
+            let openChildren = rule.role == .declaration || rule.opensChildren
             let children: [TreeSitterCodeSymbol] =
-                rule.role == .reference
-                ? []
-                : childrenForSelectedNode(node, type: type, profile: profile)
+                openChildren
+                ? childrenForSelectedNode(node, type: type, profile: profile)
+                : []
             
             let range = CodeRange(node.pointRange)
             let selectionRange = profile.selectionRange(for: node, rule: rule) ?? range

@@ -79,4 +79,39 @@ struct CodeTreeGeneratorTests {
         #expect(tree.count == 1)
         #expect(tree[0].isStructurallyEqual(to: expected))
     }
+    
+    /// Nested callee inside an outer call’s trailing closure must be projected
+    /// under the outer `call_expression` (opensChildren), not dropped as a leaf.
+    @Test func testSwiftNestedCallInsideTrailingClosure() throws {
+        let code = """
+        func outer() {
+            container { child() }
+        }
+        """
+        
+        let tree = try CodeTreeGenerator.generateTree(from: code, language: .swift)
+        
+        let expected = TreeSitterCodeSymbol(
+            role: .declaration,
+            kind: "function_declaration",
+            name: "outer",
+            children: [
+                TreeSitterCodeSymbol(
+                    role: .reference,
+                    kind: "call_expression",
+                    name: "container",
+                    children: [
+                        TreeSitterCodeSymbol(
+                            role: .reference,
+                            kind: "call_expression",
+                            name: "child"
+                        ),
+                    ]
+                ),
+            ]
+        )
+        
+        #expect(tree.count == 1)
+        #expect(tree[0].isStructurallyEqual(to: expected))
+    }
 }

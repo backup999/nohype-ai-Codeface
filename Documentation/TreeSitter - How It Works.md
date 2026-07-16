@@ -107,11 +107,12 @@ API entry point: `CodeTreeGenerator.generateTree(from:language:)`.
 
 1. Parse with grammar for `SourceLanguage`.
 2. DFS: if node type ∈ `rules` and name readable → emit `CodeNode`.
-3. **Declarations** open **all** CST children (no body-only cutoff). **References are leaves** — no nested code children — so nested CST shells (`inheritance_specifier` → `user_type` → same name) do not become two refs for one token.
-4. Under loose fields, bare `identifier` may emit as `.reference`.
-5. Everything else is skimmed (children only).
+3. **Open children by default** (`Rule.opensChildren`, default `true`): declarations always open full CST children; references also open so nested uses (call args / trailing closures, nested type args, …) remain dependency fuel. The linker walks children of references when resolving used-by (no new scope for call children).
+4. **Exception — stacked same-name shells** (`opensChildren: false`): e.g. Swift `inheritance_specifier` (would otherwise re-emit nested `user_type` for the same type), Python import nodes (would re-emit the same name via loose identifiers). One source occurrence stays one ref.
+5. Under loose fields, bare `identifier` may emit as `.reference`.
+6. Everything else is skimmed (children only).
 
-Why leaf refs: grammars stack several node types around one use; type-based selection alone double-counts unless the walk stops at the first reference shell (or the profile lists only the innermost type and never the outer).
+Nested calls under outer calls are the common case that needs open refs (see `testNestedCallInsideTrailingClosureLinksCrossFile` / bug 5). Leaf refs are the narrow special case for double-counting shells only.
 
 ## Scaling — work per language
 

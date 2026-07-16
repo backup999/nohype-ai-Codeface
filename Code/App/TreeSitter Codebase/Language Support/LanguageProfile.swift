@@ -37,6 +37,13 @@ struct LanguageProfile: Sendable {
         var role: TreeSitterCodeSymbol.Role
         /// Where to get `CodeNode.name` for this node type.
         var name: NameSource
+        /// Whether to walk CST children after emitting this node.
+        /// Default **true** — nested uses (call args, trailing closures, generic
+        /// type args, …) stay in the tree as dependency fuel.
+        /// Set **false** only for stacked shells that re-encode the same surface
+        /// name (e.g. `inheritance_specifier` → `user_type` → `Bar`) so one
+        /// source occurrence does not become two refs.
+        var opensChildren: Bool = true
     }
 
     /// Per-node-type strategy for reading a display / match name from the CST.
@@ -82,8 +89,12 @@ struct LanguageProfile: Sendable {
             "property_declaration": Rule(role: .declaration, name: .swiftPropertyName),
             "init_declaration": Rule(role: .declaration, name: .nodeText),
             "typealias_declaration": Rule(role: .declaration, name: .field("name")),
-            // References
-            "inheritance_specifier": Rule(role: .reference, name: .field("inherits_from")),
+            // References (open children by default; close only stacked same-name shells)
+            "inheritance_specifier": Rule(
+                role: .reference,
+                name: .field("inherits_from"),
+                opensChildren: false // else nested user_type re-emits the same type name
+            ),
             "call_expression": Rule(role: .reference, name: .swiftCallExpression),
             "user_type": Rule(role: .reference, name: .swiftUserTypeName),
             "import_declaration": Rule(role: .reference, name: .nodeText),
@@ -99,8 +110,14 @@ struct LanguageProfile: Sendable {
             "class_definition": Rule(role: .declaration, name: .field("name")),
             "function_definition": Rule(role: .declaration, name: .field("name")),
             "call": Rule(role: .reference, name: .pythonCall),
-            "import_statement": Rule(role: .reference, name: .field("name")),
-            "import_from_statement": Rule(role: .reference, name: .field("module_name")),
+            // Leaf: rule already captures the import name; opening would re-emit
+            // the same name via looseIdentifierFields under field "name".
+            "import_statement": Rule(role: .reference, name: .field("name"), opensChildren: false),
+            "import_from_statement": Rule(
+                role: .reference,
+                name: .field("module_name"),
+                opensChildren: false
+            ),
             "type": Rule(role: .reference, name: .nodeText),
         ],
         attributeFields: [],
