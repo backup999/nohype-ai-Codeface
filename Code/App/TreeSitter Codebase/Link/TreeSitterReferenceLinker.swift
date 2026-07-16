@@ -15,6 +15,14 @@
 /// Lookup walks the stack inward→outward. A name unique under a closer folder
 /// still resolves when an outer folder (or the root) marks it ambiguous.
 /// Function/method bodies do **not** publish nested locals into folder scopes.
+///
+/// ## Qualified calls (`Type.method` / `host.method`)
+///
+/// Call refs keep the bare method name for lookup, plus optional `call_host`.
+/// When the host **looks like a type** (UpperCamelCase) and is **not** bound in
+/// any scope, the method name is **not** linked — otherwise `Library.run()` /
+/// `BackgroundActor.run` would attach used-by to an unrelated `run` elsewhere.
+/// Instance hosts (`host.method`, lowercase) still use bare-method lookup.
 enum TreeSitterReferenceLinker {
     
     // MARK: - Public
@@ -190,6 +198,7 @@ enum TreeSitterReferenceLinker {
         for node in nodes {
             switch node.role {
             case .reference:
+                guard shouldAttemptNameLookup(node, stack: stack) else { continue }
                 if let declKey = lookup(node.name, in: stack) {
                     usedBy[declKey, default: []].append(
                         .init(filePathRelativeToRoot: filePath, range: node.range)
@@ -252,6 +261,29 @@ enum TreeSitterReferenceLinker {
             if let key = scope.lookup(name) { return key }
         }
         return nil
+    }
+    
+    /// Whether a reference should try exact-name lookup against the scope stack.
+    ///
+    /// Qualified calls with an **unresolved type-like host** skip lookup so the
+    /// bare method name cannot glue onto an unrelated same-named method in the
+    /// forest (`Library.run` ↛ `Processor.run`).
+    private static func shouldAttemptNameLookup(
+        _ node: TreeSitterCodeSymbol,
+        stack: [Scope]
+    ) -> Bool {
+        guard let host = node.attributes[LanguageProfile.callHostAttribute],
+              looksLikeTypeName(host)
+        else {
+            return true
+        }
+        return lookup(host, in: stack) != nil
+    }
+    
+    /// Swift/Python type names are UpperCamelCase; instance receivers are not.
+    private static func looksLikeTypeName(_ name: String) -> Bool {
+        guard let first = name.first else { return false }
+        return first.isUppercase
     }
     
     // MARK: - Rebuild forest with used-by attached

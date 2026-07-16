@@ -130,15 +130,32 @@ struct LanguageProfile: Sendable {
         }
     }
 
-    func attributes(for node: Node) -> [String: String] {
+    func attributes(for node: Node, rule: Rule) -> [String: String] {
         var result: [String: String] = [:]
         for field in attributeFields {
             if let text = node.child(byFieldName: field)?.text {
                 result[field] = text
             }
         }
+        // Qualified calls: retain host so the linker can refuse bare-method
+        // binding when the host type is not in the forest (`Library.run()`).
+        switch rule.name {
+        case .swiftCallExpression:
+            if let host = Self.swiftCallHost(node) {
+                result[Self.callHostAttribute] = host
+            }
+        case .pythonCall:
+            if let host = Self.pythonCallHost(node) {
+                result[Self.callHostAttribute] = host
+            }
+        default:
+            break
+        }
         return result
     }
+    
+    /// Attribute key: host / receiver of a qualified call (`Type.method` / `obj.method`).
+    static let callHostAttribute = "call_host"
     
     /// Narrower span for the surface name when the grammar exposes it; else `nil`.
     func selectionRange(for node: Node, rule: Rule) -> CodeRange? {
@@ -206,6 +223,24 @@ struct LanguageProfile: Sendable {
         }
         return nil
     }
+    
+    /// Left-hand host of a Swift navigation call (`Library` in `Library.run()`).
+    /// Free calls (`run()`) have no host.
+    private static func swiftCallHost(_ call: Node) -> String? {
+        for i in 0 ..< call.namedChildCount {
+            guard let child = call.namedChild(at: i),
+                  child.nodeType == "navigation_expression"
+            else { continue }
+            let target = child.child(byFieldName: "target")
+                ?? child.namedChild(at: 0)
+            guard let target else { continue }
+            return firstNamedDescendant(
+                target,
+                types: ["simple_identifier", "type_identifier"]
+            )?.text ?? target.text
+        }
+        return nil
+    }
 
     private static func pythonCallName(_ call: Node) -> String? {
         guard let function = call.child(byFieldName: "function") else { return nil }
@@ -216,6 +251,16 @@ struct LanguageProfile: Sendable {
             return function.child(byFieldName: "attribute")?.text
         }
         return function.text
+    }
+    
+    /// Object of a Python attribute call (`Library` in `Library.run()`).
+    private static func pythonCallHost(_ call: Node) -> String? {
+        guard let function = call.child(byFieldName: "function"),
+              function.nodeType == "attribute"
+        else { return nil }
+        let object = function.child(byFieldName: "object") ?? function.namedChild(at: 0)
+        guard let object else { return nil }
+        return firstNamedDescendant(object, types: ["identifier"])?.text ?? object.text
     }
 
     private static func firstNamedDescendant(_ node: Node, types: Set<String>) -> Node? {

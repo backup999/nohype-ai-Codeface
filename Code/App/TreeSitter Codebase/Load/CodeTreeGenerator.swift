@@ -63,7 +63,7 @@ enum CodeTreeGenerator {
                     role: rule.role,
                     kind: type,
                     name: name,
-                    attributes: profile.attributes(for: node),
+                    attributes: profile.attributes(for: node, rule: rule),
                     range: range,
                     selectionRange: selectionRange,
                     children: children
