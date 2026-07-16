@@ -46,7 +46,7 @@ struct TreeSitterCodeSymbol: Sendable {
             && children.count == other.children.count
             && zip(children, other.children).allSatisfy { $0.isStructurallyEqual(to: $1) }
     }
-    
+     
     /// Analysis role assigned when projecting the CST into a `CodeNode`.
     ///
     /// Tree-sitter has no declaration/reference notion; this is **our** early tag so
