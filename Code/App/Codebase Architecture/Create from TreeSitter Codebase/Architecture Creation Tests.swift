@@ -157,3 +157,79 @@ import SwiftyToolz
         "Architecture’s Library.run() (external host) must not create a folder edge onto Processor.run"
     )
 }
+
+// MARK: - Subscript "call" must not link to an unrelated same-named property
+
+/// Real-world: `CodeRange.getCode(fromLines lines:)` in Basic Types does
+/// `lines[start.line ... end.line].joined(...)`. Tree-sitter models the
+/// subscript `lines[...]` as a `call_expression` named `lines`. Bare-name
+/// lookup then hits `CodeFileArtifact.lines` in Codebase Architecture → false
+/// folder edge **Basic Types → Codebase Architecture**.
+///
+/// Fixture (hardcoded, stable):
+/// ```text
+/// App/
+///   BasicTypes/Range.swift   ← func getCode(fromLines lines:) { lines[0] }
+///   Architecture/File.swift  ← class File { let lines: [String] }
+/// ```
+@Test func testSubscriptBaseDoesNotCreateFolderEdgeOntoUnrelatedProperty() async throws {
+    let basicTypesCode = """
+    func getCode(fromLines lines: [String]) -> String {
+        lines[0]
+    }
+    """
+    let architectureCode = """
+    class File {
+        let lines: [String]
+    }
+    """
+    
+    let forest = TreeSitterFolder(
+        name: "App",
+        subfolders: [
+            TreeSitterFolder(
+                name: "BasicTypes",
+                files: [
+                    TreeSitterFile(
+                        name: "Range.swift",
+                        code: basicTypesCode,
+                        nodes: try CodeTreeGenerator.generateTree(
+                            from: basicTypesCode,
+                            language: .swift
+                        )
+                    ),
+                ]
+            ),
+            TreeSitterFolder(
+                name: "Architecture",
+                files: [
+                    TreeSitterFile(
+                        name: "File.swift",
+                        code: architectureCode,
+                        nodes: try CodeTreeGenerator.generateTree(
+                            from: architectureCode,
+                            language: .swift
+                        )
+                    ),
+                ]
+            ),
+        ]
+    )
+    
+    let root = await BackgroundActor.run {
+        CodeFolderArtifact.generateArchitecture(from: forest)
+    }
+    
+    let parts = Array(root.partGraph.values)
+    let basicTypes = try #require(parts.first { $0.name == "BasicTypes" })
+    let architecture = try #require(parts.first { $0.name == "Architecture" })
+    
+    let reverseEdge = root.partGraph.edge(from: basicTypes.id, to: architecture.id)
+    #expect(
+        reverseEdge == nil,
+        """
+        Local parameter subscript `lines[...]` must not create a folder edge onto \
+        Architecture’s property `lines` (false Basic Types → Architecture)
+        """
+    )
+}

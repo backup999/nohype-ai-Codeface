@@ -402,6 +402,79 @@ struct TreeSitterReferenceLinkerTests {
         )
     }
     
+    // MARK: - Subscript base must not link as a free call to a same-named property
+    
+    /// Real-world: `CodeRange.getCode(fromLines lines:)` → `lines[...].joined(...)`.
+    /// Tree-sitter emits a `call_expression` named `lines` for the subscript;
+    /// exact-name lookup then attaches used-by to an unrelated property `lines`
+    /// elsewhere (CodeFileArtifact.lines) → false Basic Types → Architecture.
+    ///
+    /// Fixture:
+    /// ```text
+    /// Range.swift  ← func getCode(fromLines lines:) { lines[0] }
+    /// File.swift   ← class File { let lines: [String] }
+    /// ```
+    @Test func testSubscriptBaseDoesNotLinkToUnrelatedProperty() throws {
+        let rangeCode = """
+        func getCode(fromLines lines: [String]) -> String {
+            lines[0]
+        }
+        """
+        let fileCode = """
+        class File {
+            let lines: [String]
+        }
+        """
+        
+        let forest = TreeSitterFolder(
+            name: "App",
+            files: [
+                TreeSitterFile(
+                    name: "Range.swift",
+                    code: rangeCode,
+                    nodes: try CodeTreeGenerator.generateTree(from: rangeCode, language: .swift)
+                ),
+                TreeSitterFile(
+                    name: "File.swift",
+                    code: fileCode,
+                    nodes: try CodeTreeGenerator.generateTree(from: fileCode, language: .swift)
+                ),
+            ]
+        )
+        let linked = forest.withLinkedReferences()
+        
+        // Control: the subscript must appear as a call_expression named `lines`
+        // (if this fails, the false positive mechanism has changed).
+        let rangeRefs = linked.files
+            .first { $0.name == "Range.swift" }?
+            .symbols
+            .flatMap { Self.collectReferences(in: $0) } ?? []
+        #expect(
+            rangeRefs.contains("lines"),
+            """
+            Subscript `lines[...]` is currently projected as call_expression named lines; \
+            got refs \(rangeRefs)
+            """
+        )
+        
+        let fileType = try #require(
+            linked.files.first { $0.name == "File.swift" }?.symbols.first {
+                $0.name == "File" && $0.role == .declaration
+            }
+        )
+        let linesProp = try #require(
+            fileType.children.first { $0.name == "lines" && $0.role == .declaration }
+        )
+        #expect(
+            (linesProp.references ?? []).isEmpty,
+            """
+            Parameter subscript `lines[...]` must not produce used-by on File.lines \
+            (would create false dependency onto File’s file/folder). Got \
+            \(linesProp.references?.map(\.filePathRelativeToRoot) ?? [])
+            """
+        )
+    }
+    
     // MARK: - Member / qualified call names must match the method decl
     
     /// Real-world: `TreeSitterReferenceLinkerTests` → `TreeSitterReferenceLinker`
