@@ -315,6 +315,93 @@ struct TreeSitterReferenceLinkerTests {
         #expect(quxFunc.references?.allSatisfy { $0.filePathRelativeToRoot == "Demo.swift" } == true)
     }
 
+    // MARK: - Nested call inside outer call trailing closure (SwiftUI composition)
+    
+    /// Real-world: `CodebaseAnalysisView.body` composes sibling views as
+    /// nested constructor calls inside another call’s trailing closure:
+    /// ```
+    /// NavigationSplitView { CodebaseNavigatorView(...) }
+    /// detail: { CodebaseCentralView(...) }
+    /// .inspector { CodebaseInspectorView(...) }
+    /// ```
+    /// Those nested type initializers must still produce used-by edges onto the
+    /// sibling types (and thereby folder deps onto Navigator / Central / Inspector).
+    ///
+    /// Suspected gap: `call_expression` is a reference **leaf** in the code tree,
+    /// so callees nested in arguments / trailing closures of an outer call are
+    /// never projected as references.
+    @Test func testNestedCallInsideTrailingClosureLinksCrossFile() throws {
+        // Minimal SwiftUI-style composition: outer container call + nested child init.
+        let rootCode = """
+        struct RootView {
+            var body: some View {
+                Container {
+                    ChildView()
+                }
+            }
+        }
+        """
+        let childCode = """
+        struct ChildView {}
+        """
+        
+        let forest = TreeSitterFolder(
+            name: "AnalysisView",
+            files: [
+                TreeSitterFile(
+                    name: "RootView.swift",
+                    code: rootCode,
+                    nodes: try CodeTreeGenerator.generateTree(from: rootCode, language: .swift)
+                ),
+            ],
+            subfolders: [
+                TreeSitterFolder(
+                    name: "Child",
+                    files: [
+                        TreeSitterFile(
+                            name: "ChildView.swift",
+                            code: childCode,
+                            nodes: try CodeTreeGenerator.generateTree(
+                                from: childCode,
+                                language: .swift
+                            )
+                        ),
+                    ]
+                ),
+            ]
+        )
+        let linked = forest.withLinkedReferences()
+        
+        // Control: the nested init must appear as a reference in RootView’s tree
+        // (if this fails, the linker never sees the use).
+        let rootRefs = linked.files
+            .first { $0.name == "RootView.swift" }?
+            .symbols
+            .flatMap { Self.collectReferences(in: $0) } ?? []
+        #expect(
+            rootRefs.contains("ChildView"),
+            """
+            Nested constructor `ChildView()` inside `Container { … }` trailing closure \
+            must be projected as a call_expression reference; got refs \(rootRefs)
+            """
+        )
+        
+        let child = try #require(
+            linked.subfolders
+                .first { $0.name == "Child" }?
+                .files.first { $0.name == "ChildView.swift" }?
+                .symbols.first { $0.name == "ChildView" && $0.role == .declaration }
+        )
+        #expect(
+            (child.references ?? []).contains { $0.filePathRelativeToRoot == "RootView.swift" },
+            """
+            RootView’s nested `ChildView()` use should produce used-by on ChildView \
+            (CodebaseAnalysisView → sibling view folders). Got \
+            \(child.references?.map(\.filePathRelativeToRoot) ?? [])
+            """
+        )
+    }
+    
     // MARK: - Member / qualified call names must match the method decl
     
     /// Real-world: `TreeSitterReferenceLinkerTests` → `TreeSitterReferenceLinker`
