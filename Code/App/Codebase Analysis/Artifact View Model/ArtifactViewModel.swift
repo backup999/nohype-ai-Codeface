@@ -1,6 +1,14 @@
 import Foundation
 import SwiftyToolz
 
+extension ArtifactViewModel
+{
+    func getPath() -> [ArtifactViewModel]
+    {
+        (scope?.getPath() ?? []) + [self]
+    }
+}
+
 @MainActor
 class ArtifactViewModel: Identifiable, ObservableObject, Comparable
 {

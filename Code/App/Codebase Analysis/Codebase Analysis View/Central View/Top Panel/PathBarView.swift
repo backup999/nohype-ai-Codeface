@@ -35,11 +35,3 @@ struct PathBarView: View
     
     var overviewBar: PathBar
 }
-
-extension ArtifactViewModel
-{
-    func getPath() -> [ArtifactViewModel]
-    {
-        (scope?.getPath() ?? []) + [self]
-    }
-}
