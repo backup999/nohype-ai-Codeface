@@ -36,7 +36,14 @@ struct CodeTreeGeneratorTests {
                     kind: "function_declaration",
                     name: "baz",
                     children: [
-                        TreeSitterCodeSymbol(role: .reference, kind: "user_type", name: "Wom"),
+                        TreeSitterCodeSymbol(
+                            role: .declaration,
+                            kind: "parameter",
+                            name: "y",
+                            children: [
+                                TreeSitterCodeSymbol(role: .reference, kind: "user_type", name: "Wom"),
+                            ]
+                        ),
                         TreeSitterCodeSymbol(role: .reference, kind: "call_expression", name: "qux"),
                     ]
                 ),
@@ -46,6 +53,39 @@ struct CodeTreeGeneratorTests {
         #expect(tree.count == 1)
         #expect(tree[0].isStructurallyEqual(to: expected))
         #expect(tree[0].range.start.line == 0)
+    }
+    
+    /// Parameters project as body-local declarations named by the **internal**
+    /// binding (`lines`), not the external call-site label (`fromLines`).
+    @Test func testSwiftParameterProjectsInternalBindingName() throws {
+        let code = """
+        func getCode(fromLines lines: [String]) -> String {
+            lines[0]
+        }
+        """
+        
+        let tree = try CodeTreeGenerator.generateTree(from: code, language: .swift)
+        
+        let expected = TreeSitterCodeSymbol(
+            role: .declaration,
+            kind: "function_declaration",
+            name: "getCode",
+            children: [
+                TreeSitterCodeSymbol(
+                    role: .declaration,
+                    kind: "parameter",
+                    name: "lines",
+                    children: [
+                        TreeSitterCodeSymbol(role: .reference, kind: "user_type", name: "String"),
+                    ]
+                ),
+                TreeSitterCodeSymbol(role: .reference, kind: "user_type", name: "String"),
+                TreeSitterCodeSymbol(role: .reference, kind: "call_expression", name: "lines"),
+            ]
+        )
+        
+        #expect(tree.count == 1)
+        #expect(tree[0].isStructurallyEqual(to: expected))
     }
     
     @Test func testPython() throws {

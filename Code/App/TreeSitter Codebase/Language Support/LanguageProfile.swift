@@ -54,6 +54,10 @@ struct LanguageProfile: Sendable {
         case nodeText
         /// Swift `property_declaration`: dig through `pattern` → bound identifier.
         case swiftPropertyName
+        /// Swift `parameter` / `lambda_parameter`: **internal** binding name only
+        /// (field `"name"` → `simple_identifier`). Never the call-site label
+        /// (`external_name` / `fromLines` in `fromLines lines:`).
+        case swiftParameterName
         /// Swift `user_type`: primary `type_identifier`.
         case swiftUserTypeName
         /// Swift `call_expression`: callee identifier or navigation expression.
@@ -89,6 +93,11 @@ struct LanguageProfile: Sendable {
             "property_declaration": Rule(role: .declaration, name: .swiftPropertyName),
             "init_declaration": Rule(role: .declaration, name: .nodeText),
             "typealias_declaration": Rule(role: .declaration, name: .field("name")),
+            // Body-local name bindings (bug 6): parameters must enter function/init
+            // body scopes so `lines[...]` / bare uses shadow foreign same-named members.
+            // Not published into folder scopes (`function_declaration` is not type-like).
+            "parameter": Rule(role: .declaration, name: .swiftParameterName),
+            "lambda_parameter": Rule(role: .declaration, name: .swiftParameterName),
             // References (open children by default; close only stacked same-name shells)
             "inheritance_specifier": Rule(
                 role: .reference,
@@ -138,6 +147,8 @@ struct LanguageProfile: Sendable {
             return node.text
         case .swiftPropertyName:
             return Self.swiftPropertyName(node)
+        case .swiftParameterName:
+            return Self.swiftParameterName(node)
         case .swiftUserTypeName:
             return Self.swiftUserTypeName(node)
         case .swiftCallExpression:
@@ -188,6 +199,11 @@ struct LanguageProfile: Sendable {
                 return CodeRange(id.pointRange)
             }
             return CodeRange(pattern.pointRange)
+        case .swiftParameterName:
+            if let id = Self.swiftParameterNameNode(node) {
+                return CodeRange(id.pointRange)
+            }
+            return nil
         case .swiftUserTypeName:
             if let id = Self.firstNamedDescendant(node, types: ["type_identifier"]) {
                 return CodeRange(id.pointRange)
@@ -207,6 +223,21 @@ struct LanguageProfile: Sendable {
         }
         return firstNamedDescendant(pattern, types: ["simple_identifier"])?.text
             ?? pattern.text
+    }
+    
+    /// Internal parameter binding (`lines` in `fromLines lines: [String]`).
+    /// Ignores `external_name` and type-ish children that the node-types union
+    /// lists under field `"name"`.
+    private static func swiftParameterName(_ node: Node) -> String? {
+        swiftParameterNameNode(node)?.text
+    }
+    
+    private static func swiftParameterNameNode(_ node: Node) -> Node? {
+        guard let nameField = node.child(byFieldName: "name") else { return nil }
+        if nameField.nodeType == "simple_identifier" {
+            return nameField
+        }
+        return firstNamedDescendant(nameField, types: ["simple_identifier"])
     }
     
     private static func swiftUserTypeName(_ node: Node) -> String? {
